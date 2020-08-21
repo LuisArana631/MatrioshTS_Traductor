@@ -37,9 +37,25 @@
               },
               {
                 "input": "src/global.scss"
+              },
+              {
+                "input": "./codemirror/lib/codemirror.css"
+              },
+              {
+                "input": "./codemirror/theme/darcula.css"
               }
             ],
-            "scripts": []
+            "scripts": [
+              {
+                "input": "./codemirror/lib/codemirror.js",
+              },
+              {
+                "input": "./codemirror/mode/javascript/javascript.js"
+              },
+              {
+                "input": "src/assets/js/seteditor.js"
+              }
+            ]
           },
           "configurations": {
             "production": {

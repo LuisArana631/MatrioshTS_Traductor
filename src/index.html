@@ -13,8 +13,6 @@
     <meta name="msapplication-tap-highlight" content="no" />
 
     <link rel="icon" type="image/png" href="assets/icon/favicon.png" />
-    <link rel="stylesheet" href="../codemirror-5.52.2/lib/codemirror.css">
-    <link rel="stylesheet" href="../codemirror-5.52.2/theme/darcula.css">
 
     <!-- add to homescreen for ios -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -23,18 +21,8 @@
 
 <body>
     <app-root></app-root>
+    <br><br><br><br>
     <textarea id="editor"></textarea>
-
-    <script src="../codemirror-5.52.2/lib/codemirror.js"></script>
-    <script src="../codemirror-5.52.2/mode/javascript/javascript.js"></script>
-
-    <script>
-        var editor = CodeMirror.fromTextArea(document.getElementById('editor'), {
-            mode: "javascript",
-            theme: "darcula"
-        });
-    </script>
-
 </body>
 
 </html>
