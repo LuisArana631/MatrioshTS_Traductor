@@ -18,5 +18,39 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-      
+    <!-- ESPACIO OCUPADO POR EL EDITOR DE TEXTO -->
+    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+
+    <!-- CONSOLA -->
+    <ion-item>
+        <ion-label position="floating">Consola</ion-label>
+        <ion-textarea readonly #myInput></ion-textarea>
+    </ion-item>
+
+    <!-- TABS PARA MOSTRAR CONTENIDO EXTRA -->
+    <ion-item>
+        <ion-tabs>
+            <ion-tab-bar slot="bottom">
+                <ion-tab-button tab="schedule">
+                    <ion-icon name="git-pull-request-outline"></ion-icon>
+                    <ion-label>AST</ion-label>
+                </ion-tab-button>
+
+                <ion-tab-button tab="speakers">
+                    <ion-icon name="person-circle"></ion-icon>
+                    <ion-label>Speakers</ion-label>
+                </ion-tab-button>
+
+                <ion-tab-button tab="map">
+                    <ion-icon name="map"></ion-icon>
+                    <ion-label>Map</ion-label>
+                </ion-tab-button>
+
+                <ion-tab-button tab="about">
+                    <ion-icon name="information-circle"></ion-icon>
+                    <ion-label>About</ion-label>
+                </ion-tab-button>
+            </ion-tab-bar>
+        </ion-tabs>
+    </ion-item>
 </ion-content>
