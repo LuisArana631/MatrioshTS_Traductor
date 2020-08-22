@@ -18,39 +18,65 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-    <!-- ESPACIO OCUPADO POR EL EDITOR DE TEXTO -->
-    <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+    <!-- EDITOR -->
+    <div style="padding:1%;">
+        <ion-row>
+            <ion-col>
+                <ion-label position="floating ">
+                    <ion-icon name="enter-outline"></ion-icon> Código Fuente</ion-label>
+                <ngx-codemirror [options]="{
+                    lineNumbers: true,
+                    theme: 'darcula',
+                    mode: 'javascript'
+                  }" [(ngModel)]="input " [disabled]="false " [autoFocus]="true ">
+                </ngx-codemirror>
+            </ion-col>
+            <ion-col>
+                <ion-icon name="enter-outline"></ion-icon>
+                <ion-label position="floating "> Traducción</ion-label>
+                <ngx-codemirror [options]="{
+                    lineNumbers: true,
+                    theme: 'darcula',
+                    mode: 'javascript'
+                  } " [(ngModel)]="output " [disabled]="true " [autoFocus]="false ">
+                </ngx-codemirror>
+            </ion-col>
+        </ion-row>
+    </div>
 
-    <!-- CONSOLA -->
-    <ion-item>
-        <ion-label position="floating">Consola</ion-label>
-        <ion-textarea readonly #myInput></ion-textarea>
-    </ion-item>
 
-    <!-- TABS PARA MOSTRAR CONTENIDO EXTRA -->
-    <ion-item>
-        <ion-tabs>
-            <ion-tab-bar slot="bottom">
-                <ion-tab-button tab="schedule">
-                    <ion-icon name="git-pull-request-outline"></ion-icon>
-                    <ion-label>AST</ion-label>
-                </ion-tab-button>
+    <div style="padding:1%; padding-top:0;">
+        <!-- CONSOLA -->
+        <ion-item>
 
-                <ion-tab-button tab="speakers">
-                    <ion-icon name="person-circle"></ion-icon>
-                    <ion-label>Speakers</ion-label>
-                </ion-tab-button>
+            <ion-label position="stacked">
+                <ion-icon name="terminal-outline"></ion-icon> Terminal</ion-label>
+            <ion-textarea readonly #myInput rows="9 ">PS MatrioshTS>
+            </ion-textarea>
+        </ion-item>
 
-                <ion-tab-button tab="map">
-                    <ion-icon name="map"></ion-icon>
-                    <ion-label>Map</ion-label>
-                </ion-tab-button>
 
-                <ion-tab-button tab="about">
-                    <ion-icon name="information-circle"></ion-icon>
-                    <ion-label>About</ion-label>
-                </ion-tab-button>
-            </ion-tab-bar>
-        </ion-tabs>
-    </ion-item>
+        <!-- TABS PARA MOSTRAR CONTENIDO EXTRA -->
+        <ion-item>
+            <ion-tabs>
+                <ion-tab-bar slot="bottom ">
+                    <ion-tab-button tab="schedule ">
+                        <ion-icon name="git-network-outline"></ion-icon>
+                        <ion-label>Reporte AST</ion-label>
+                    </ion-tab-button>
+
+                    <ion-tab-button tab="speakers ">
+                        <ion-icon name="grid-outline"></ion-icon>
+                        <ion-label>Tabla de Símbolos</ion-label>
+                    </ion-tab-button>
+
+                    <ion-tab-button tab="map ">
+                        <ion-icon name="bug-outline"></ion-icon>
+                        <ion-label>Reporte de Errores</ion-label>
+                    </ion-tab-button>
+                </ion-tab-bar>
+            </ion-tabs>
+        </ion-item>
+    </div>
+
 </ion-content>

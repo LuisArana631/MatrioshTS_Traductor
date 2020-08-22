@@ -7,8 +7,14 @@ import { Component } from '@angular/core';
 })
 export class HomePage {
 
+  conf: any = {
+    lineNumbers: true,
+    theme:'blackboard',
+    lineWrapping : true,
+    indentWithTabs: true,
+    mode: 'javascript',
+    styleActiveLine: true
+  };
+
   constructor() {}
-
-  
-
 }
