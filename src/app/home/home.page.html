@@ -45,8 +45,8 @@
     </div>
 
 
-    <div style="padding:1%; padding-top:0;">
-        <!-- CONSOLA -->
+    <!-- CONSOLA -->
+    <div style="padding:1%; padding-top:0;">        
         <ion-item>
 
             <ion-label position="stacked">
@@ -54,30 +54,37 @@
             <ion-textarea readonly #myInput rows="9 ">PS MatrioshTS>
             </ion-textarea>
         </ion-item>
-
-
-        <!-- TABS PARA MOSTRAR CONTENIDO EXTRA -->
-        <ion-item>
-            
-            <ion-tabs>
-                <ion-tab-bar slot="bottom ">
-                    <ion-tab-button tab="ast">
-                        <ion-icon name="git-network-outline"></ion-icon>
-                        <ion-label>Reporte AST</ion-label>
-                    </ion-tab-button>
-
-                    <ion-tab-button tab="simbolos">
-                        <ion-icon name="grid-outline"></ion-icon>
-                        <ion-label>Tabla de Símbolos</ion-label>
-                    </ion-tab-button>
-
-                    <ion-tab-button tab="errores">
-                        <ion-icon name="bug-outline"></ion-icon>
-                        <ion-label>Reporte de Errores</ion-label>
-                    </ion-tab-button>
-                </ion-tab-bar>
-            </ion-tabs>
-        </ion-item>
     </div>
+
+
+    <!-- TABS PARA MOSTRAR CONTENIDO EXTRA -->
+    <div style="padding:1%; padding-top:0;">
+        <mat-tab-group mat-align-tabs="center">
+            <mat-tab>
+              <ng-template mat-tab-label>                
+                    <ion-label><ion-icon name="git-network-outline"></ion-icon>Reporte AST</ion-label>
+              </ng-template>
+              <!-- CONTENIDO DEL TAB AST -->
+              Content 1
+            </mat-tab>
+          
+            <mat-tab>
+              <ng-template mat-tab-label>
+                    <ion-label><ion-icon name="grid-outline"></ion-icon> Tabla de Símbolos</ion-label>
+              </ng-template>
+              <!-- CONTENIDO DEL TAB SIMBOLOS -->
+              Content 2
+            </mat-tab>
+          
+            <mat-tab>
+              <ng-template mat-tab-label>                                    
+                    <ion-label><ion-icon name="bug-outline"></ion-icon> Reporte de Errores</ion-label>                
+              </ng-template>
+              <!-- CONTENIDO DEL TAB ERRORES -->
+              Content 3
+            </mat-tab>
+          </mat-tab-group>                
+    </div>
+
 
 </ion-content>

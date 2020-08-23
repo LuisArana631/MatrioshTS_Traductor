@@ -6,6 +6,7 @@ import { HomePage } from './home.page';
 
 import { HomePageRoutingModule } from './home-routing.module';
 import { CodemirrorModule } from '@ctrl/ngx-codemirror'
+import { AppMaterialModule } from '../app.material.module'
 
 @NgModule({
   imports: [
@@ -13,7 +14,8 @@ import { CodemirrorModule } from '@ctrl/ngx-codemirror'
     FormsModule,
     IonicModule,
     HomePageRoutingModule,
-    CodemirrorModule
+    CodemirrorModule,
+    AppMaterialModule
   ],
   declarations: [HomePage]
 })
