@@ -22,6 +22,8 @@ class errores extends Array<nodoError>{
             array_return.push(er);
         });
 
+        array_return.pop();
+
         return array_return;
     }
 }

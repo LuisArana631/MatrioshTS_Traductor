@@ -4,13 +4,15 @@ export class nodoError{
     private linea:number;
     private columna:number;
     private valor:string;
+    private ambito:string;
 
-    constructor(tipo:string, descripcion:string, linea:number, columna:number, valor:string){
+    constructor(tipo:string, descripcion:string, linea:number, columna:number, valor:string, ambito:string){
         this.tipo = tipo;
         this.descripcion = descripcion;
         this.linea = linea;
         this.columna = columna;
         this.valor = valor;
+        this.ambito = ambito;
     }
 
     get Tipo():string{
@@ -31,5 +33,9 @@ export class nodoError{
 
     get Valor():string{
         return this.valor;
+    }
+
+    get Ambito():string{
+        return this.ambito;
     }
 }

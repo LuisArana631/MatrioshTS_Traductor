@@ -1,128 +1,152 @@
-/*  IMPORTS */
-{
-    
-}
+%{
+    const { nodoError } = require('../js/error/error');
+    const { errores } = require('../js/error/errores');
+%}
 
-/* LEXICO */
 %lex
-%%
 
-/* ESPACIO EN BLANCO */
-\s+ /* IGNORAR */
-
-/* COMENTARIOS */
-"//".* /* IGNORAR COMENTARIO */
-[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/] /* IGNORAR COMENTARIO */
-
-/* TIPO DE DATO */
-"string" return 'RSTRING';
-"number" return 'RNUMBER';
-"boolean" return 'RBOOLEAN';
-"void" return 'RVOID';
-"types" return 'RTYPES';
+/* DATOS */
+entero  [0-9]+
+decimal [0-9]+"."[0-9]+
+identificador ([a-zA-Z_])[a-zA-Z0-9_]*
 
 /* SECUENCIAS DE ESCAPE */
-[\]["] return 'COMILLADOBLE';
-[\][\] return 'BARRADOBLE';
-[\][n] return 'SALTOLINEA';
-[\][t] return 'TABULACION';
-[\][r] return 'RETORNO';
+saltolinea \\n
+tabulador \\t
+retornocarro \\r
+barrainvertida \\\\
+comillasimple \\\'
+comilladoble \\\"
+
+/* CADENAS */
+cadenadoble (\"[^"]*\")
+cadenasimple (\'[^']*\')
+
+%%
+\s+                   /* EVITAR ESPACIOS EN BLANCO */
+
+/* DATOS */
+{entero}                return 'ENTERO'
+{decimal}               return 'DECIMAL'
+{identificador}         return 'IDENTIFICADOR'
+
+/* SECUENCIAS DE ESCAPE */
+{saltolinea}            return 'SALTOLINEA'
+{tabulador}             return 'TABULADOR'
+{retornocarro}          return 'RETORNOCARRO'
+{barrainvertida}        return 'BARRAINVERTIDA'
+{comillasimple}         return 'COMILLASIMPLE'
+{comilladoble}          return 'COMILLADOBLE'
+
+/* CADENAS */
+{cadenadoble}           { yytext = yytext.substr( 1 , yyleng-2 ); return 'CADENA'; }
+{cadenasimple}          { yytext = yytext.substr( 1 , yyleng-2 ); return 'CADENA'; }     
+
+/* TIPOS DE DATOS */
+"string"                return 'RSTRING'
+"number"                return 'RNUMBER'
+"boolean"               return 'RBOOLEAN'
+"void"                  return 'RVOID'
+"types"                 return 'RTYPES'
+
 
 /* OPERACIONES ARITMETICAS */
-"+" return 'SUMA';
-"-" return 'RESTA';
-"*" return 'MULTIPLICACION';
-"/" return 'DIVISION';
-"**" return 'POTENCIA';
-"%" return 'MODULO';
-"++" return 'INCREMENTO';
-"--"  return 'DECREMENTO';
+"**"                    return 'POTENCIA'
+"+"                     return 'SUMA'
+"-"                     return 'RESTA'
+"*"                     return 'MULTIPLICACION'
+"/"                     return 'DIVISION'
+"%"                     return 'MODULO'
+"++"                    return 'INCREMENTO'
+"--"                    return 'DECREMENTO'
 
 /* OPERACIONES RELACIONALES */
-">" return 'MAYOR';
-"<" return 'MENOR';
-">=" return 'MAYORIGUAL';
-"<=" return 'MENORIGUAL';
-"==" return 'IGUALDAD';
-"!=" return 'DIFERENCIA';
+">"                     return 'MAYOR'
+"<"                     return 'MENOR'
+">="                    return 'MAYORIGUAL'
+"<="                    return 'MENORIGUAL'
+"=="                    return 'IGUALDAD'
+"!="                    return 'DIFERENCIA'
 
 /* OPERACIONES LOGICAS */
-"&&" return 'AND';
-"||" return 'OR';
-"!" return 'NOT';
-"?" return 'TERNARIO';
+"&&"                    return 'AND'
+"||"                    return 'OR'
+"!"                     return 'NOT'
+"?"                     return 'TERNARIO'
 
 /* PALABRAS RESERVADAS */
-"break" return 'RBREAK';
-"continue" return 'RCONTINUE';
-"return" return 'RRETURN';
-"if" return 'RIF';
-"else" return 'RELSE';
-"switch" return 'RSWITCH';
-"while" return 'RWHILE';
-"do" return 'RDO';
-"for" return 'RFOR';
-"in" return 'RIN';
-"of" return 'ROF';
-"case" return 'RCASE';
-"function" return 'RFUNCTION';
-"console.log" return 'RPRINT';
-"graficar_ts" return 'RGRAFICAR';
-"true" return 'RTRUE';
-"false" return 'RFALSE';
-"pop" return 'RPOP';
-"push" return 'RPUSH';
-"length" return 'RLENGTH';
+"if"                    return 'IF'
+"else"                  return 'ELSE'
+"switch"                return 'SWITCH'
+"case"                  return 'CASE'
+"while"                 return 'WHILE'
+"do"                    return 'DO'
+"for"                   return 'FOR'
+"in"                    return 'IN'
+"of"                    return 'OF'
+"push"                  return 'PUSH'
+"pop"                   return 'POP'
+"length"                return 'LENGTH'
+"let"                   return 'LET'
+"const"                 return 'CONST'
+"break"                 return 'BEARK'
+"continue"              return 'CONTINUE'
+"return"                return 'RETURN'
+"function"              return 'FUNCTION'
+"console.log"           return 'PRINT'
+"graficar_ts"           return 'GRAFICAR'
 
 /* CARACTERES ESPECIALES */
-"{" return 'LLAVEIZQ';
-"}" return 'LLAVE DER';
-"[" return 'CORIZQ';
-"]" return 'CORDER';
-"=" return 'IGUAL';
-"," return 'COMA';
-";" return 'PUNTOCOMA';
-":" return 'DOSPUNTOS';
-"(" return 'PARIZQ';
-")" return 'PARDER';
+"{"                     return 'LLAVEIZQ'
+"}"                     return 'LLAVERDER'
+"["                     return 'CORIZQ'
+"]"                     return 'CORDER'
+"="                     return 'IGUAL'
+","                     return 'COMA'
+";"                     return 'PUTOCOMA'
+":"                     return 'DOSPUNTOS'
+"("                     return 'PARIZQ'
+")"                     return 'PARDER'
 
-/* IDENTIFICADORES */
-([a-zA-Z_])[a-zA-Z0-9_]* return 'IDENTIFICADOR';
+<<EOF>>		            return 'EOF'
 
-/* NUMEROS */
-[0-9]+("."[0-9]+)? return 'DECIMAL';
-[0-9] return 'NUMERO';
-
-<<EOF>> return 'EOF';
-
-. ERROR
+.                       errores.addError(new nodoError("Lexico","Caracter desconocido",yylloc.first_line, yylloc.first_column, yytext, "-"))
 
 /lex
 
 %left 'OR'
 %left 'AND'
 %left 'IGUALDAD', 'DIFERENCIA'
-%left 'MAYORIGUAL', 'MENORIGUAL', 'MAYOR', 'MENOR'
-%left 'SUMA', 'RESTA'
-%left 'MULTIPLICACION', 'DIVISION', 'POTENCIA', 'MODULO'
-%left 'PARDER', 'PARIZQ'
+%left 'MAYORIGUAL', 'MENORIGUAL', 'MENOR', 'MAYOR'
+%left 'SUMA' 'RESTA'
+%left 'MULTIPLICACION' 'DIVISION' 
 
-/* SINTACTICO */
-%start ini
+%start init
+
 %%
 
-ini
-    :instrucciones EOF { return $1; };
+init    
+    : instrucciones EOF { return $1; };
 
 instrucciones
-    :instrucciones instruccion { $1.push($2); $$ = $1; }
-    |instrccion { $$ = [$1]; };
+    : instrucciones instruccion { $1.push($2); $$ = $1; }
+    | instruccion { $$ = [$1]; };
 
 instruccion
-    :sentencia_if {}
-    |sentencia_while {}
-    |sentencia_do {}
-    |sentencia_switch {}
-    |declaracion {}
-    |funcion {}
-    |llamada {}
+    : declaracion { $$ = $1; }   
+    | error { errores.addError(new nodoError("Sintáctico","Se esperaba una instrucción y se encontró ",this._$.first_line,this._$.first_column,$1, "Global")) };
+
+declaracion
+    : tipo_variable {  }
+    | ;
+
+tipo_variable
+    : LET {  }
+    | CONST {  };
+
+tipo_dato
+    : RSTRING   {  }
+    | RNUMBER   {  }
+    | RBOOLEAN  {  }
+    | RVOID     {  };
+

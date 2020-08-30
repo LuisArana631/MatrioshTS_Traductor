@@ -2,7 +2,7 @@
     <ion-toolbar>
         <ion-buttons slot="secondary">
 
-            <ion-button>
+            <ion-button (click)="parser_traduccion()">
                 <ion-icon slot="icon-only" name="language-outline"></ion-icon>
             </ion-button>
 
@@ -24,21 +24,13 @@
             <ion-col>
                 <ion-label position="floating ">
                     <ion-icon name="enter-outline"></ion-icon> Código Fuente</ion-label>
-                <ngx-codemirror [options]="{
-                    lineNumbers: true,
-                    theme: 'darcula',
-                    mode: 'javascript'
-                  }" [(ngModel)]="input " [disabled]="false " [autoFocus]="true ">
+                <ngx-codemirror [options]="conf" [(ngModel)]="fuente" [disabled]="false " [autoFocus]="true ">
                 </ngx-codemirror>
             </ion-col>
             <ion-col>
                 <ion-icon name="enter-outline"></ion-icon>
                 <ion-label position="floating "> Traducción</ion-label>
-                <ngx-codemirror [options]="{
-                    lineNumbers: true,
-                    theme: 'darcula',
-                    mode: 'javascript'
-                  } " [(ngModel)]="output " [disabled]="true " [autoFocus]="false ">
+                <ngx-codemirror  [options]="conf" [(ngModel)]="traduccion" [autoFocus]="false">                  
                 </ngx-codemirror>
             </ion-col>
         </ion-row>
@@ -119,9 +111,6 @@
               <ion-grid>
                 <ion-row>
                   <ion-col>
-                    <ion-title><ion-icon name="bug-outline"></ion-icon> No.</ion-title>
-                  </ion-col>
-                  <ion-col>
                     <ion-title><ion-icon name="bug-outline"></ion-icon> Tipo de Error</ion-title>
                   </ion-col>
                   <ion-col>
@@ -133,22 +122,25 @@
                   <ion-col>
                     <ion-title><ion-icon name="bug-outline"></ion-icon> Error</ion-title>
                   </ion-col>
+                  <ion-col>
+                    <ion-title><ion-icon name="bug-outline"></ion-icon> Ambito</ion-title>
+                  </ion-col>
                 </ion-row>  
-                <ion-row>
+                <ion-row *ngFor="let error of listaErrores">
                     <ion-col>
-                      1
+                      {{error.tipo}}
                     </ion-col>
                     <ion-col>
-                      2
+                      {{error.linea}}
                     </ion-col>
                     <ion-col>
-                      3
+                      {{error.columna}}
                     </ion-col>
                     <ion-col>
-                      4
+                      {{error.descripcion + ": " + error.valor}}
                     </ion-col>
                     <ion-col>
-                      5
+                      {{error.ambito}}
                     </ion-col>
                   </ion-row>              
               </ion-grid>
