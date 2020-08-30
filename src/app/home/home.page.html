@@ -12,7 +12,7 @@
 
         </ion-buttons>
 
-        <ion-img style="width: 35px; height: 35px; display:inline-block; margin-left: 1%;" src=" ../assets/img/ts_logo.png "></ion-img>
+        <ion-icon name="logo-javascript" style="width: 35px; height: 35px; display:inline-block; margin-left: 1%;"></ion-icon>        
         <ion-title style="display:inline-block">MatrioshTS</ion-title>
     </ion-toolbar>
 </ion-header>
@@ -43,7 +43,7 @@
 
             <ion-label position="stacked">
                 <ion-icon name="terminal-outline"></ion-icon> Terminal</ion-label>
-            <ion-textarea readonly #myInput rows="9 ">PS MatrioshTS>
+            <ion-textarea readonly #myInput rows="9 ">PS MatrioshTS> {{contenido_consola}}
             </ion-textarea>
         </ion-item>
     </div>
@@ -68,19 +68,22 @@
               <ion-grid>
                 <ion-row>
                   <ion-col>
-                    <ion-title><ion-icon name="grid-outline"></ion-icon> No. </ion-title>
+                    <ion-title><ion-icon name="grid-outline"></ion-icon> Reporte No. </ion-title>
                   </ion-col>
                   <ion-col>
-                    <ion-title><ion-icon name="grid-outline"></ion-icon> Tipo de Error</ion-title>
+                    <ion-title><ion-icon name="grid-outline"></ion-icon> Nombre </ion-title>
                   </ion-col>
                   <ion-col>
-                    <ion-title><ion-icon name="grid-outline"></ion-icon> Linea</ion-title>
+                    <ion-title><ion-icon name="grid-outline"></ion-icon> Tipo </ion-title>
                   </ion-col>
                   <ion-col>
-                    <ion-title><ion-icon name="grid-outline"></ion-icon> Columna</ion-title>
+                    <ion-title><ion-icon name="grid-outline"></ion-icon> Ámbito </ion-title>
                   </ion-col>
                   <ion-col>
-                    <ion-title><ion-icon name="grid-outline"></ion-icon> Error</ion-title>
+                    <ion-title><ion-icon name="grid-outline"></ion-icon> Fila </ion-title>
+                  </ion-col>
+                  <ion-col>
+                    <ion-title><ion-icon name="grid-outline"></ion-icon> Columna </ion-title>
                   </ion-col>
                 </ion-row>  
                 <ion-row>
@@ -99,6 +102,9 @@
                     <ion-col>
                       5
                     </ion-col>
+                    <ion-col>
+                      6
+                    </ion-col>
                   </ion-row>              
               </ion-grid>
             </mat-tab>
@@ -110,37 +116,31 @@
               <!-- CONTENIDO DEL TAB ERRORES -->              
               <ion-grid>
                 <ion-row>
-                  <ion-col>
+                  <ion-col size="2">
                     <ion-title><ion-icon name="bug-outline"></ion-icon> Tipo de Error</ion-title>
+                  </ion-col>                  
+                  <ion-col size="6">
+                    <ion-title><ion-icon name="bug-outline"></ion-icon> Descripcion</ion-title>
                   </ion-col>
-                  <ion-col>
+                  <ion-col size="2">
                     <ion-title><ion-icon name="bug-outline"></ion-icon> Linea</ion-title>
-                  </ion-col>
-                  <ion-col>
+                  </ion-col>                  
+                  <ion-col size="2">
                     <ion-title><ion-icon name="bug-outline"></ion-icon> Columna</ion-title>
-                  </ion-col>
-                  <ion-col>
-                    <ion-title><ion-icon name="bug-outline"></ion-icon> Error</ion-title>
-                  </ion-col>
-                  <ion-col>
-                    <ion-title><ion-icon name="bug-outline"></ion-icon> Ambito</ion-title>
                   </ion-col>
                 </ion-row>  
                 <ion-row *ngFor="let error of listaErrores">
-                    <ion-col>
+                    <ion-col size="2">
                       {{error.tipo}}
-                    </ion-col>
-                    <ion-col>
-                      {{error.linea}}
-                    </ion-col>
-                    <ion-col>
-                      {{error.columna}}
-                    </ion-col>
-                    <ion-col>
+                    </ion-col>                    
+                    <ion-col size="6">
                       {{error.descripcion + ": " + error.valor}}
                     </ion-col>
-                    <ion-col>
-                      {{error.ambito}}
+                    <ion-col size="2">
+                      {{error.linea}}
+                    </ion-col>
+                    <ion-col size="2">
+                      {{error.columna}}
                     </ion-col>
                   </ion-row>              
               </ion-grid>

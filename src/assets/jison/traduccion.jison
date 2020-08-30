@@ -22,13 +22,12 @@ comilladoble \\\"
 cadenadoble (\"[^"]*\")
 cadenasimple (\'[^']*\')
 
+/* COMENTARIOS */
+"//".* /* IGNORAR COMENTARIO */
+[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/] /* IGNORAR COMENTARIO */
+
 %%
 \s+                   /* EVITAR ESPACIOS EN BLANCO */
-
-/* DATOS */
-{entero}                return 'ENTERO'
-{decimal}               return 'DECIMAL'
-{identificador}         return 'IDENTIFICADOR'
 
 /* SECUENCIAS DE ESCAPE */
 {saltolinea}            return 'SALTOLINEA'
@@ -43,36 +42,35 @@ cadenasimple (\'[^']*\')
 {cadenasimple}          { yytext = yytext.substr( 1 , yyleng-2 ); return 'CADENA'; }     
 
 /* TIPOS DE DATOS */
-"string"                return 'RSTRING'
-"number"                return 'RNUMBER'
-"boolean"               return 'RBOOLEAN'
-"void"                  return 'RVOID'
-"types"                 return 'RTYPES'
-
+"string"                return 'STRING'
+"number"                return 'NUMBER'
+"boolean"               return 'BOOLEAN'
+"void"                  return 'VOID'
+"types"                 return 'TYPES'
 
 /* OPERACIONES ARITMETICAS */
-"**"                    return 'POTENCIA'
-"+"                     return 'SUMA'
-"-"                     return 'RESTA'
-"*"                     return 'MULTIPLICACION'
-"/"                     return 'DIVISION'
-"%"                     return 'MODULO'
-"++"                    return 'INCREMENTO'
-"--"                    return 'DECREMENTO'
+"**"                    return '**'
+"--"                    return '--'
+"++"                    return '++'
+"+"                     return '+'
+"-"                     return '-'
+"*"                     return '*'
+"/"                     return '/'
+"%"                     return '%'
 
 /* OPERACIONES RELACIONALES */
-">"                     return 'MAYOR'
-"<"                     return 'MENOR'
-">="                    return 'MAYORIGUAL'
-"<="                    return 'MENORIGUAL'
-"=="                    return 'IGUALDAD'
-"!="                    return 'DIFERENCIA'
+">="                    return '>='
+"<="                    return '<='
+">"                     return '>'
+"<"                     return '<'
+"=="                    return '=='
+"!="                    return '!='
 
 /* OPERACIONES LOGICAS */
-"&&"                    return 'AND'
-"||"                    return 'OR'
-"!"                     return 'NOT'
-"?"                     return 'TERNARIO'
+"&&"                    return '&&'
+"||"                    return '||'
+"!"                     return '!'
+"?"                     return '?'
 
 /* PALABRAS RESERVADAS */
 "if"                    return 'IF'
@@ -97,29 +95,37 @@ cadenasimple (\'[^']*\')
 "graficar_ts"           return 'GRAFICAR'
 
 /* CARACTERES ESPECIALES */
-"{"                     return 'LLAVEIZQ'
-"}"                     return 'LLAVERDER'
-"["                     return 'CORIZQ'
-"]"                     return 'CORDER'
-"="                     return 'IGUAL'
-","                     return 'COMA'
-";"                     return 'PUTOCOMA'
-":"                     return 'DOSPUNTOS'
-"("                     return 'PARIZQ'
-")"                     return 'PARDER'
+"{"                     return '{'
+"}"                     return '}'
+"["                     return '['
+"]"                     return ']'
+"="                     return '='
+","                     return ','
+";"                     return ';'
+":"                     return ':'
+"("                     return '('
+")"                     return ')'
+"."                     return '.'
+
+/* DATOS */
+{entero}                return 'ENTERO'
+{decimal}               return 'DECIMAL'
+{identificador}         return 'IDENTIFICADOR'
+{booleano}              return 'BOOLEANO'
 
 <<EOF>>		            return 'EOF'
 
-.                       errores.addError(new nodoError("Lexico","Caracter desconocido",yylloc.first_line, yylloc.first_column, yytext, "-"))
+.                       errores.addError(new nodoError("Lexico","Caracter desconocido",yylloc.first_line, yylloc.first_column, yytext))
 
 /lex
 
-%left 'OR'
-%left 'AND'
-%left 'IGUALDAD', 'DIFERENCIA'
-%left 'MAYORIGUAL', 'MENORIGUAL', 'MENOR', 'MAYOR'
-%left 'SUMA' 'RESTA'
-%left 'MULTIPLICACION' 'DIVISION' 
+%left '||'
+%left '&&'
+%left '!'
+%left '==', '!='
+%left '>=', '<=', '<', '>'
+%left '+' '-'
+%left '*' '/' '%' '**'
 
 %start init
 
@@ -133,20 +139,114 @@ instrucciones
     | instruccion { $$ = [$1]; };
 
 instruccion
-    : declaracion { $$ = $1; }   
-    | error { errores.addError(new nodoError("Sintáctico","Se esperaba una instrucción y se encontró ",this._$.first_line,this._$.first_column,$1, "Global")) };
+    : declaracion_variables { $$ = $1; }   
+    | error { errores.addError(new nodoError("Sintáctico","Se esperaba una instrucción y se encontró ",this._$.first_line,this._$.first_column,$1)); $$ = undefined; };
 
-declaracion
-    : tipo_variable {  }
-    | ;
+declaracion_variables 
+    : tipo_restriccion 'IDENTIFICADOR' ';' { $$ = {
+        text: $1 + " " + $2 + $3 + "\n"
+    }; }
+    | tipo_restriccion 'IDENTIFICADOR' '=' expresion ';' { $$ = {
+        text: $1 + " " + $2 + " " + $3 + " " + $4.text + $5 + "\n"
+    }; }
+    | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato ';' { $$ = {
+        text: $1 + " " + $2 + $3 + $4 + $5 + "\n"
+    }; }
+    | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato '=' expresion ';' { $$ = {
+        text: $1 + " " + $2 + $3 + $4 + " " + $5 + " " + $6.text + $7 + "\n"        
+    }; }; 
 
-tipo_variable
-    : LET {  }
-    | CONST {  };
+expresion
+    : expresion '+' expresion { $$ = {
+        text: $1.text + $2 + $3.text
+    }; }
+    | expresion '-' expresion { $$ = {
+        text: $1.text + $2 + $3.text
+    }; }
+    | expresion '*' expresion { $$ = {
+        text: $1.text + $2 + $3.text
+    }; }
+    | expresion '/' expresion { $$ = {
+        text: $1.text + $2 + $3.text
+    }; }
+    | expresion '%' expresion { $$ = {
+        text: $1.text + $2 + $3.text
+    }; }
+    | expresion '**' expresion { $$ = {
+        text: $1.text + $2 + $3.text
+    }; }
+    | 'IDENTIFICADOR' '++' { $$ = {
+        text: $1 + $2
+    }; }
+    | 'IDENTIFICADOR' '--' { $$ = {
+        text: $1 + $2
+    }; }
+    | '-' expresion { $$ = {
+        text: $1 + $2.text
+    }; } 
+    | expresion '<' expresion { $$ = {
+        text: $1.text + $2 + $3.text
+    }; }
+    | expresion '>' expresion { $$ = {
+        text: $1.text + $2 + $3.text
+    }; }
+    | expresion '<=' expresion { $$ = {
+        text: $1.text + $2 + $3.text
+    }; }
+    | expresion '>=' expresion { $$ = {
+        text: $1.text + $2 + $3.text
+    }; }
+    | expresion '!=' expresion { $$ = {
+        text: $1.text + $2 + $3.text
+    }; }
+    | expresion '==' expresion { $$ = {
+        text: $1.text + $2 + $3.text
+    }; }
+    | expresion '||' expresion { $$ = {
+        text: $1.text + $2 + $3.text
+    }; }
+    | expresion '&&' expresion { $$ = {
+        text: $1.text + $2 + $3.text
+    }; }
+    | '!' expresion { $$ = {
+        text: $1 + $2.text
+    }; }
+    | dato_valor { $$ = $1; };
+
+dato_valor
+    : '(' expresion ')' { $$ = {
+        text: $1 + $2.text + $3
+    }; }
+    | 'ENTERO' { $$ = {
+        text: $1
+    }; }
+    | 'DECIMAL' { $$ = {
+        text: $1
+    }; }
+    | 'CADENA' { $$ = {
+        text: $1
+    }; }
+    | 'IDENTIFICADOR' { $$ = {
+        text: $1
+    }; }
+    | llamada { $$ = $1; };
+
+llamada
+    : 'IDENTIFICADOR' '(' ')' { $$ = {
+        text: $1 + $2 + $3
+    }; }
+    | 'IDENTIFICADOR' '(' parametros ')' { $$ = {
+        text: $1 + $2 + $3 + $4
+    }; };
+
+tipo_restriccion
+    : 'LET' { $$ = $1; }
+    | 'CONST' { $$ = $1; };
 
 tipo_dato
-    : RSTRING   {  }
-    | RNUMBER   {  }
-    | RBOOLEAN  {  }
-    | RVOID     {  };
-
+    : 'NUMBER' { $$ = $1; }
+    | 'STRING' { $$ = $1; }
+    | 'VOID' { $$ = $1; }
+    | 'BOOLEAN' { $$ = $1; }
+    | 'TYPES' { $$ = $1; }
+    | 'IDENTIFICADOR' { $$ = $1; };

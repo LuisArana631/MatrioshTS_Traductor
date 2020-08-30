@@ -29,8 +29,10 @@
     "@ionic-native/status-bar": "^5.0.0",
     "@ionic/angular": "^5.0.0",
     "@ionic/pwa-elements": "^3.0.1",
+    "@types/graphviz": "0.0.32",
     "angular-cli-ghpages": "^0.6.2",
     "codemirror": "^5.57.0",
+    "graphviz": "0.0.9",
     "jison": "^0.4.18",
     "npm-force-resolutions": "0.0.3",
     "rxjs": "~6.5.5",
@@ -67,6 +69,7 @@
   "browser": {
     "fs": false,
     "os": false,
-    "path": false
+    "path": false,
+    "child_process": false
   }
 }
