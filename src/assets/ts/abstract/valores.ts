@@ -10,3 +10,4 @@ export type retorno = {
     valor:any,
     tipo: tipo
 }
+

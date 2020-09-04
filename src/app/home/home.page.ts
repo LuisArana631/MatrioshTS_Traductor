@@ -40,8 +40,7 @@ export class HomePage {
         this.contenido_consola = this.contenido_consola + " Traducción realizada con éxito. \nPS MatrioshTS>" 
 
         errores.clear();
-        this.ast = analizador.parse(this.fuente);
-        console.log(this.ast);
+        this.ast = analizador.parse(this.fuente);        
   
         this.mostrar_traduccion();      
   
@@ -73,15 +72,15 @@ export class HomePage {
       this.listaErrores = errores.getErrores();
     }catch(er){
       console.log(er);
+      this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> " 
     }    
   }
 
-
-  
-  graphviz_displayf(){   
+  parser_ejecucion(){
     
   }
-
+  
+  
 }
 
 
