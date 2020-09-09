@@ -15,7 +15,6 @@ class errores extends Array {
         this.prototype.forEach(er => {
             array_return.push(er);
         });
-        array_return.pop();
         return array_return;
     }
 }
