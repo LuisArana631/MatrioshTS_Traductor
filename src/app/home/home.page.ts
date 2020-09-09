@@ -30,6 +30,7 @@ export class HomePage {
   //CONTENEDOR DE TEXTOS
   contenido_traduccion:string = "";
   contenido_consola:string = "";
+  conteo_tabs:number = 0;
 
   conf:any = {
     lineNumbers: true,
@@ -77,8 +78,73 @@ export class HomePage {
     this.contenido_traduccion = "";
     for(const item of this.ast){
       if(item != undefined){
-        this.contenido_traduccion = this.contenido_traduccion + item.text ;
+        this.concatenar_traduccion(item);
       }          
+    }
+  }
+
+  get_tabulaciones():string{
+    let tabulaciones = "";
+
+    for(let i=0; i<this.conteo_tabs; i++){
+      tabulaciones = tabulaciones + "\t";
+    }
+
+    return tabulaciones;
+  }
+
+  concatenar_traduccion(item:any){
+    let tabular = this.get_tabulaciones();   
+
+    if(item.escritura == 0){  //LINEALES 
+      this.contenido_traduccion = this.contenido_traduccion + tabular + item.text + "\n";
+    }else if(item.escritura == 1){  //INSTRUCCIONES
+      this.contenido_traduccion =  this.contenido_traduccion + tabular +  item.text + "{\n";
+      this.conteo_tabs++;
+
+      console.log(item.instr);
+
+      for(const sub_item of item.instr){
+        this.concatenar_traduccion(sub_item);
+      }
+
+      this.conteo_tabs--;
+      this.contenido_traduccion = this.contenido_traduccion + tabular +  "}\n";
+    }else if(item.escritura == 2){  //IF
+      this.contenido_traduccion = this.contenido_traduccion + tabular + item.text + "{\n";
+      this.conteo_tabs++;
+
+      //INSTRUCCIONES IF
+      for(const sub_item of item.instr){
+        this.concatenar_traduccion(sub_item);
+      }      
+
+      this.contenido_traduccion = this.contenido_traduccion + tabular + "}";      
+      if(item.els.escritura == 2){  //INSTRUCCIONES ELSE IF
+
+        this.contenido_traduccion = this.contenido_traduccion + "else ";
+        this.conteo_tabs--;
+        this.concatenar_traduccion(item.els);        
+
+      }else{
+        if(Array.isArray(item.els)){ //CON ELSE
+          this.contenido_traduccion = this.contenido_traduccion + "else{\n";
+          this.conteo_tabs--;
+
+          for(const sub_item of item.els){
+            this.concatenar_traduccion(sub_item);
+          } 
+
+          this.contenido_traduccion = this.contenido_traduccion + "}";
+          this.conteo_tabs--;
+        }else{ //SIN ELSE
+          this.contenido_traduccion = this.contenido_traduccion + "\n";         
+        }
+      }
+      
+    }else if(item.escritura == 3){  //DO WHILE
+      console.log("escritura 3");
+        
     }
   }
 
@@ -107,7 +173,6 @@ export class HomePage {
   cargar_tabla_simbolos(){
     try{
       this.listaSimbolos = tabla_simbolos.get_simbolos();
-      console.log(this.listaSimbolos);
     }catch(er){
       console.log(er);
       this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> " 
@@ -125,8 +190,8 @@ export class HomePage {
   }
   
   graficar_ast(){    
-    wasmFolder('/assets/@hpcc-js/wasm/dist/');
-    graphviz(this.div_ast).renderDot('digraph {a -> b}');
+    wasmFolder('https://cdn.jsdelivr.net/npm/@hpcc-js/wasm@0.3.13/dist');
+    graphviz(this.div_ast).renderDot('digraph {a -> c;a->b;}');
   }
 
 }

@@ -12,7 +12,7 @@
 
         </ion-buttons>
 
-        <ion-icon name="logo-javascript" style="width: 35px; height: 35px; display:inline-block; margin-left: 1%;"></ion-icon>        
+        <ion-icon name="logo-javascript" style="width: 35px; height: 35px; display:inline-block; margin-left: 1%;"></ion-icon>
         <ion-title style="display:inline-block">MatrioshTS</ion-title>
     </ion-toolbar>
 </ion-header>
@@ -30,7 +30,7 @@
             <ion-col>
                 <ion-icon name="enter-outline"></ion-icon>
                 <ion-label position="floating "> Traducción</ion-label>
-                <ngx-codemirror  [options]="conf" [(ngModel)]="traduccion" [autoFocus]="false">                  
+                <ngx-codemirror [options]="conf" [(ngModel)]="traduccion" [autoFocus]="false">
                 </ngx-codemirror>
             </ion-col>
         </ion-row>
@@ -38,7 +38,7 @@
 
 
     <!-- CONSOLA -->
-    <div style="padding:1%; padding-top:0;">        
+    <div style="padding:1%; padding-top:0;">
         <ion-item>
 
             <ion-label position="stacked">
@@ -49,108 +49,121 @@
     </div>
 
 
-    <div #divast id="divast" name="divast"> 
 
-    </div>   
 
     <!-- TABS PARA MOSTRAR CONTENIDO EXTRA -->
     <div style="padding:1%; padding-top:0;">
         <mat-tab-group mat-align-tabs="center">
             <mat-tab>
-              <ng-template mat-tab-label>                
-                    <ion-label><ion-icon name="git-network-outline"></ion-icon>Reporte AST</ion-label>
-              </ng-template>
-              <!-- CONTENIDO DEL TAB AST -->
-              
+                <ng-template mat-tab-label>
+                    <ion-label>
+                        <ion-icon name="git-network-outline"></ion-icon>Reporte AST</ion-label>
+                </ng-template>
+                <!-- CONTENIDO DEL TAB AST -->
+                <div id="divast" style="padding:1%; padding-top:0;">
+
+                </div>
             </mat-tab>
-          
+
             <mat-tab>
-              <ng-template mat-tab-label>
-                    <ion-label><ion-icon name="grid-outline"></ion-icon> Tabla de Símbolos</ion-label>
-              </ng-template>
-              <!-- CONTENIDO DEL TAB SIMBOLOS -->
-              <ion-grid>
-                <ion-row>
-                  <ion-col size="2">
-                    <ion-title><ion-icon name="grid-outline"></ion-icon> Nombre </ion-title>
-                  </ion-col>
-                  <ion-col size="2">
-                    <ion-title><ion-icon name="grid-outline"></ion-icon> Tipo </ion-title>
-                  </ion-col>
-                  <ion-col size="2">
-                    <ion-title><ion-icon name="grid-outline"></ion-icon> Ámbito </ion-title>
-                  </ion-col>
-                  <ion-col size="2">
-                    <ion-title><ion-icon name="grid-outline"></ion-icon> Valor </ion-title>
-                  </ion-col>
-                  <ion-col size="2">
-                    <ion-title><ion-icon name="grid-outline"></ion-icon> Fila </ion-title>
-                  </ion-col>
-                  <ion-col size="2">
-                    <ion-title><ion-icon name="grid-outline"></ion-icon> Columna </ion-title>
-                  </ion-col>
-                </ion-row >  
-                <ion-row *ngFor="let item of listaSimbolos">
-                    <ion-col size="2">
-                      {{item.Id}}
-                    </ion-col>
-                    <ion-col size="2">
-                      {{item.Tipostr}}
-                    </ion-col>
-                    <ion-col size="2">
-                      {{item.Ambiente}}
-                    </ion-col>
-                    <ion-col size="2">
-                      {{item.Valor}}
-                    </ion-col>
-                    <ion-col size="2">
-                      {{item.Linea}}
-                    </ion-col>
-                    <ion-col size="2">
-                      {{item.Columna}}
-                    </ion-col>
-                  </ion-row>              
-              </ion-grid>
+                <ng-template mat-tab-label>
+                    <ion-label>
+                        <ion-icon name="grid-outline"></ion-icon> Tabla de Símbolos</ion-label>
+                </ng-template>
+                <!-- CONTENIDO DEL TAB SIMBOLOS -->
+                <ion-grid>
+                    <ion-row>
+                        <ion-col size="2">
+                            <ion-title>
+                                <ion-icon name="grid-outline"></ion-icon> Nombre </ion-title>
+                        </ion-col>
+                        <ion-col size="2">
+                            <ion-title>
+                                <ion-icon name="grid-outline"></ion-icon> Tipo </ion-title>
+                        </ion-col>
+                        <ion-col size="2">
+                            <ion-title>
+                                <ion-icon name="grid-outline"></ion-icon> Ámbito </ion-title>
+                        </ion-col>
+                        <ion-col size="2">
+                            <ion-title>
+                                <ion-icon name="grid-outline"></ion-icon> Valor </ion-title>
+                        </ion-col>
+                        <ion-col size="2">
+                            <ion-title>
+                                <ion-icon name="grid-outline"></ion-icon> Fila </ion-title>
+                        </ion-col>
+                        <ion-col size="2">
+                            <ion-title>
+                                <ion-icon name="grid-outline"></ion-icon> Columna </ion-title>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row *ngFor="let item of listaSimbolos">
+                        <ion-col size="2">
+                            {{item.Id}}
+                        </ion-col>
+                        <ion-col size="2">
+                            {{item.Tipostr}}
+                        </ion-col>
+                        <ion-col size="2">
+                            {{item.Ambiente}}
+                        </ion-col>
+                        <ion-col size="2">
+                            {{item.Valor}}
+                        </ion-col>
+                        <ion-col size="2">
+                            {{item.Linea}}
+                        </ion-col>
+                        <ion-col size="2">
+                            {{item.Columna}}
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
             </mat-tab>
-          
+
             <mat-tab>
-              <ng-template mat-tab-label>                                    
-                    <ion-label><ion-icon name="bug-outline"></ion-icon> Reporte de Errores</ion-label>                
-              </ng-template>
-              <!-- CONTENIDO DEL TAB ERRORES -->              
-              <ion-grid>
-                <ion-row>
-                  <ion-col size="2">
-                    <ion-title><ion-icon name="bug-outline"></ion-icon> Tipo de Error</ion-title>
-                  </ion-col>                  
-                  <ion-col size="6">
-                    <ion-title><ion-icon name="bug-outline"></ion-icon> Descripcion</ion-title>
-                  </ion-col>
-                  <ion-col size="2">
-                    <ion-title><ion-icon name="bug-outline"></ion-icon> Linea</ion-title>
-                  </ion-col>                  
-                  <ion-col size="2">
-                    <ion-title><ion-icon name="bug-outline"></ion-icon> Columna</ion-title>
-                  </ion-col>
-                </ion-row>  
-                <ion-row *ngFor="let error of listaErrores">
-                    <ion-col size="2">
-                      {{error.tipo}}
-                    </ion-col>                    
-                    <ion-col size="6">
-                      {{error.descripcion + ": " + error.valor}}
-                    </ion-col>
-                    <ion-col size="2">
-                      {{error.linea}}
-                    </ion-col>
-                    <ion-col size="2">
-                      {{error.columna}}
-                    </ion-col>
-                  </ion-row>              
-              </ion-grid>
-                
+                <ng-template mat-tab-label>
+                    <ion-label>
+                        <ion-icon name="bug-outline"></ion-icon> Reporte de Errores</ion-label>
+                </ng-template>
+                <!-- CONTENIDO DEL TAB ERRORES -->
+                <ion-grid>
+                    <ion-row>
+                        <ion-col size="2">
+                            <ion-title>
+                                <ion-icon name="bug-outline"></ion-icon> Tipo de Error</ion-title>
+                        </ion-col>
+                        <ion-col size="6">
+                            <ion-title>
+                                <ion-icon name="bug-outline"></ion-icon> Descripcion</ion-title>
+                        </ion-col>
+                        <ion-col size="2">
+                            <ion-title>
+                                <ion-icon name="bug-outline"></ion-icon> Linea</ion-title>
+                        </ion-col>
+                        <ion-col size="2">
+                            <ion-title>
+                                <ion-icon name="bug-outline"></ion-icon> Columna</ion-title>
+                        </ion-col>
+                    </ion-row>
+                    <ion-row *ngFor="let error of listaErrores">
+                        <ion-col size="2">
+                            {{error.tipo}}
+                        </ion-col>
+                        <ion-col size="6">
+                            {{error.descripcion + ": " + error.valor}}
+                        </ion-col>
+                        <ion-col size="2">
+                            {{error.linea}}
+                        </ion-col>
+                        <ion-col size="2">
+                            {{error.columna}}
+                        </ion-col>
+                    </ion-row>
+                </ion-grid>
+
             </mat-tab>
-          </mat-tab-group>                
+        </mat-tab-group>
     </div>
 
 

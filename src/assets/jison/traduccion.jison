@@ -156,41 +156,61 @@ instruccion
     : declaracion_variables { $$ = $1; }   
     | declaracion_arreglos { $$ = $1; }
     | declaracion_funciones { $$ = $1; }
+    | declaracion_types { $$ = $1; }
+    | asignacion { $$ = $1; }
     | if { $$ = $1; }
     | while { $$ = $1; }
     | do_while { $$ = $1; }
     | switch { $$ = $1; }
-    | for { $$ = $1; }
+    | for_normal { $$ = $1; }
     | for_in { $$ = $1; }
     | for_of { $$ = $1; }
     | 'BREAK' ';' { $$ = $1; }
+    | 'CONTINUE' ';' { $$ = $1; }
+    | sentencia_return { $$ = $1; }
     | 'GRAFICAR' '(' ')' ';' { $$ = {
-        text: $1 + $2 + $3 + $4
+        text: $1 + $2 + $3 + $4,
+        escritura: 0
     }; }
     | 'PRINT' '(' expresion ')' ';' { $$ = {
-        text: $1 + $2 + $3.text + $4 + $5 + "\n"
+        text: $1 + $2 + $3.text + $4 + $5,
+        escritura: 0
     }; }    
     | error { errores.addError(new nodoError("Sintáctico","Se esperaba una instrucción y se encontró ",this._$.first_line,this._$.first_column,$1)); $$ = undefined; };
 
 declaracion_variables
     : tipo_restriccion 'IDENTIFICADOR' ';' { $$ = {
-        text: $1 + " " + $2 + $3 + "\n"
+        text: $1 + " " + $2 + $3,
+        escritura: 0
     };
     tabla_simbolos.push_simbolo(new nodoSimbolo("", $2, name_function[name_function.length-1], undefined, undefined, undefined, @1.first_line, @1.first_column)); }
     | tipo_restriccion 'IDENTIFICADOR' '=' expresion ';' { $$ = {
-        text: $1 + " " + $2 + " " + $3 + " " + $4.text + $5 + "\n",
-        valor: $4.valor
+        text: $1 + " " + $2 + " " + $3 + " " + $4.text + $5,
+        valor: $4.valor,
+        escritura: 0
     }; 
     tabla_simbolos.push_simbolo(new nodoSimbolo("", $2, name_function[name_function.length-1], undefined, undefined, $4.valor, @1.first_line, @1.first_column)); }
     | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato ';' { $$ = {
-        text: $1 + " " + $2 + $3 + $4 + $5 + "\n"
+        text: $1 + " " + $2 + $3 + $4 + $5,
+        escritura: 0
     }; 
     tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, undefined, @1.first_line, @1.first_column)); }
     | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato '=' expresion ';' { $$ = {
-        text: $1 + " " + $2 + $3 + $4 + " " + $5 + " " + $6.text + $7 + "\n",
-        valor: $6.valor        
+        text: $1 + " " + $2 + $3 + $4 + " " + $5 + " " + $6.text + $7,
+        valor: $6.valor,
+        escritura: 0
     }; 
     tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, $6.valor,  @1.first_line, @1.first_column)); };
+
+declaracion_arreglos
+    : tipo_restriccion 'IDENTIFICADOR' lista_dimensiones ';' { $$ = {
+        text: $1.text + $2 + $3.text,
+        escritura: 0
+    }; }
+    | tipo_restriccion 'IDENTIFICADOR' lista_dimensiones { $$ = {
+        text: $1.text + $2 + $3.text,
+        escritura: 0
+    }; };
 
 expresion
     : expresion '+' expresion { $$ = {
@@ -288,10 +308,12 @@ dato_valor
 
 llamada
     : 'IDENTIFICADOR' '(' ')' { $$ = {
-        text: $1 + $2 + $3
+        text: $1 + $2 + $3,
+        escritura: 0
     }; }
     | 'IDENTIFICADOR' '(' parametros ')' { $$ = {
-        text: $1 + $2 + $3 + $4
+        text: $1 + $2 + $3 + $4,
+        escritura: 0
     }; };
 
 tipo_restriccion
@@ -303,65 +325,76 @@ tipo_dato
     | 'STRING' { $$ = $1; }
     | 'VOID' { $$ = $1; }
     | 'BOOLEAN' { $$ = $1; }
-    | 'TYPES' { $$ = $1; }
     | 'IDENTIFICADOR' { $$ = $1; };
 
 if
     : 'IF' '(' expresion ')' statement else {         
         $$ = {
-            text: $1 + $2 + $3.text + $4 + $5.text + $6.text
+            text: $1 + $2 + $3.text + $4,
+            escritura: 2,
+            instr: $5,
+            els: $6
         };
      };
 
 else
-    : 'ELSE' if { $$ = {
-        text: $1 + " " + $2.text
-    }; }
-    | 'ELSE' statement { $$ = {
-        text: $1 + $2.text
-    }; }
+    : 'ELSE' if { $$ = $2; }
+    | 'ELSE' statement { $$ = $2; }
     | /* epsilon */ { $$ = {
         text: ""
     }; };
 
 statement
-    : '{' instrucciones '}' {
-        var instrucciones = "{ \n";        
-        var tabulaciones_string = "\t";
-
-        for(var i=0; i<$2.length; i++){
-            instrucciones = instrucciones + tabulaciones_string + $2[i].text;              
-        };  
-
-        instrucciones = instrucciones + "} \n";        
-     $$ = {
-        text: instrucciones
-     }; };
+    : '{' instrucciones '}' { $$ = $2; };
 
 while
     : 'WHILE' '(' expresion ')' statement { $$ = {
-        text: $1 + $2 + $3.text + $4 + $5.text
+        text: $1 + $2 + $3.text + $4,
+        escritura: 1,
+        instr: $5
     }; };
 
 do_while
     : 'DO' statement 'WHILE' '(' expresion ')' ';' { $$ = {        
-        text: $1 + $2.text + $3 + $4 + $5.text + $6
+        text: $3 + $4 + $5.text + $6,
+        escritura: 3,
+        instr: $2
     }; };
 
 switch
-    : 'SWITCH' '(' expresion ')' cases {};
-
-for
-    :'FOR' '(' declaracion_variables ';' expresion ';' expresion ')' statement { $$ = {
-        text: $1 + $2 + $3.text + $4 + $5.text + $6 + $7.text + $8 + $9.text
+    : 'SWITCH' '(' expresion ')' cases { $$ = {
+        text: $1 + $2 + $3.text + $4,
+        escritura: 1,
+        instr: $5
     }; };
 
 for_in
     :'FOR' '(' tipo_restriccion 'IDENTIFICADOR' 'IN' 'IDENTIFICADOR' ')' statement { $$ = {
-        text: $1 + $2 + $3 + " " + $4 + " " + $5 + " " + $6 + $7 + $8.text
+        text: $1 + $2 + $3 + " " + $4 + " " + $5 + " " + $6 + $7,
+        escritura: 1,
+        instr: $8
     }; };
 
 for_of
     :'FOR' '(' tipo_restriccion 'IDENTIFICADOR' 'OF' 'IDENTIFICADOR' ')' statement { $$ = {
-        text: $1 + " " + $2 + $3 + " " + $4 + " " + $5 + " " + $6 + $7 + $8.text
+        text: $1 + " " + $2 + $3 + " " + $4 + " " + $5 + " " + $6 + $7,
+        escritura: 1,
+        instr: $8
+    }; };
+
+for_normal
+    :'FOR' '(' declaracion_variables expresion ';' expresion ')' statement { $$ = {
+        text: $1 + $2 + $3.text + " " + $4.text + $5 + $6.text + $7,
+        escritura: 1,
+        instr: $8
+    }; };
+
+sentencia_return
+    :'RETURN' ';' { $$ = {
+        text: $1 + " " + $2,
+        escritura: 0
+    }; }
+    |'RETURN' expresion ';' {  $$ = {
+        text: $1 + " " + $2.text + $3,
+        escritura: 0
     }; };
