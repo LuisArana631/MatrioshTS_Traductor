@@ -49,6 +49,10 @@
     </div>
 
 
+    <div #divast id="divast" name="divast"> 
+
+    </div>   
+
     <!-- TABS PARA MOSTRAR CONTENIDO EXTRA -->
     <div style="padding:1%; padding-top:0;">
         <mat-tab-group mat-align-tabs="center">
@@ -57,7 +61,7 @@
                     <ion-label><ion-icon name="git-network-outline"></ion-icon>Reporte AST</ion-label>
               </ng-template>
               <!-- CONTENIDO DEL TAB AST -->
-              Content 1
+              
             </mat-tab>
           
             <mat-tab>
@@ -67,43 +71,43 @@
               <!-- CONTENIDO DEL TAB SIMBOLOS -->
               <ion-grid>
                 <ion-row>
-                  <ion-col>
-                    <ion-title><ion-icon name="grid-outline"></ion-icon> Reporte No. </ion-title>
-                  </ion-col>
-                  <ion-col>
+                  <ion-col size="2">
                     <ion-title><ion-icon name="grid-outline"></ion-icon> Nombre </ion-title>
                   </ion-col>
-                  <ion-col>
+                  <ion-col size="2">
                     <ion-title><ion-icon name="grid-outline"></ion-icon> Tipo </ion-title>
                   </ion-col>
-                  <ion-col>
+                  <ion-col size="2">
                     <ion-title><ion-icon name="grid-outline"></ion-icon> Ámbito </ion-title>
                   </ion-col>
-                  <ion-col>
+                  <ion-col size="2">
+                    <ion-title><ion-icon name="grid-outline"></ion-icon> Valor </ion-title>
+                  </ion-col>
+                  <ion-col size="2">
                     <ion-title><ion-icon name="grid-outline"></ion-icon> Fila </ion-title>
                   </ion-col>
-                  <ion-col>
+                  <ion-col size="2">
                     <ion-title><ion-icon name="grid-outline"></ion-icon> Columna </ion-title>
                   </ion-col>
-                </ion-row>  
-                <ion-row>
-                    <ion-col>
-                      1
+                </ion-row >  
+                <ion-row *ngFor="let item of listaSimbolos">
+                    <ion-col size="2">
+                      {{item.Id}}
                     </ion-col>
-                    <ion-col>
-                      2
+                    <ion-col size="2">
+                      {{item.Tipostr}}
                     </ion-col>
-                    <ion-col>
-                      3
+                    <ion-col size="2">
+                      {{item.Ambiente}}
                     </ion-col>
-                    <ion-col>
-                      4
+                    <ion-col size="2">
+                      {{item.Valor}}
                     </ion-col>
-                    <ion-col>
-                      5
+                    <ion-col size="2">
+                      {{item.Linea}}
                     </ion-col>
-                    <ion-col>
-                      6
+                    <ion-col size="2">
+                      {{item.Columna}}
                     </ion-col>
                   </ion-row>              
               </ion-grid>

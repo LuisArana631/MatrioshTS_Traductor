@@ -1,5 +1,4 @@
-import { tipos } from '../herramientas/tablatipos';
-export class expresion {
+export class instruccion {
     constructor(linea, columna) {
         this._linea = linea;
         this._columna = columna;
@@ -15,9 +14,5 @@ export class expresion {
     }
     set columna(columna) {
         this._columna = columna;
-    }
-    determinar_tipo(tipo_izquierdo, tipo_derecho) {
-        let tipo_retorno = tipos[tipo_izquierdo][tipo_derecho];
-        return tipo_retorno;
     }
 }

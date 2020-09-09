@@ -1,6 +1,15 @@
 %{
     const { nodoError } = require('../js/error/error');
     const { errores } = require('../js/error/errores');
+
+    const { tipo } = require('../js/abstract/valores');
+    const { nodoSimbolo } = require('../js/tabla_simbolos/nodosimbolo');
+    const { tabla_simbolos } = require('../js/tabla_simbolos/tablasimbolos');
+
+    let name_function = new Array;
+    name_function.push("Global");
+
+    const { aritmetica, operacion_aritmetica } = require('../js/expresion/aritmetica');
 %}
 
 %lex
@@ -146,7 +155,7 @@ instrucciones
 instruccion
     : declaracion_variables { $$ = $1; }   
     | declaracion_arreglos { $$ = $1; }
-    | declaracion_funciones { $$ = $ }1
+    | declaracion_funciones { $$ = $1; }
     | if { $$ = $1; }
     | while { $$ = $1; }
     | do_while { $$ = $1; }
@@ -166,62 +175,83 @@ instruccion
 declaracion_variables
     : tipo_restriccion 'IDENTIFICADOR' ';' { $$ = {
         text: $1 + " " + $2 + $3 + "\n"
-    }; }
+    };
+    tabla_simbolos.push_simbolo(new nodoSimbolo("", $2, name_function[name_function.length-1], undefined, undefined, undefined, @1.first_line, @1.first_column)); }
     | tipo_restriccion 'IDENTIFICADOR' '=' expresion ';' { $$ = {
-        text: $1 + " " + $2 + " " + $3 + " " + $4.text + $5 + "\n"
-    }; }
+        text: $1 + " " + $2 + " " + $3 + " " + $4.text + $5 + "\n",
+        valor: $4.valor
+    }; 
+    tabla_simbolos.push_simbolo(new nodoSimbolo("", $2, name_function[name_function.length-1], undefined, undefined, $4.valor, @1.first_line, @1.first_column)); }
     | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato ';' { $$ = {
         text: $1 + " " + $2 + $3 + $4 + $5 + "\n"
-    }; }
+    }; 
+    tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, undefined, @1.first_line, @1.first_column)); }
     | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato '=' expresion ';' { $$ = {
-        text: $1 + " " + $2 + $3 + $4 + " " + $5 + " " + $6.text + $7 + "\n"        
-    }; };
+        text: $1 + " " + $2 + $3 + $4 + " " + $5 + " " + $6.text + $7 + "\n",
+        valor: $6.valor        
+    }; 
+    tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, $6.valor,  @1.first_line, @1.first_column)); };
 
 expresion
     : expresion '+' expresion { $$ = {
-        text: $1.text + $2 + $3.text
+        text: $1.text + $2 + $3.text,
+        valor: $1.valor + $3.valor
     }; }
     | expresion '-' expresion { $$ = {
-        text: $1.text + $2 + $3.text
+        text: $1.text + $2 + $3.text,
+        valor: $1.valor - $3.valor
     }; }
     | expresion '*' expresion { $$ = {
-        text: $1.text + $2 + $3.text
-    }; }
+        text: $1.text + $2 + $3.text,
+        valor: $1.valor * $3.valor
+    }; }    
     | expresion '/' expresion { $$ = {
-        text: $1.text + $2 + $3.text
+        text: $1.text + $2 + $3.text,
+        valor: $1.valor / $3.valor
     }; }
     | expresion '%' expresion { $$ = {
-        text: $1.text + $2 + $3.text
+        text: $1.text + $2 + $3.text,
+        valor: $1.valor % $3.valor
     }; }
     | expresion '**' expresion { $$ = {
-        text: $1.text + $2 + $3.text
+        text: $1.text + $2 + $3.text,
+        valor: $1.valor ** $3.valor
     }; }
     | 'IDENTIFICADOR' '++' { $$ = {
-        text: $1 + $2
+        text: $1 + $2,
+        valor: $1.valor++
     }; }
     | 'IDENTIFICADOR' '--' { $$ = {
-        text: $1 + $2
+        text: $1 + $2,
+        valor: $1.valor--
     }; }
     | '-' expresion { $$ = {
-        text: $1 + $2.text
+        text: $1 + $2.text,
+        valor: -$2.valor
     }; } 
     | expresion '<' expresion { $$ = {
-        text: $1.text + $2 + $3.text
+        text: $1.text + $2 + $3.text,
+        valor: $1.valor < $3.valor
     }; }
     | expresion '>' expresion { $$ = {
-        text: $1.text + $2 + $3.text
+        text: $1.text + $2 + $3.text,
+        valor: $1.valor > $3.valor
     }; }
     | expresion '<=' expresion { $$ = {
-        text: $1.text + $2 + $3.text
+        text: $1.text + $2 + $3.text,
+        valor: $1.valor <= $3.valor
     }; }
     | expresion '>=' expresion { $$ = {
-        text: $1.text + $2 + $3.text
+        text: $1.text + $2 + $3.text,
+        valor: $1.valor >= $3.valor
     }; }
     | expresion '!=' expresion { $$ = {
-        text: $1.text + $2 + $3.text
+        text: $1.text + $2 + $3.text,
+        valor: $1.valor != $3.valor
     }; }
     | expresion '==' expresion { $$ = {
-        text: $1.text + $2 + $3.text
+        text: $1.text + $2 + $3.text,
+        valor: $1.valor === $3.valor
     }; }
     | expresion '||' expresion { $$ = {
         text: $1.text + $2 + $3.text
@@ -239,16 +269,20 @@ dato_valor
         text: $1 + $2.text + $3
     }; }
     | 'ENTERO' { $$ = {
-        text: $1
+        text: $1,
+        valor: +$1
     }; }
     | 'DECIMAL' { $$ = {
-        text: $1
+        text: $1,
+        valor: +$1
     }; }
     | 'CADENA' { $$ = {
-        text: $1
+        text: $1,
+        valor: $1
     }; }
     | 'IDENTIFICADOR' { $$ = {
-        text: $1
+        text: $1,
+        valor: $1
     }; }
     | llamada { $$ = $1; };
 
@@ -293,7 +327,7 @@ else
 statement
     : '{' instrucciones '}' {
         var instrucciones = "{ \n";        
-        var tabulaciones_string = "\t";        
+        var tabulaciones_string = "\t";
 
         for(var i=0; i<$2.length; i++){
             instrucciones = instrucciones + tabulaciones_string + $2[i].text;              
@@ -318,10 +352,16 @@ switch
     : 'SWITCH' '(' expresion ')' cases {};
 
 for
-    :'FOR' '(' declaracion_variables ';' expresion ';' expresion ')' statement {};
+    :'FOR' '(' declaracion_variables ';' expresion ';' expresion ')' statement { $$ = {
+        text: $1 + $2 + $3.text + $4 + $5.text + $6 + $7.text + $8 + $9.text
+    }; };
 
 for_in
-    :'FOR' '(' tipo_restriccion 'IDENTIFICADOR' 'IN' 'IDENTIFICADOR' ')' statement {};
+    :'FOR' '(' tipo_restriccion 'IDENTIFICADOR' 'IN' 'IDENTIFICADOR' ')' statement { $$ = {
+        text: $1 + $2 + $3 + " " + $4 + " " + $5 + " " + $6 + $7 + $8.text
+    }; };
 
 for_of
-    :'FOR' '(' tipo_restriccion 'IDENTIFICADOR' 'OF' 'IDENTIFICADOR' ')' statement {};
+    :'FOR' '(' tipo_restriccion 'IDENTIFICADOR' 'OF' 'IDENTIFICADOR' ')' statement { $$ = {
+        text: $1 + " " + $2 + $3 + " " + $4 + " " + $5 + " " + $6 + $7 + $8.text
+    }; };

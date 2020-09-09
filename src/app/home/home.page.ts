@@ -1,18 +1,31 @@
 import { Component } from '@angular/core';
+
 import { errores }  from '../../assets/js/error/errores'
 import { nodoError }  from '../../assets/js/error/error';
+
+import { tabla_simbolos } from '../../assets/js/tabla_simbolos/tablasimbolos';
+import { nodoSimbolo } from '../../assets/js/tabla_simbolos/nodosimbolo';
+
+import { ambiente } from '../../assets/js/herramientas/ambiente';
 import * as analizador from '../../assets/jison/traduccion';
 
-//GRAFICOS
+import { graphviz } from 'd3-graphviz';
+import { wasmFolder } from '@hpcc-js/wasm';
 
+//GRAFICOS
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
 })
+
 export class HomePage {  
   //LISTA ERRORES
   listaErrores:nodoError[] = [];
+  listaSimbolos:nodoSimbolo[] = [];
+
+  //AMBIENTE
+  env = new ambiente(null);  
 
   //CONTENEDOR DE TEXTOS
   contenido_traduccion:string = "";
@@ -30,8 +43,10 @@ export class HomePage {
 
   //AST 
   ast:any;
+  div_ast:any;
 
-  constructor() {}
+  constructor() {
+  }
 
   parser_traduccion(){      
     if(this.fuente != undefined){
@@ -52,6 +67,7 @@ export class HomePage {
       }    
   
       this.cargar_errores();
+      this.cargar_tabla_simbolos();
     }else{
       this.contenido_consola = this.contenido_consola + " ERROR -> No se realizó la traducción porque no hay código fuente. \nPS MatrioshTS>" 
     }   
@@ -66,6 +82,18 @@ export class HomePage {
     }
   }
 
+  ejecutar_traduccion(){
+    for(let item of this.ast){
+      try{          
+        if(item != undefined){
+          console.log(item.nodo.execute(this.env));
+        }
+      }catch(error){
+        errores.addError(error);
+      }
+    }
+  }
+
   cargar_errores(){
     try{
       this.listaErrores = [];
@@ -76,11 +104,31 @@ export class HomePage {
     }    
   }
 
+  cargar_tabla_simbolos(){
+    try{
+      this.listaSimbolos = tabla_simbolos.get_simbolos();
+      console.log(this.listaSimbolos);
+    }catch(er){
+      console.log(er);
+      this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> " 
+    }
+  }
+
   parser_ejecucion(){
     
   }
+
+
+  ionViewDidEnter(){
+    this.div_ast = document.getElementById('divast');        
+    this.graficar_ast();
+  }
   
-  
+  graficar_ast(){    
+    wasmFolder('/assets/@hpcc-js/wasm/dist/');
+    graphviz(this.div_ast).renderDot('digraph {a -> b}');
+  }
+
 }
 
 

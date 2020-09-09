@@ -5,4 +5,7 @@ export var tipo;
     tipo[tipo["BOOLEAN"] = 2] = "BOOLEAN";
     tipo[tipo["ARRAY"] = 3] = "ARRAY";
     tipo[tipo["VOID"] = 4] = "VOID";
+    tipo[tipo["NULL"] = 5] = "NULL";
+    tipo[tipo["TYPES"] = 6] = "TYPES";
+    tipo[tipo["ANY"] = 7] = "ANY";
 })(tipo || (tipo = {}));

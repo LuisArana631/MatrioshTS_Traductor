@@ -3,7 +3,10 @@ export enum tipo{
     STRING,
     BOOLEAN,
     ARRAY,
-    VOID
+    VOID,
+    NULL,
+    TYPES,
+    ANY
 }
 
 export type retorno = {

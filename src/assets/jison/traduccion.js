@@ -92,11 +92,8 @@ break;
 case 3:
  this.$ = [$$[$0]]; 
 break;
-case 4: case 5: case 7: case 8: case 9: case 10: case 11: case 12: case 13: case 40: case 46: case 49: case 50: case 51: case 52: case 53: case 54: case 55: case 56:
+case 4: case 5: case 6: case 7: case 8: case 9: case 10: case 11: case 12: case 13: case 40: case 46: case 49: case 50: case 51: case 52: case 53: case 54: case 55: case 56:
  this.$ = $$[$0]; 
-break;
-case 6:
- this.$ = $ 
 break;
 case 14:
  this.$ = $$[$0-1]; 
@@ -117,34 +114,125 @@ break;
 case 18:
  this.$ = {
         text: $$[$0-2] + " " + $$[$0-1] + $$[$0] + "\n"
-    }; 
+    };
+    tabla_simbolos.push_simbolo(new nodoSimbolo("", $$[$0-1], name_function[name_function.length-1], undefined, undefined, undefined, _$[$0-2].first_line, _$[$0-2].first_column)); 
 break;
 case 19:
  this.$ = {
-        text: $$[$0-4] + " " + $$[$0-3] + " " + $$[$0-2] + " " + $$[$0-1].text + $$[$0] + "\n"
+        text: $$[$0-4] + " " + $$[$0-3] + " " + $$[$0-2] + " " + $$[$0-1].text + $$[$0] + "\n",
+        valor: $$[$0-1].valor
     }; 
+    tabla_simbolos.push_simbolo(new nodoSimbolo("", $$[$0-3], name_function[name_function.length-1], undefined, undefined, $$[$0-1].valor, _$[$0-4].first_line, _$[$0-4].first_column)); 
 break;
 case 20:
  this.$ = {
         text: $$[$0-4] + " " + $$[$0-3] + $$[$0-2] + $$[$0-1] + $$[$0] + "\n"
     }; 
+    tabla_simbolos.push_simbolo(new nodoSimbolo($$[$0-1], $$[$0-3], name_function[name_function.length-1], undefined, undefined, undefined, _$[$0-4].first_line, _$[$0-4].first_column)); 
 break;
 case 21:
  this.$ = {
-        text: $$[$0-6] + " " + $$[$0-5] + $$[$0-4] + $$[$0-3] + " " + $$[$0-2] + " " + $$[$0-1].text + $$[$0] + "\n"        
+        text: $$[$0-6] + " " + $$[$0-5] + $$[$0-4] + $$[$0-3] + " " + $$[$0-2] + " " + $$[$0-1].text + $$[$0] + "\n",
+        valor: $$[$0-1].valor        
+    }; 
+    tabla_simbolos.push_simbolo(new nodoSimbolo($$[$0-3], $$[$0-5], name_function[name_function.length-1], undefined, undefined, $$[$0-1].valor,  _$[$0-6].first_line, _$[$0-6].first_column)); 
+break;
+case 22:
+ this.$ = {
+        text: $$[$0-2].text + $$[$0-1] + $$[$0].text,
+        valor: $$[$0-2].valor + $$[$0].valor
     }; 
 break;
-case 22: case 23: case 24: case 25: case 26: case 27: case 31: case 32: case 33: case 34: case 35: case 36: case 37: case 38:
+case 23:
+ this.$ = {
+        text: $$[$0-2].text + $$[$0-1] + $$[$0].text,
+        valor: $$[$0-2].valor - $$[$0].valor
+    }; 
+break;
+case 24:
+ this.$ = {
+        text: $$[$0-2].text + $$[$0-1] + $$[$0].text,
+        valor: $$[$0-2].valor * $$[$0].valor
+    }; 
+break;
+case 25:
+ this.$ = {
+        text: $$[$0-2].text + $$[$0-1] + $$[$0].text,
+        valor: $$[$0-2].valor / $$[$0].valor
+    }; 
+break;
+case 26:
+ this.$ = {
+        text: $$[$0-2].text + $$[$0-1] + $$[$0].text,
+        valor: $$[$0-2].valor % $$[$0].valor
+    }; 
+break;
+case 27:
+ this.$ = {
+        text: $$[$0-2].text + $$[$0-1] + $$[$0].text,
+        valor: $$[$0-2].valor ** $$[$0].valor
+    }; 
+break;
+case 28:
+ this.$ = {
+        text: $$[$0-1] + $$[$0],
+        valor: $$[$0-1].valor++
+    }; 
+break;
+case 29:
+ this.$ = {
+        text: $$[$0-1] + $$[$0],
+        valor: $$[$0-1].valor--
+    }; 
+break;
+case 30:
+ this.$ = {
+        text: $$[$0-1] + $$[$0].text,
+        valor: -$$[$0].valor
+    }; 
+break;
+case 31:
+ this.$ = {
+        text: $$[$0-2].text + $$[$0-1] + $$[$0].text,
+        valor: $$[$0-2].valor < $$[$0].valor
+    }; 
+break;
+case 32:
+ this.$ = {
+        text: $$[$0-2].text + $$[$0-1] + $$[$0].text,
+        valor: $$[$0-2].valor > $$[$0].valor
+    }; 
+break;
+case 33:
+ this.$ = {
+        text: $$[$0-2].text + $$[$0-1] + $$[$0].text,
+        valor: $$[$0-2].valor <= $$[$0].valor
+    }; 
+break;
+case 34:
+ this.$ = {
+        text: $$[$0-2].text + $$[$0-1] + $$[$0].text,
+        valor: $$[$0-2].valor >= $$[$0].valor
+    }; 
+break;
+case 35:
+ this.$ = {
+        text: $$[$0-2].text + $$[$0-1] + $$[$0].text,
+        valor: $$[$0-2].valor != $$[$0].valor
+    }; 
+break;
+case 36:
+ this.$ = {
+        text: $$[$0-2].text + $$[$0-1] + $$[$0].text,
+        valor: $$[$0-2].valor === $$[$0].valor
+    }; 
+break;
+case 37: case 38:
  this.$ = {
         text: $$[$0-2].text + $$[$0-1] + $$[$0].text
     }; 
 break;
-case 28: case 29:
- this.$ = {
-        text: $$[$0-1] + $$[$0]
-    }; 
-break;
-case 30: case 39: case 59:
+case 39: case 59:
  this.$ = {
         text: $$[$0-1] + $$[$0].text
     }; 
@@ -154,9 +242,16 @@ case 41:
         text: $$[$0-2] + $$[$0-1].text + $$[$0]
     }; 
 break;
-case 42: case 43: case 44: case 45:
+case 42: case 43:
  this.$ = {
-        text: $$[$0]
+        text: $$[$0],
+        valor: +$$[$0]
+    }; 
+break;
+case 44: case 45:
+ this.$ = {
+        text: $$[$0],
+        valor: $$[$0]
     }; 
 break;
 case 47:
@@ -184,7 +279,7 @@ break;
 case 61:
 
         var instrucciones = "{ \n";        
-        var tabulaciones_string = "\t";        
+        var tabulaciones_string = "\t";
 
         for(var i=0; i<$$[$0-1].length; i++){
             instrucciones = instrucciones + tabulaciones_string + $$[$0-1][i].text;              
@@ -193,7 +288,7 @@ case 61:
         instrucciones = instrucciones + "} \n";        
      this.$ = {
         text: instrucciones
-     } 
+     }; 
 break;
 case 62:
  this.$ = {
@@ -203,6 +298,21 @@ break;
 case 63:
  this.$ = {        
         text: $$[$0-6] + $$[$0-5].text + $$[$0-4] + $$[$0-3] + $$[$0-2].text + $$[$0-1]
+    }; 
+break;
+case 65:
+ this.$ = {
+        text: $$[$0-8] + $$[$0-7] + $$[$0-6].text + $$[$0-5] + $$[$0-4].text + $$[$0-3] + $$[$0-2].text + $$[$0-1] + $$[$0].text
+    }; 
+break;
+case 66:
+ this.$ = {
+        text: $$[$0-7] + $$[$0-6] + $$[$0-5] + " " + $$[$0-4] + " " + $$[$0-3] + " " + $$[$0-2] + $$[$0-1] + $$[$0].text
+    }; 
+break;
+case 67:
+ this.$ = {
+        text: $$[$0-7] + " " + $$[$0-6] + $$[$0-5] + " " + $$[$0-4] + " " + $$[$0-3] + " " + $$[$0-2] + $$[$0-1] + $$[$0].text
     }; 
 break;
 }
@@ -459,7 +569,15 @@ _handle_error:
 
     const { nodoError } = require('../js/error/error');
     const { errores } = require('../js/error/errores');
-    var { count_tabulaciones } = require('../js/herramientas/variables');
+
+    const { tipo } = require('../js/abstract/valores');
+    const { nodoSimbolo } = require('../js/tabla_simbolos/nodosimbolo');
+    const { tabla_simbolos } = require('../js/tabla_simbolos/tablasimbolos');
+
+    let name_function = new Array;
+    name_function.push("Global");
+
+    const { aritmetica, operacion_aritmetica } = require('../js/expresion/aritmetica');
 /* generated by jison-lex 0.3.4 */
 var lexer = (function(){
 var lexer = ({
