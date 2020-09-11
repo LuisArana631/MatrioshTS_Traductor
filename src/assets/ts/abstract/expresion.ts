@@ -30,7 +30,7 @@ export abstract class expresion{
     }   
 
     public determinar_tipo(tipo_izquierdo:tipo, tipo_derecho:tipo):tipo{
-        let tipo_retorno:tipo = tipos[tipo_izquierdo][tipo_derecho];
+        let tipo_retorno = tipos[tipo_izquierdo][tipo_derecho];
         return tipo_retorno;
     }
 }

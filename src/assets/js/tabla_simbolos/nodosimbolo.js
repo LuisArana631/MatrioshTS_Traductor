@@ -1,6 +1,6 @@
 import { tipo } from '../abstract/valores';
 export class nodoSimbolo {
-    constructor(tipo_, id, ambiente, instrucciones, parametros, valor, linea, columna) {
+    constructor(tipo_, id, ambiente, instrucciones, parametros, valor, linea, columna, dimension) {
         if (tipo_ === "string") {
             this._tipo = tipo.STRING;
         }
@@ -17,7 +17,7 @@ export class nodoSimbolo {
             this._tipo = tipo.TYPES;
         }
         else if (tipo_ === "") {
-            this._tipo = tipo.ANY;
+            this._tipo = tipo.NULL;
         }
         this._tipostr = tipo_;
         this._id = id;
@@ -55,6 +55,9 @@ export class nodoSimbolo {
     get Columna() {
         return this._columna;
     }
+    get Dimension() {
+        return this._dimension;
+    }
     set Tipostr(_tipo) {
         this._tipostr = _tipo;
     }
@@ -81,5 +84,8 @@ export class nodoSimbolo {
     }
     set Columna(columna) {
         this._columna = columna;
+    }
+    set Dimension(dimension) {
+        this._dimension = dimension;
     }
 }

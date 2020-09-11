@@ -8,6 +8,7 @@ import { nodoSimbolo } from '../../assets/js/tabla_simbolos/nodosimbolo';
 
 import { ambiente } from '../../assets/js/herramientas/ambiente';
 import * as analizador from '../../assets/jison/traduccion';
+import * as ejecutar_code from '../../assets/jison/ejecutar';
 
 import { graphviz } from 'd3-graphviz';
 import { wasmFolder } from '@hpcc-js/wasm';
@@ -45,6 +46,7 @@ export class HomePage {
   //AST 
   ast:any;
   div_ast:any;
+  str_ast:string;
 
   constructor() {
   }
@@ -61,6 +63,8 @@ export class HomePage {
         this.mostrar_traduccion();      
   
         this.traduccion=this.contenido_traduccion;      
+
+        this.graficar_ast();
       }catch(er){
         /* NOTIFICAR ERROR EN TRADUCCIÓN */
         console.log(er);
@@ -101,9 +105,7 @@ export class HomePage {
     }else if(item.escritura == 1){  //INSTRUCCIONES
       this.contenido_traduccion =  this.contenido_traduccion + tabular +  item.text + "{\n";
       this.conteo_tabs++;
-
-      console.log(item.instr);
-
+      
       for(const sub_item of item.instr){
         this.concatenar_traduccion(sub_item);
       }
@@ -128,14 +130,13 @@ export class HomePage {
 
       }else{
         if(Array.isArray(item.els)){ //CON ELSE
-          this.contenido_traduccion = this.contenido_traduccion + "else{\n";
-          this.conteo_tabs--;
+          this.contenido_traduccion = this.contenido_traduccion + "else{\n";          
 
           for(const sub_item of item.els){
             this.concatenar_traduccion(sub_item);
           } 
 
-          this.contenido_traduccion = this.contenido_traduccion + "}";
+          this.contenido_traduccion = this.contenido_traduccion + "}\n";
           this.conteo_tabs--;
         }else{ //SIN ELSE
           this.contenido_traduccion = this.contenido_traduccion + "\n";         
@@ -143,20 +144,15 @@ export class HomePage {
       }
       
     }else if(item.escritura == 3){  //DO WHILE
-      console.log("escritura 3");
-        
-    }
-  }
-
-  ejecutar_traduccion(){
-    for(let item of this.ast){
-      try{          
-        if(item != undefined){
-          console.log(item.nodo.execute(this.env));
-        }
-      }catch(error){
-        errores.addError(error);
+      this.contenido_traduccion = this.contenido_traduccion + tabular + "do{\n";
+      this.conteo_tabs++;
+      
+      for(const sub_item of item.instr){
+        this.concatenar_traduccion(sub_item);
       }
+
+      this.conteo_tabs--;
+      this.contenido_traduccion = this.contenido_traduccion + tabular + item.text + "\n";        
     }
   }
 
@@ -166,7 +162,7 @@ export class HomePage {
       this.listaErrores = errores.getErrores();
     }catch(er){
       console.log(er);
-      this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> " 
+        this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> " 
     }    
   }
 
@@ -179,19 +175,97 @@ export class HomePage {
     }
   }
 
+  ejecutar_codigo(){    
+    for(const item of this.ast){
+      if(item != undefined){
+        const resultado_instr = item.nodo.ejecutar(this.env);
+        if(resultado_instr != null || resultado_instr != undefined){
+          
+        }
+        console.log(resultado_instr);
+      }          
+    }
+  }
+
   parser_ejecucion(){
-    
+    if(this.traduccion != undefined){ //EJECUTAR TRADUCCION
+      try{          
+        errores.clear();
+        this.ast = ejecutar_code.parse(this.traduccion);        
+        this.ejecutar_codigo();
+
+        this.graficar_ast();
+      }catch(er){
+        /* NOTIFICAR ERROR EN TRADUCCIÓN */
+        console.log(er);
+        this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> " 
+      }    
+
+      this.cargar_errores();      
+    }else if(this.fuente != undefined){ //EJECUTAR FUENTE
+      try{          
+        errores.clear();
+        this.ast = ejecutar_code.parse(this.fuente);        
+        this.ejecutar_codigo();
+
+        this.graficar_ast();
+      }catch(er){
+        /* NOTIFICAR ERROR EN TRADUCCIÓN */
+        console.log(er);
+        this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> " 
+      }    
+
+      this.cargar_errores();
+      console.log(this.env.get_global());
+    }else{
+      this.contenido_consola = this.contenido_consola + " ERROR -> No se realizó la ejecución porque no hay código. \nPS MatrioshTS>" 
+    }
   }
 
 
   ionViewDidEnter(){
     this.div_ast = document.getElementById('divast');        
-    this.graficar_ast();
+    wasmFolder('https://cdn.jsdelivr.net/npm/@hpcc-js/wasm@0.3.13/dist');
   }
   
   graficar_ast(){    
-    wasmFolder('https://cdn.jsdelivr.net/npm/@hpcc-js/wasm@0.3.13/dist');
-    graphviz(this.div_ast).renderDot('digraph {a -> c;a->b;}');
+    let count_instr:number = 0;
+
+    this.str_ast = "digraph { _inicio_ [label=\"Inicio\"];\n"
+    this.str_ast += "_instrucciones_ [label=\"Instrucciones\"];\n"
+    this.str_ast += "_inicio_ -> _instrucciones_ ;\n"
+
+    for(const item of this.ast){
+      if(item != undefined){
+        this.str_ast += "instruccion_" +count_instr + " [label=\"Instruccion\"];\n";
+        this.str_ast += "_instrucciones_ -> instruccion_" + count_instr + ";\n"
+
+        this.graficar_instruccion(item, count_instr);
+
+        count_instr++;
+      }          
+    }
+
+    this.str_ast += "}"
+    console.log(this.str_ast);
+
+    graphviz(this.div_ast).renderDot(this.str_ast);
+  }
+
+  graficar_instruccion(item:any, instr_num:number){
+    let sub_instr = 0;
+
+    this.str_ast += "declaracion_variable_" + sub_instr + instr_num + " [label  = \"Declaracion\"];\n";
+    this.str_ast +=  "instruccion_" + instr_num + "-> declaracion_variable_"  + sub_instr + instr_num + ";\n";
+
+    if(item.tipo == "declaracion_variable"){  //AST DECLARAR VARIABLES
+      this.str_ast += item.restriccion + sub_instr + instr_num + " [label = \"" + item.restriccion + "\"];\n";
+      this.str_ast += item.id + sub_instr + instr_num + " [label = \"" + item.id + "\"];\n";
+
+      this.str_ast += "declaracion_variable_" + sub_instr + instr_num + " -> " + item.restriccion + sub_instr + instr_num + ";\n";
+      this.str_ast += "declaracion_variable_" + sub_instr + instr_num + " -> " + item.id + sub_instr + instr_num + ";\n";
+    }
+
   }
 
 }

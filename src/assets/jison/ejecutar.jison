@@ -2,12 +2,10 @@
     const { nodoError } = require('../js/error/error');
     const { errores } = require('../js/error/errores');
 
-    const { tipo } = require('../js/abstract/valores');
-    const { nodoSimbolo } = require('../js/tabla_simbolos/nodosimbolo');
-    const { tabla_simbolos } = require('../js/tabla_simbolos/tablasimbolos');
+    const { declaracion } = require('../js/instruccion/declaracion');
+    const { operacion_aritmetica, aritmetica } = require('../js/expresion/aritmetica');
 
-    let name_function = new Array;
-    name_function.push("Global");    
+    const { dato_literal } = require('../js/expresion/dato');
 %}
 
 %lex
@@ -107,6 +105,9 @@ cadenasimple (\'[^']*\')
 "console.log"           return 'PRINT'
 "graficar_ts"           return 'GRAFICAR'
 
+"true"                  return  'TRUE'
+"false"                 return 'FALSE'
+
 /* CARACTERES ESPECIALES */
 "{"                     return '{'
 "}"                     return '}'
@@ -179,35 +180,23 @@ instruccion
 
 declaracion_variables
     : tipo_restriccion 'IDENTIFICADOR' ';' { $$ = {
-        text: $1 + " " + $2 + $3,
-        escritura: 0,
+        nodo: (new declaracion($2, null, @1.first_line, @1.first_column)),
 
         tipo: "declaracion_variable",
         restriccion: $1,
         id: $2
-    };
-    tabla_simbolos.push_simbolo(new nodoSimbolo("", $2, name_function[name_function.length-1], undefined, undefined, undefined, @1.first_line, @1.first_column, 0)); }
+    }; }
     | tipo_restriccion 'IDENTIFICADOR' '=' expresion ';' { $$ = {
-        text: $1 + " " + $2 + " " + $3 + " " + $4.text + $5,
-        valor: $4.valor,
-        escritura: 0
-    }; 
-    tabla_simbolos.push_simbolo(new nodoSimbolo("", $2, name_function[name_function.length-1], undefined, undefined, $4.valor, @1.first_line, @1.first_column, 0)); }
+        nodo: (new declaracion($2, $4.nodo, @1.first_line, @1.first_column)),
+    }; }
     | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato ';' { $$ = {
         text: $1 + " " + $2 + $3 + $4 + $5,
         escritura: 0
-    }; 
-    tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, undefined, @1.first_line, @1.first_column, 0)); }
+    }; }
     | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato '=' expresion ';' { $$ = {
         text: $1 + " " + $2 + $3 + $4 + " " + $5 + " " + $6.text + $7,
         valor: $6.valor,
         escritura: 0
-    }; 
-    tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, $6.valor,  @1.first_line, @1.first_column, 0)); }
-    | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato '=' '{' '}' ';' { $$ = {
-        text: $1 + " " + $2 + $3 + $4 + $5,
-        escritura: 1,
-        instr: $7
     }; 
     tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, $6.valor,  @1.first_line, @1.first_column, 0)); };
 
@@ -261,12 +250,10 @@ atributo
 
 expresion
     : expresion '+' expresion { $$ = {
-        text: $1.text + $2 + $3.text,
-        valor: $1.valor + $3.valor
+        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.SUMA, @1.first_line, @1.first_column))
     }; }
     | expresion '-' expresion { $$ = {
-        text: $1.text + $2 + $3.text,
-        valor: $1.valor - $3.valor
+        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.RESTA, @1.first_line, @1.first_column))
     }; }
     | expresion '*' expresion { $$ = {
         text: $1.text + $2 + $3.text,
@@ -332,32 +319,25 @@ expresion
     | dato_valor { $$ = $1; };
 
 dato_valor
-    : '(' expresion ')' { $$ = {
-        text: $1 + $2.text + $3
-    }; }
+    : '(' expresion ')' { $$ = $2; }
     | 'ENTERO' { $$ = {
-        text: $1,
-        valor: +$1
+        nodo: (new dato_literal($1, 0, @1.first_line, @1.first_column))
     }; }
     | 'DECIMAL' { $$ = {
-        text: $1,
-        valor: +$1
+        nodo: (new dato_literal($1, 0, @1.first_line, @1.first_column))
     }; }
     | 'CADENA' { $$ = {
-        text: $1,
-        valor: $1
-    }; }    
-    | 'TRUE' { $$ = {
-        text: $1,
-        valor: $1
-    }; }
-    | 'FALSE' { $$ = {        
-        text: $1,
-        valor: $1
+        nodo: (new dato_literal($1.replace(/\"/g,""), 1, @1.first_line, @1.first_column))
     }; }
     | 'IDENTIFICADOR' { $$ = {
         text: $1,
         valor: $1
+    }; }
+    | 'TRUE' {  $$ = {
+        nodo: (new dato_literal($1, 2, @1.first_line, @1.first_column))
+    }; }
+    | 'FALSE' { $$ = {
+        nodo: (new dato_literal($1, 2, @1.first_line, @1.first_column))
     }; }
     | llamada { $$ = $1; };
 
