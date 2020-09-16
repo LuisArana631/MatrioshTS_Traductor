@@ -4,16 +4,16 @@ export class ambiente {
         this.prev = prev;
         this._variables = new Map();
     }
-    guardar_variable(id, valor, tipo) {
+    guardar_variable(id, valor, tipo, tipostr, linea, columna) {
         let enviroment = this;
         while (enviroment != null) {
             if (enviroment._variables.has(id)) {
-                enviroment._variables.set(id, new simbolo(valor, id, tipo));
+                enviroment._variables.set(id, new simbolo(valor, id, tipo, tipostr, linea, columna));
                 return;
             }
             enviroment = enviroment.prev;
         }
-        this._variables.set(id, new simbolo(valor, id, tipo));
+        this._variables.set(id, new simbolo(valor, id, tipo, tipostr, linea, columna));
     }
     get_variable(id) {
         let enviroment = this;
@@ -24,6 +24,10 @@ export class ambiente {
             enviroment = enviroment.prev;
         }
         return null;
+    }
+    get_variables() {
+        let enviroment = this;
+        return enviroment._variables.values();
     }
     get_global() {
         let enviroment = this;

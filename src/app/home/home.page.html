@@ -118,6 +118,26 @@
                             {{item.Columna}}
                         </ion-col>
                     </ion-row>
+                    <ion-row *ngFor="let item of listaSimbolosEjecutar">
+                        <ion-col size="2">
+                            {{item._id}}
+                        </ion-col>
+                        <ion-col size="2">
+                            {{item._tipostr}}
+                        </ion-col>
+                        <ion-col size="2">
+                            {{"global"}}
+                        </ion-col>
+                        <ion-col size="2">
+                            {{item._valor}}
+                        </ion-col>
+                        <ion-col size="2">
+                            {{item._linea}}
+                        </ion-col>
+                        <ion-col size="2">
+                            {{item._columna}}
+                        </ion-col>
+                    </ion-row>
                 </ion-grid>
             </mat-tab>
 

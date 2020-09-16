@@ -1,8 +1,11 @@
 export class simbolo {
-    constructor(valor, id, tipo) {
+    constructor(valor, id, tipo, tipostr, linea, columna) {
         this._valor = valor;
         this._id = id;
         this._tipo = tipo;
+        this._tipostr = tipostr;
+        this._linea = linea;
+        this._columna = columna;
     }
     get valor() {
         return this._valor;

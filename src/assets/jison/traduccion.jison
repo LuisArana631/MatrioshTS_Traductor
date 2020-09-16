@@ -157,6 +157,24 @@ instruccion
     | declaracion_funciones { $$ = $1; }
     | declaracion_types { $$ = $1; }
     | asignacion { $$ = $1; }
+    | 'IDENTIFICADOR' '++' { $$ = {
+        text: $1 + $2,
+        valor: $1.valor++,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            operador: $2
+        }
+    }; }
+    | 'IDENTIFICADOR' '--' { $$ = {
+        text: $1 + $2,
+        valor: $1.valor--,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            operador: $2
+        }
+    }; }
     | if { $$ = $1; }
     | while { $$ = $1; }
     | do_while { $$ = $1; }
@@ -190,18 +208,32 @@ declaracion_variables
     | tipo_restriccion 'IDENTIFICADOR' '=' expresion ';' { $$ = {
         text: $1 + " " + $2 + " " + $3 + " " + $4.text + $5,
         valor: $4.valor,
-        escritura: 0
+        escritura: 0,
+
+        tipo: "declaracion_variable",
+        restriccion: $1,
+        id: $2,
+        expresion: $4.expresion
     }; 
     tabla_simbolos.push_simbolo(new nodoSimbolo("", $2, name_function[name_function.length-1], undefined, undefined, $4.valor, @1.first_line, @1.first_column, 0)); }
     | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato ';' { $$ = {
         text: $1 + " " + $2 + $3 + $4 + $5,
-        escritura: 0
+        escritura: 0,
+
+        tipo: "declaracion_variable",
+        restriccion: $1,
+        id: $2
     }; 
     tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, undefined, @1.first_line, @1.first_column, 0)); }
     | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato '=' expresion ';' { $$ = {
         text: $1 + " " + $2 + $3 + $4 + " " + $5 + " " + $6.text + $7,
         valor: $6.valor,
-        escritura: 0
+        escritura: 0,
+
+        tipo: "declaracion_variable",
+        restriccion: $1,
+        id: $2,
+        expresion: $6.expresion
     }; 
     tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, $6.valor,  @1.first_line, @1.first_column, 0)); }
     | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato '=' '{' '}' ';' { $$ = {
@@ -262,98 +294,229 @@ atributo
 expresion
     : expresion '+' expresion { $$ = {
         text: $1.text + $2 + $3.text,
-        valor: $1.valor + $3.valor
+        valor: $1.valor + $3.valor,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '-' expresion { $$ = {
         text: $1.text + $2 + $3.text,
-        valor: $1.valor - $3.valor
+        valor: $1.valor - $3.valor,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
+        
     }; }
     | expresion '*' expresion { $$ = {
         text: $1.text + $2 + $3.text,
-        valor: $1.valor * $3.valor
+        valor: $1.valor * $3.valor,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }    
     | expresion '/' expresion { $$ = {
         text: $1.text + $2 + $3.text,
-        valor: $1.valor / $3.valor
+        valor: $1.valor / $3.valor,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '%' expresion { $$ = {
         text: $1.text + $2 + $3.text,
-        valor: $1.valor % $3.valor
+        valor: $1.valor % $3.valor,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '**' expresion { $$ = {
         text: $1.text + $2 + $3.text,
-        valor: $1.valor ** $3.valor
+        valor: $1.valor ** $3.valor,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | 'IDENTIFICADOR' '++' { $$ = {
         text: $1 + $2,
-        valor: $1.valor++
+        valor: $1.valor++,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            operador: $2
+        }
     }; }
     | 'IDENTIFICADOR' '--' { $$ = {
         text: $1 + $2,
-        valor: $1.valor--
+        valor: $1.valor--,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            operador: $2
+        }
     }; }
     | '-' expresion { $$ = {
         text: $1 + $2.text,
-        valor: -$2.valor
+        valor: -$2.valor,
+
+        expresion: {
+            izquierdo: $2.expresion,
+            operador: $1
+        }
     }; } 
     | expresion '<' expresion { $$ = {
         text: $1.text + $2 + $3.text,
-        valor: $1.valor < $3.valor
+        valor: $1.valor < $3.valor,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '>' expresion { $$ = {
         text: $1.text + $2 + $3.text,
-        valor: $1.valor > $3.valor
+        valor: $1.valor > $3.valor,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '<=' expresion { $$ = {
         text: $1.text + $2 + $3.text,
-        valor: $1.valor <= $3.valor
+        valor: $1.valor <= $3.valor,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '>=' expresion { $$ = {
         text: $1.text + $2 + $3.text,
-        valor: $1.valor >= $3.valor
+        valor: $1.valor >= $3.valor,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '!=' expresion { $$ = {
         text: $1.text + $2 + $3.text,
-        valor: $1.valor != $3.valor
+        valor: $1.valor != $3.valor,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '==' expresion { $$ = {
         text: $1.text + $2 + $3.text,
-        valor: $1.valor === $3.valor
+        valor: $1.valor === $3.valor,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '||' expresion { $$ = {
-        text: $1.text + $2 + $3.text
+        text: $1.text + $2 + $3.text,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '&&' expresion { $$ = {
-        text: $1.text + $2 + $3.text
+        text: $1.text + $2 + $3.text,
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | '!' expresion { $$ = {
-        text: $1 + $2.text
+        text: $1 + $2.text,
+
+        expresion: {
+            izquierdo: $2.expresion,
+            operador: $1
+        }
     }; }
     | dato_valor { $$ = $1; };
 
 dato_valor
     : '(' expresion ')' { $$ = {
-        text: $1 + $2.text + $3
+        text: $1 + $2.text + $3,
+        expresion: $2
     }; }
     | 'ENTERO' { $$ = {
         text: $1,
-        valor: +$1
+        valor: +$1,
+
+        expresion: {
+            dato: $1,
+            tipo: "number"
+        }
     }; }
     | 'DECIMAL' { $$ = {
         text: $1,
-        valor: +$1
+        valor: +$1,
+
+        expresion: {
+            dato: $1,
+            tipo: "number"
+        }   
     }; }
     | 'CADENA' { $$ = {
         text: $1,
-        valor: $1
+        valor: $1,
+
+        expresion: {
+            dato: $1,
+            tipo: "string"
+        }
     }; }    
     | 'TRUE' { $$ = {
         text: $1,
-        valor: $1
+        valor: $1,
+
+        expresion: {
+            dato: $1,
+            tipo: "boolean"
+        }
     }; }
     | 'FALSE' { $$ = {        
         text: $1,
-        valor: $1
+        valor: $1,
+
+        expresion: {
+            dato: $1,
+            tipo: "boolean"
+        }
     }; }
     | 'IDENTIFICADOR' { $$ = {
         text: $1,
@@ -400,7 +563,8 @@ else
     }; };
 
 statement
-    : '{' instrucciones '}' { $$ = $2; };
+    : '{' instrucciones '}' { $$ = $2; }
+    | '{' '}' { $$ = new Array(); };
 
 while
     : 'WHILE' '(' expresion ')' statement { $$ = {

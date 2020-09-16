@@ -24,6 +24,7 @@ export class HomePage {
   //LISTA ERRORES
   listaErrores:nodoError[] = [];
   listaSimbolos:nodoSimbolo[] = [];
+  listaSimbolosEjecutar:any[] = [];
 
   //AMBIENTE
   env = new ambiente(null);  
@@ -167,8 +168,10 @@ export class HomePage {
   }
 
   cargar_tabla_simbolos(){
-    try{
+    try{          
+      this.listaSimbolosEjecutar = [];
       this.listaSimbolos = tabla_simbolos.get_simbolos();
+      tabla_simbolos.clear();
     }catch(er){
       console.log(er);
       this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> " 
@@ -180,11 +183,12 @@ export class HomePage {
       if(item != undefined){
         const resultado_instr = item.nodo.ejecutar(this.env);
         if(resultado_instr != null || resultado_instr != undefined){
-          
-        }
-        console.log(resultado_instr);
+            this.contenido_consola += resultado_instr.valor;            
+        }        
       }          
     }
+
+    this.contenido_consola += "PS MatrioshTS> ";
   }
 
   parser_ejecucion(){
@@ -201,7 +205,8 @@ export class HomePage {
         this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> " 
       }    
 
-      this.cargar_errores();      
+      this.cargar_errores();
+      this.cargar_simbolos_ejecucion();      
     }else if(this.fuente != undefined){ //EJECUTAR FUENTE
       try{          
         errores.clear();
@@ -216,12 +221,11 @@ export class HomePage {
       }    
 
       this.cargar_errores();
-      console.log(this.env.get_global());
+      this.cargar_simbolos_ejecucion();
     }else{
       this.contenido_consola = this.contenido_consola + " ERROR -> No se realizó la ejecución porque no hay código. \nPS MatrioshTS>" 
     }
   }
-
 
   ionViewDidEnter(){
     this.div_ast = document.getElementById('divast');        
@@ -240,21 +244,28 @@ export class HomePage {
         this.str_ast += "instruccion_" +count_instr + " [label=\"Instruccion\"];\n";
         this.str_ast += "_instrucciones_ -> instruccion_" + count_instr + ";\n"
 
-        this.graficar_instruccion(item, count_instr);
+        this.graficar_instruccion(item, count_instr, 0);
 
         count_instr++;
       }          
     }
 
     this.str_ast += "}"
-    console.log(this.str_ast);
 
     graphviz(this.div_ast).renderDot(this.str_ast);
   }
 
-  graficar_instruccion(item:any, instr_num:number){
-    let sub_instr = 0;
+  cargar_simbolos_ejecucion(){
+    try{      
+      this.listaSimbolos = [];
+      this.listaSimbolosEjecutar = Array.from(this.env.get_variables());      
+    }catch(er){
+      console.log(er);
+        this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> " 
+    }    
+  }
 
+  graficar_instruccion(item:any, instr_num:number, sub_instr:number){
     this.str_ast += "declaracion_variable_" + sub_instr + instr_num + " [label  = \"Declaracion\"];\n";
     this.str_ast +=  "instruccion_" + instr_num + "-> declaracion_variable_"  + sub_instr + instr_num + ";\n";
 
@@ -264,6 +275,40 @@ export class HomePage {
 
       this.str_ast += "declaracion_variable_" + sub_instr + instr_num + " -> " + item.restriccion + sub_instr + instr_num + ";\n";
       this.str_ast += "declaracion_variable_" + sub_instr + instr_num + " -> " + item.id + sub_instr + instr_num + ";\n";
+
+      if(item.expresion){        
+        this.graficar_expresion(item.expresion, instr_num, sub_instr++, "declaracion_variable_"+(sub_instr-1)+instr_num);
+      }
+    }
+
+  }
+
+  graficar_expresion(item:any, instr_num:number, sub_instr:number, padre:string){
+    let nombre_expresion = "expresion_" + sub_instr + instr_num;
+    this.str_ast += nombre_expresion + " [label = \"Expresion\"];\n";
+    this.str_ast += padre + " -> " + nombre_expresion + ";\n";
+
+    if(item.dato){  //Es un dato
+      this.str_ast += "dato_" + sub_instr + instr_num + " [label = \"Dato\"];\n";
+      this.str_ast += nombre_expresion + " -> " + "dato_" + sub_instr + instr_num + ";\n";
+
+      this.str_ast += item.dato + sub_instr + instr_num + " [label = \"" + item.dato +"\"];\n";
+      this.str_ast += "dato_" + sub_instr + instr_num + " -> " + item.dato + sub_instr + instr_num + ";\n";
+
+      this.str_ast += item.tipo + sub_instr + instr_num + " [label = \"" + item.tipo +"\"];\n";
+      this.str_ast += "dato_" + sub_instr + instr_num + " -> " + item.tipo + sub_instr + instr_num + ";\n";
+
+    }else{  //Es una expresion
+      this.str_ast += "operador_" + sub_instr + instr_num + " [label = \"" + item.operador +"\"];\n";
+      this.str_ast += nombre_expresion + " -> " + "operador_" + sub_instr + instr_num + ";\n";
+
+      if(item.izquierdo){
+        this.graficar_expresion(item.izquierdo, instr_num, sub_instr++, nombre_expresion);
+      }
+
+      if(item.derecho){
+        this.graficar_expresion(item.derecho, instr_num, sub_instr++, nombre_expresion);
+      }   
     }
 
   }

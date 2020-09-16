@@ -8,18 +8,18 @@ export class ambiente{
         this._variables = new Map();
     }
 
-    public guardar_variable(id:string, valor:any, tipo:tipo){
+    public guardar_variable(id:string, valor:any, tipo:tipo, tipostr:string, linea:number, columna:number){
         let enviroment:ambiente|null = this;
 
         while(enviroment != null){
             if(enviroment._variables.has(id)){
-                enviroment._variables.set(id, new simbolo(valor, id, tipo));
+                enviroment._variables.set(id, new simbolo(valor, id, tipo, tipostr, linea, columna));
                 return;
             }
             enviroment = enviroment.prev;
         }
 
-        this._variables.set(id, new simbolo(valor, id, tipo));
+        this._variables.set(id, new simbolo(valor, id, tipo, tipostr, linea, columna));
     }
 
     public get_variable(id:string):simbolo|undefined|null{
@@ -33,6 +33,12 @@ export class ambiente{
         }
 
         return null;
+    }
+
+    public get_variables():any{
+        let enviroment:ambiente|null = this;
+
+        return enviroment._variables.values();
     }
 
     public get_global():ambiente {

@@ -11,7 +11,10 @@ export enum operacion_aritmetica{
     MULTIPLICACION,
     DIVISION,
     MODULO,
-    POTENCIA
+    POTENCIA,
+    INCREMENTO,
+    DECREMENTO,
+    NEGAR
 }
 
 export class aritmetica extends expresion{
@@ -21,8 +24,16 @@ export class aritmetica extends expresion{
     }
 
     public ejecutar(environment:ambiente):retorno{
-        let operacion_izquierda = this.izquierda.ejecutar(environment);
-        let operacion_derecha = this.derecha.ejecutar(environment);
+        let operacion_izquierda;
+        let operacion_derecha
+
+        if(this.izquierda){
+           operacion_izquierda = this.izquierda.ejecutar(environment);            
+        }            
+        
+        if(this.derecha){
+            operacion_derecha = this.derecha.ejecutar(environment);
+        }        
 
         let resultado:retorno;
         let tipo_guia = this.determinar_tipo(operacion_izquierda.tipo, operacion_derecha.tipo);
@@ -139,6 +150,69 @@ export class aritmetica extends expresion{
             if(tipo_guia == tipo.NUMBER){
                 resultado = {
                     valor: (operacion_izquierda.valor ** operacion_derecha.valor),
+                    tipo: tipo.NUMBER
+                };
+            }else if(tipo_guia == tipo.STRING){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "string"));
+            }else if(tipo_guia == tipo.BOOLEAN){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "booleanos"));
+            }else if(tipo_guia == tipo.VOID){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "void"));
+            }else if(tipo_guia == tipo.NULL){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "null"));
+            }else if(tipo_guia == tipo.TYPES){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "type"));
+            }else if(tipo_guia == tipo.ARRAY){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "array"));
+            }else{
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "desconocido"));
+            }
+        }else if(this.tipo == operacion_aritmetica.INCREMENTO){
+            if(tipo_guia == tipo.NUMBER){
+                resultado = {
+                    valor: (operacion_izquierda.valor++),
+                    tipo: tipo.NUMBER
+                };
+            }else if(tipo_guia == tipo.STRING){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "string"));
+            }else if(tipo_guia == tipo.BOOLEAN){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "booleanos"));
+            }else if(tipo_guia == tipo.VOID){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "void"));
+            }else if(tipo_guia == tipo.NULL){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "null"));
+            }else if(tipo_guia == tipo.TYPES){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "type"));
+            }else if(tipo_guia == tipo.ARRAY){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "array"));
+            }else{
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "desconocido"));
+            }
+        }else if(this.tipo == operacion_aritmetica.DECREMENTO){
+            if(tipo_guia == tipo.NUMBER){
+                resultado = {
+                    valor: (operacion_izquierda.valor--),
+                    tipo: tipo.NUMBER
+                };
+            }else if(tipo_guia == tipo.STRING){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "string"));
+            }else if(tipo_guia == tipo.BOOLEAN){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "booleanos"));
+            }else if(tipo_guia == tipo.VOID){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "void"));
+            }else if(tipo_guia == tipo.NULL){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "null"));
+            }else if(tipo_guia == tipo.TYPES){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "type"));
+            }else if(tipo_guia == tipo.ARRAY){
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "array"));
+            }else{
+                errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "desconocido"));
+            }
+        }else if(this.tipo == operacion_aritmetica.NEGAR){
+            if(tipo_guia == tipo.NUMBER){
+                resultado = {
+                    valor: (-operacion_izquierda.valor),
                     tipo: tipo.NUMBER
                 };
             }else if(tipo_guia == tipo.STRING){

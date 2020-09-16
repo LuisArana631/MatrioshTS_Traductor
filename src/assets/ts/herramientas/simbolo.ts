@@ -1,14 +1,21 @@
 import { tipo } from '../abstract/valores';
+import { tipos } from './tablatipos';
 
 export class simbolo{
     private _valor:any;
     private _id:string;
     private _tipo:tipo;
+    private _tipostr:string;
+    private _linea:number;
+    private _columna:number;
 
-    constructor(valor:any, id:string, tipo:tipo){
+    constructor(valor:any, id:string, tipo:tipo, tipostr:string, linea:number, columna:number){
         this._valor = valor;
         this._id = id;
         this._tipo = tipo;
+        this._tipostr = tipostr;
+        this._linea = linea;
+        this._columna = columna;
     }
 
     get valor():any{
