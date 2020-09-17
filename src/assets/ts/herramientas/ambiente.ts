@@ -35,6 +35,20 @@ export class ambiente{
         return null;
     }
 
+    public update_variable(id:string, valor:any){
+        let environment:ambiente|null = this;
+
+        while(environment != null){
+            if(environment._variables.has(id)){
+                let aux_var = environment._variables.get(id);
+
+                aux_var.valor = valor;
+            }
+
+            environment = environment.prev;
+        }
+    }
+
     public get_variables():any{
         let enviroment:ambiente|null = this;
 

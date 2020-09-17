@@ -12,6 +12,7 @@
 
     //EXPRESIONES
     const { operacion_aritmetica, aritmetica } = require('../js/expresion/aritmetica');
+    const { operacion_unitaria, aritmetica_unitaria } = require('../js/expresion/aritmetica_unaria');
     const { operacion_relacional, relacional } = require('../js/expresion/relacional');
     const { operacion_logica, logica } = require('../js/expresion/logica');
 
@@ -170,11 +171,11 @@ instruccion
     | declaracion_funciones { $$ = $1; }
     | declaracion_types { $$ = $1; }
     | asignacion { $$ = $1; }
-    | dato_valor '++' { $$ = {
-        nodo: (new aritmetica($1.nodo, null, operacion_aritmetica.INCREMENTO, @1.first_line, @1.first_column))
+    | dato_valor '++' ';' { $$ = {
+        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.INCREMENTO, $1.id, @1.first_line, @1.first_column))
     }; }
-    | dato_valor '--' { $$ = {
-        nodo: (new aritmetica($1.nodo, null, operacion_aritmetica.DECREMENTO, @1.first_line, @1.first_column))
+    | dato_valor '--' ';' { $$ = {
+        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.DECREMENTO, $1.id, @1.first_line, @1.first_column))
     }; }
     | if { $$ = $1; }
     | while { $$ = $1; }
@@ -293,10 +294,10 @@ expresion
         nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.POTENCIA, @1.first_line, @1.first_column))
     }; }
     | dato_valor '++' { $$ = {
-        nodo: (new aritmetica($1.nodo, null, operacion_aritmetica.INCREMENTO, @1.first_line, @1.first_column))
+        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.INCREMENTO, $1.id, @1.first_line, @1.first_column))
     }; }
     | dato_valor '--' { $$ = {
-        nodo: (new aritmetica($1.nodo, null, operacion_aritmetica.DECREMENTO, @1.first_line, @1.first_column))
+        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.DECREMENTO, $1.id, @1.first_line, @1.first_column))
     }; }
     | '-' expresion { $$ = {
         nodo: (new aritmetica($2.nodo, null, operacion_aritmetica.NEGAR, @1.first_line, @1.first_column))
@@ -342,7 +343,8 @@ dato_valor
         nodo: (new dato_literal($1.replace(/\"/g,""), 1, @1.first_line, @1.first_column))
     }; }
     | 'IDENTIFICADOR' { $$ = {
-        nodo: (new acceso($1, @1.first_line, @1.first_column))
+        nodo: (new acceso($1, @1.first_line, @1.first_column)),
+        id: $1
     }; }
     | 'TRUE' {  $$ = {
         nodo: (new dato_literal($1, 2, @1.first_line, @1.first_column))

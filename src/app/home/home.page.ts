@@ -179,16 +179,28 @@ export class HomePage {
   }
 
   ejecutar_codigo(){    
+    let num_prints = 0;
     for(const item of this.ast){
       if(item != undefined){
-        const resultado_instr = item.nodo.ejecutar(this.env);
+        const resultado_instr = item.nodo.ejecutar(this.env); 
+        console.log("-----------------------------")
+        console.log(item);
+        console.log(resultado_instr);
         if(resultado_instr != null || resultado_instr != undefined){
-            this.contenido_consola += resultado_instr.valor;            
+          console.log("imprimiendo");
+            this.contenido_consola +=resultado_instr.valor + "\n";  
+            num_prints++;          
         }        
       }          
     }
 
-    this.contenido_consola += "PS MatrioshTS> ";
+    console.log(num_prints);
+
+    if(num_prints>0){
+      this.contenido_consola += "PS MatrioshTS> ";
+    }else{
+      this.contenido_consola += "\nPS MatrioshTS> ";
+    }    
   }
 
   parser_ejecucion(){
@@ -265,11 +277,11 @@ export class HomePage {
     }    
   }
 
-  graficar_instruccion(item:any, instr_num:number, sub_instr:number){
-    this.str_ast += "declaracion_variable_" + sub_instr + instr_num + " [label  = \"Declaracion\"];\n";
-    this.str_ast +=  "instruccion_" + instr_num + "-> declaracion_variable_"  + sub_instr + instr_num + ";\n";
-
+  graficar_instruccion(item:any, instr_num:number, sub_instr:number){    
     if(item.tipo == "declaracion_variable"){  //AST DECLARAR VARIABLES
+      this.str_ast += "declaracion_variable_" + sub_instr + instr_num + " [label  = \"Declaracion\"];\n";
+      this.str_ast +=  "instruccion_" + instr_num + "-> declaracion_variable_"  + sub_instr + instr_num + ";\n";
+      
       this.str_ast += item.restriccion + sub_instr + instr_num + " [label = \"" + item.restriccion + "\"];\n";
       this.str_ast += item.id + sub_instr + instr_num + " [label = \"" + item.id + "\"];\n";
 
