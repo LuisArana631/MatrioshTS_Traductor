@@ -35,6 +35,22 @@ export class ambiente{
         return null;
     }
 
+    public get_padre(id:string):simbolo|undefined|null{
+        let enviroment:ambiente|null = this;
+        let padre:ambiente;
+
+        while(enviroment != null){
+            if(enviroment._variables.has(id)){
+                //padre = enviroment;
+                return null;
+            }
+
+            enviroment = enviroment.prev;
+        }
+
+        return null;
+    }
+
     public update_variable(id:string, valor:any){
         let environment:ambiente|null = this;
 

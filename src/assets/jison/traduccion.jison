@@ -100,7 +100,7 @@ cadenasimple (\'[^']*\')
 "length"                return 'LENGTH'
 "let"                   return 'LET'
 "const"                 return 'CONST'
-"break"                 return 'BEARK'
+"break"                 return 'BREAK'
 "continue"              return 'CONTINUE'
 "return"                return 'RETURN'
 "function"              return 'FUNCTION'
@@ -157,19 +157,23 @@ instruccion
     | declaracion_funciones { $$ = $1; }
     | declaracion_types { $$ = $1; }
     | asignacion { $$ = $1; }
-    | 'IDENTIFICADOR' '++' { $$ = {
-        text: $1 + $2,
+    | dato_valor '++' ';' { $$ = {
+        text: $1.text + $2 + $3,
+        escritura: 0,
         valor: $1.valor++,
 
+        tipo: "incremento",
         expresion: {
             izquierdo: $1.expresion,
             operador: $2
         }
     }; }
-    | 'IDENTIFICADOR' '--' { $$ = {
-        text: $1 + $2,
+    | dato_valor '--' ';' { $$ = {
+        text: $1.text + $2 + $3,
+        escritura: 1,
         valor: $1.valor--,
 
+        tipo: "incremento",
         expresion: {
             izquierdo: $1.expresion,
             operador: $2
@@ -182,7 +186,10 @@ instruccion
     | for_normal { $$ = $1; }
     | for_in { $$ = $1; }
     | for_of { $$ = $1; }
-    | 'BREAK' ';' { $$ = $1; }
+    | 'BREAK' ';' { $$ = {
+        text: $1 + $2,
+        escritura: 0
+    }; }
     | 'CONTINUE' ';' { $$ = $1; }
     | sentencia_return { $$ = $1; }
     | 'GRAFICAR' '(' ')' ';' { $$ = {
@@ -191,9 +198,18 @@ instruccion
     }; }
     | 'PRINT' '(' expresion ')' ';' { $$ = {
         text: $1 + $2 + $3.text + $4 + $5,
-        escritura: 0
+        escritura: 0,
+
+        tipo: "print",
+        expresion: $3.expresion
     }; }    
     | error { errores.addError(new nodoError("Sintáctico","Se esperaba una instrucción y se encontró ",this._$.first_line,this._$.first_column,$1)); $$ = undefined; };
+
+asignacion     
+    : 'IDENTIFICADOR' '=' expresion ';' { $$ = {
+        text: $1 + $2 + $3.text,
+        escritura: 0
+    }; };
 
 declaracion_variables
     : tipo_restriccion 'IDENTIFICADOR' ';' { $$ = {
@@ -520,7 +536,12 @@ dato_valor
     }; }
     | 'IDENTIFICADOR' { $$ = {
         text: $1,
-        valor: $1
+        valor: $1,
+        
+        expresion: {
+            dato: $1,
+            tipo: "variable"
+        }
     }; }
     | llamada { $$ = $1; };
 
@@ -551,7 +572,12 @@ if
             text: $1 + $2 + $3.text + $4,
             escritura: 2,
             instr: $5,
-            els: $6
+            els: $6,
+
+            tipo: "if_",
+            condicion: $3.expresion,
+            instrucciones: $5,
+            else: $6
         };
      };
 
@@ -581,10 +607,21 @@ do_while
     }; };
 
 switch
-    : 'SWITCH' '(' expresion ')' cases { $$ = {
+    : 'SWITCH' '(' expresion ')' '{' cases '}' { $$ = {
         text: $1 + $2 + $3.text + $4,
         escritura: 1,
-        instr: $5
+        instr: $6
+    }; };
+
+cases 
+    : cases case { $1.push($2); $$ = $1; }
+    | case { $$ = [$1]; };
+
+case
+    : 'CASE' expresion ':' instrucciones { $$ = {
+        text: $1 + " " + $2.text + $3,
+        escritura: 1,
+        instr: $4
     }; };
 
 for_in
@@ -605,7 +642,26 @@ for_normal
     :'FOR' '(' declaracion_variables expresion ';' expresion ')' statement { $$ = {
         text: $1 + $2 + $3.text + " " + $4.text + $5 + $6.text + $7,
         escritura: 1,
-        instr: $8
+        instr: $8,
+
+        tipo: "for_",
+        
+    }; }
+    | 'FOR' '(' asignacion expresion ';' expresion ')' statement { $$ = {
+        text: $1 + $2 + $3.text + " " + $4.text + $5 + $6.text + $7,
+        escritura: 1,
+        instr: $8,
+
+        tipo: "for_",
+        
+    }; }
+    |'FOR' '(' 'INDETIFICADOR' ';' expresion ';' expresion ')' statement { $$ = {
+        text: $1 + $2 + $3.text + " " + $4.text + $5 + $6.text + $7,
+        escritura: 1,
+        instr: $8,
+
+        tipo: "for_",
+        
     }; };
 
 sentencia_return

@@ -57,6 +57,7 @@ export class HomePage {
       try{          
         /* NOTIFICAR EN CONSOLA */
         this.contenido_consola = this.contenido_consola + " Traducción realizada con éxito. \nPS MatrioshTS>" 
+        this.conteo_tabs = 0;
 
         errores.clear();
         this.ast = analizador.parse(this.fuente);        
@@ -153,7 +154,7 @@ export class HomePage {
       }
 
       this.conteo_tabs--;
-      this.contenido_traduccion = this.contenido_traduccion + tabular + item.text + "\n";        
+      this.contenido_traduccion = this.contenido_traduccion + tabular + "}" + item.text + "\n";        
     }
   }
 
@@ -183,18 +184,12 @@ export class HomePage {
     for(const item of this.ast){
       if(item != undefined){
         const resultado_instr = item.nodo.ejecutar(this.env); 
-        console.log("-----------------------------")
-        console.log(item);
-        console.log(resultado_instr);
         if(resultado_instr != null || resultado_instr != undefined){
-          console.log("imprimiendo");
             this.contenido_consola +=resultado_instr.valor + "\n";  
             num_prints++;          
         }        
       }          
     }
-
-    console.log(num_prints);
 
     if(num_prints>0){
       this.contenido_consola += "PS MatrioshTS> ";
@@ -256,13 +251,13 @@ export class HomePage {
         this.str_ast += "instruccion_" +count_instr + " [label=\"Instruccion\"];\n";
         this.str_ast += "_instrucciones_ -> instruccion_" + count_instr + ";\n"
 
-        this.graficar_instruccion(item, count_instr, 0);
+        this.graficar_instruccion(item, count_instr, 0, "instruccion_"+count_instr);
 
         count_instr++;
       }          
     }
 
-    this.str_ast += "}"
+    this.str_ast += "}";
 
     graphviz(this.div_ast).renderDot(this.str_ast);
   }
@@ -277,10 +272,10 @@ export class HomePage {
     }    
   }
 
-  graficar_instruccion(item:any, instr_num:number, sub_instr:number){    
+  graficar_instruccion(item:any, instr_num:number, sub_instr:number, padre:string){    
     if(item.tipo == "declaracion_variable"){  //AST DECLARAR VARIABLES
       this.str_ast += "declaracion_variable_" + sub_instr + instr_num + " [label  = \"Declaracion\"];\n";
-      this.str_ast +=  "instruccion_" + instr_num + "-> declaracion_variable_"  + sub_instr + instr_num + ";\n";
+      this.str_ast +=  padre + "-> declaracion_variable_"  + sub_instr + instr_num + ";\n";
       
       this.str_ast += item.restriccion + sub_instr + instr_num + " [label = \"" + item.restriccion + "\"];\n";
       this.str_ast += item.id + sub_instr + instr_num + " [label = \"" + item.id + "\"];\n";
@@ -288,11 +283,54 @@ export class HomePage {
       this.str_ast += "declaracion_variable_" + sub_instr + instr_num + " -> " + item.restriccion + sub_instr + instr_num + ";\n";
       this.str_ast += "declaracion_variable_" + sub_instr + instr_num + " -> " + item.id + sub_instr + instr_num + ";\n";
 
-      if(item.expresion){        
-        this.graficar_expresion(item.expresion, instr_num, sub_instr++, "declaracion_variable_"+(sub_instr-1)+instr_num);
+      if(item.expresion){                
+        this.graficar_expresion(item.expresion, instr_num, sub_instr+1, "declaracion_variable_"+(sub_instr)+instr_num);
       }
-    }
+    }else if(item.tipo == "if_"){ //AST IF
+      let name_if = "if_" + sub_instr + instr_num;
+      this.str_ast += name_if + " [label = \"If\"];\n";
+      this.str_ast += padre + "-> if_" + sub_instr + instr_num + ";\n";
 
+      this.str_ast += "condicion_" + sub_instr + instr_num + " [label = \"Condicion\"];\n";
+      this.str_ast += name_if + "-> condicion_" + sub_instr + instr_num + ";\n";      
+      this.graficar_expresion(item.condicion, instr_num, sub_instr+1, "condicion_"+sub_instr+instr_num);
+
+      let name_instrucciones = "instrucciones_" + sub_instr + instr_num;
+      this.str_ast += name_instrucciones + "[label = \"Instrucciones\"];\n";
+      
+      this.str_ast += name_if + "->" + name_instrucciones + ";\n";
+      for(let instr_item of item.instrucciones){
+        this.graficar_instruccion(instr_item, instr_num, sub_instr+2, name_instrucciones);
+        sub_instr++;
+      }
+
+      if(item.else.condicion){  //ES ELSE IF
+        this.str_ast += "else_" + sub_instr + instr_num + "[label = \"Else\"];\n";
+        this.str_ast += name_if + "-> else_" + sub_instr + instr_num + ";\n";
+        this.graficar_instruccion(item.else, instr_num, sub_instr+3, "else_" + sub_instr + instr_num);
+      }else if(item.else.text != ""){  //ELSE 
+        let name_else = "else_" + sub_instr + instr_num;
+        this.str_ast += name_else + "[label = \"Else\"];\n";
+        this.str_ast += name_if + "->" + name_else + ";\n";
+        for(let instr_item of item.else){
+          this.graficar_instruccion(instr_item, instr_num, sub_instr+4, "else_"+sub_instr+instr_num);
+          sub_instr++;
+        }
+      }            
+    }else if(item.tipo == "while_"){  //AST WHILE
+
+    }else if(item.tipo == "dowhile_"){  //AST DO WHILE
+
+    }else if(item.tipo == "incremento"){  //AST INCREMENTO  
+      this.graficar_expresion(item.expresion, instr_num, sub_instr+1, "instruccion_" + instr_num);
+    }else if(item.tipo == "print"){
+      this.str_ast += "print_" + sub_instr + instr_num + " [label = \"Console.log\"];\n";
+      this.str_ast += padre + "-> print_"+sub_instr + instr_num + ";\n";
+
+      this.graficar_expresion(item.expresion, instr_num, sub_instr + 1, "print_" + sub_instr + instr_num);
+    }else if(item.tipo == "for_"){
+      
+    }
   }
 
   graficar_expresion(item:any, instr_num:number, sub_instr:number, padre:string){
@@ -313,14 +351,14 @@ export class HomePage {
     }else{  //Es una expresion
       this.str_ast += "operador_" + sub_instr + instr_num + " [label = \"" + item.operador +"\"];\n";
       this.str_ast += nombre_expresion + " -> " + "operador_" + sub_instr + instr_num + ";\n";
-
-      if(item.izquierdo){
-        this.graficar_expresion(item.izquierdo, instr_num, sub_instr++, nombre_expresion);
-      }
-
+      
       if(item.derecho){
-        this.graficar_expresion(item.derecho, instr_num, sub_instr++, nombre_expresion);
+        this.graficar_expresion(item.derecho, instr_num, sub_instr+1, nombre_expresion);
       }   
+
+      if(item.izquierdo){        
+        this.graficar_expresion(item.izquierdo, instr_num, sub_instr+2, nombre_expresion);
+      }
     }
 
   }

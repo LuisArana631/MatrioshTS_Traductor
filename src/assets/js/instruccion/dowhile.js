@@ -2,7 +2,7 @@ import { nodoError } from '../error/error';
 import { errores } from '../error/errores';
 import { instruccion } from '../abstract/instruccion';
 import { tipo } from '../abstract/valores';
-export class while_ extends instruccion {
+export class dowhile_ extends instruccion {
     constructor(condicion, instrucciones, linea, columna) {
         super(linea, columna);
         this.condicion = condicion;
@@ -16,8 +16,12 @@ export class while_ extends instruccion {
             return null;
         }
         else {
+            const elemento = this.instrucciones.ejecutar(environment, 0);
+            if (elemento != null || elemento != undefined) {
+                elemento_str += elemento.valor;
+            }
             while (condicion.valor) {
-                const elemento = this.instrucciones.ejecutar(environment, 3);
+                const elemento = this.instrucciones.ejecutar(environment, 0);
                 if (elemento != null || elemento != undefined) {
                     elemento_str += elemento.valor;
                 }

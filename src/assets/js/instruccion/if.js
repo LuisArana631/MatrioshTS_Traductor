@@ -18,7 +18,7 @@ export class if_ extends instruccion {
         }
         else {
             if (condicion.valor == true) {
-                return this.instrucciones.ejecutar(environment);
+                return this.instrucciones.ejecutar(environment, 2);
             }
             else {
                 return (_a = this.elst) === null || _a === void 0 ? void 0 : _a.ejecutar(environment);

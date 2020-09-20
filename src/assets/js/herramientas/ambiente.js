@@ -25,6 +25,18 @@ export class ambiente {
         }
         return null;
     }
+    get_padre(id) {
+        let enviroment = this;
+        let padre;
+        while (enviroment != null) {
+            if (enviroment._variables.has(id)) {
+                //padre = enviroment;
+                return null;
+            }
+            enviroment = enviroment.prev;
+        }
+        return null;
+    }
     update_variable(id, valor) {
         let environment = this;
         while (environment != null) {

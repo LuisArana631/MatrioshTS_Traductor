@@ -8,7 +8,13 @@
     const { print } = require('../js/instruccion/print');
     const { if_ } = require('../js/instruccion/if');
     const { while_ } = require('../js/instruccion/while');
+    const { dowhile_ } = require('../js/instruccion/dowhile')
+    const { for_ } = require('../js/instruccion/for');
     const { instrucciones_ } = require('../js/instruccion/instrucciones');
+    const { asignacion_ } = require('../js/instruccion/asignacion');
+    const { break_ } = require('../js/instruccion/break');
+    const { switch_ } = require('../js/instruccion/switch');
+    const { case_ } = require('../js/instruccion/case');
 
     //EXPRESIONES
     const { operacion_aritmetica, aritmetica } = require('../js/expresion/aritmetica');
@@ -111,7 +117,7 @@ cadenasimple (\'[^']*\')
 "length"                return 'LENGTH'
 "let"                   return 'LET'
 "const"                 return 'CONST'
-"break"                 return 'BEARK'
+"break"                 return 'BREAK'
 "continue"              return 'CONTINUE'
 "return"                return 'RETURN'
 "function"              return 'FUNCTION'
@@ -184,7 +190,9 @@ instruccion
     | for_normal { $$ = $1; }
     | for_in { $$ = $1; }
     | for_of { $$ = $1; }
-    | 'BREAK' ';' { $$ = $1; }
+    | 'BREAK' ';' { $$ = {
+        nodo: (new break_(@1.first_line, @1.first_column))
+    }; }
     | 'CONTINUE' ';' { $$ = $1; }
     | sentencia_return { $$ = $1; }
     | 'GRAFICAR' '(' ')' ';' { $$ = {
@@ -195,6 +203,12 @@ instruccion
         nodo: (new print($3.nodo, @1.first_line, @1.first_column))
     }; }    
     | error { errores.addError(new nodoError("Sintáctico","Se esperaba una instrucción y se encontró ",this._$.first_line,this._$.first_column,$1)); $$ = undefined; };
+
+asignacion     
+    : 'IDENTIFICADOR' '=' expresion ';' { $$ = {
+        nodo: (new asignacion_($3.nodo, $1, @1.first_line, @1.first_column)),
+        id: $1
+    }; };
 
 declaracion_variables
     : tipo_restriccion 'IDENTIFICADOR' ';' { $$ = {
@@ -229,7 +243,7 @@ declaracion_variables
 declaracion_arreglos
     : tipo_restriccion 'IDENTIFICADOR' ':' lista_dimensiones ';' { $$ = {
         text: $1.text + " " + $2 + $3 + $4.text + $5,
-        escritura: 0
+        escritura: 0,
     }; }
     | tipo_restriccion 'IDENTIFICADOR' ':' lista_dimensiones '=' 'valores_arreglo' ';' { $$ = {
         text: $1.text + " " + $2 + $3 + $4.text + $5 + $6.text + $7,
@@ -395,6 +409,11 @@ statement
         nodo: (new instrucciones_(new Array(),  @1.first_line, @1.first_column))
     }; };
 
+statement_switch
+    : instrucciones { $$ = {
+        nodo: (new instrucciones_($1,  @1.first_line, @1.first_column))
+    }; };
+
 while
     : 'WHILE' '(' expresion ')' statement { $$ = {
         nodo: (new while_($3.nodo, $5.nodo, @1.first_line, @1.first_column))
@@ -402,16 +421,21 @@ while
 
 do_while
     : 'DO' statement 'WHILE' '(' expresion ')' ';' { $$ = {        
-        text: $3 + $4 + $5.text + $6 + $7,
-        escritura: 3,
-        instr: $2
+        nodo: (new dowhile_($5.nodo, $2.nodo, @1.first_linea, @1.first_column))
     }; };
 
 switch
-    : 'SWITCH' '(' expresion ')' cases { $$ = {
-        text: $1 + $2 + $3.text + $4,
-        escritura: 1,
-        instr: $5
+    : 'SWITCH' '(' expresion ')' '{' cases '}' { $$ = {
+        nodo: (new switch_($3.nodo, $6, @1.first_line, @1.first_column))
+    }; };
+
+cases 
+    : cases case { $1.push($2); $$ = $1; }
+    | case { $$ = [$1]; };
+
+case
+    : 'CASE' expresion ':' statement_switch { $$ = {
+        nodo: (new case_($2.nodo, $4.nodo, @1.first_line, @1.first_column))
     }; };
 
 for_in
@@ -430,9 +454,13 @@ for_of
 
 for_normal
     :'FOR' '(' declaracion_variables expresion ';' expresion ')' statement { $$ = {
-        text: $1 + $2 + $3.text + " " + $4.text + $5 + $6.text + $7,
-        escritura: 1,
-        instr: $8
+        nodo: (new for_($4.nodo, $6.nodo, $3.nodo, $8.nodo, $3.id, @1.first_line, @1.first_column))
+    }; }
+    | 'FOR' '(' asignacion expresion ';' expresion ')' statement { $$ = {
+        nodo: (new for_($4.nodo, $6.nodo, $3.nodo, $8.nodo, $3.id, @1.first_line, @1.first_column))
+    }; }
+    | 'FOR' '(' 'IDENTIFICADOR' ';' expresion ';' expresion ')' statement { $$ = {
+        nodo: (new for_($5.nodo, $7.nodo, null, $9.nodo, $3, @1.first_line, @1.first_column))
     }; };
 
 sentencia_return

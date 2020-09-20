@@ -7,13 +7,19 @@ export class instrucciones_ extends instruccion {
         super(linea, columna);
         this.codigo = codigo;
     }
-    ejecutar(environment) {
+    //VALORES PERMITIDOS FUNC_PADRE
+    // 0 -> DOWHILE
+    // 1 -> FOR
+    // 2 -> IF
+    // 3 -> WHILE
+    // 4 -> SWITCH
+    ejecutar(environment, func_padre) {
         const nuevo_ambiente = new ambiente(environment);
         let elemento_str = "";
         for (const instr of this.codigo) {
             try {
                 const elemento = instr.nodo.ejecutar(nuevo_ambiente);
-                if (elemento != undefined || elemento != null) {
+                if (elemento.valor != undefined) {
                     elemento_str += elemento.valor + "\n";
                 }
             }

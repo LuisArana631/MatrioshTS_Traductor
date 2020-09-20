@@ -9,7 +9,14 @@ export class instrucciones_ extends instruccion{
         super(linea, columna);
     }
 
-    public ejecutar(environment:ambiente){
+    //VALORES PERMITIDOS FUNC_PADRE
+    // 0 -> DOWHILE
+    // 1 -> FOR
+    // 2 -> IF
+    // 3 -> WHILE
+    // 4 -> SWITCH
+
+    public ejecutar(environment:ambiente, func_padre:number){
         const nuevo_ambiente = new ambiente(environment);
         let elemento_str:string = "";
 
@@ -17,7 +24,7 @@ export class instrucciones_ extends instruccion{
             try{
                 const elemento = instr.nodo.ejecutar(nuevo_ambiente);
 
-                if(elemento != undefined || elemento != null){
+                if(elemento.valor != undefined){
                     elemento_str += elemento.valor + "\n";
                 }
             }catch(error){
@@ -25,7 +32,6 @@ export class instrucciones_ extends instruccion{
             }
         }
 
-        
         return {
             valor: elemento_str,
             tipo: 1

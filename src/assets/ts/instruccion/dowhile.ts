@@ -4,10 +4,10 @@ import { errores } from '../error/errores';
 import { instruccion } from '../abstract/instruccion';
 import { expresion } from '../abstract/expresion';
 import { ambiente } from '../herramientas/ambiente';
-import { tipo } from '../abstract/valores'; 
+import { tipo } from '../abstract/valores';
 import { instrucciones_ } from '../instruccion/instrucciones';
 
-export class while_ extends instruccion{
+export class dowhile_ extends instruccion{
     constructor(private condicion:expresion, private instrucciones:instrucciones_, linea:number, columna:number){
         super(linea, columna);
     }
@@ -20,8 +20,14 @@ export class while_ extends instruccion{
             errores.addError(new nodoError("Semántico", "If solo puede ejecutarse con una expresión booleana", this.linea, this.columna, "Booleana"));
             return null;
         }else{
+            const elemento = this.instrucciones.ejecutar(environment, 0);
+
+            if(elemento != null || elemento != undefined){
+                elemento_str += elemento.valor;
+            }
+
             while(condicion.valor){
-                const elemento = this.instrucciones.ejecutar(environment, 3);
+                const elemento = this.instrucciones.ejecutar(environment, 0);
 
                 if(elemento != null || elemento != undefined){
                     elemento_str += elemento.valor;      
@@ -34,6 +40,6 @@ export class while_ extends instruccion{
                 valor: elemento_str,
                 tipo: 1
             }
-        }        
+        }
     }
 }

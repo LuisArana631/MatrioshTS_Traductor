@@ -20,7 +20,7 @@ export class if_ extends instruccion{
             return null;
         }else{
             if(condicion.valor == true){                                                
-                return this.instrucciones.ejecutar(environment);
+                return this.instrucciones.ejecutar(environment, 2);
             }else{
                 return this.elst?.ejecutar(environment);
             }

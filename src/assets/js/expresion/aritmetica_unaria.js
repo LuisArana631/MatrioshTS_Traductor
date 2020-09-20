@@ -19,7 +19,6 @@ export class aritmetica_unitaria extends expresion {
         let resultado;
         let tipo_guia = this.determinar_tipo(operacion_.tipo, 0); //SOLO SE PUEDE INCREMENTAR, DECREMENTO Y NEGAR NUMEROS
         if (this.tipo == operacion_unitaria.INCREMENTO) {
-            console.log("incremento como no");
             if (this.id != "") { //SE INCLUYE ID
                 if (tipo_guia == tipo.NUMBER) {
                     resultado = {
