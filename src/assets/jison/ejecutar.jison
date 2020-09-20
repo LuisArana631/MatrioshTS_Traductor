@@ -13,8 +13,10 @@
     const { instrucciones_ } = require('../js/instruccion/instrucciones');
     const { asignacion_ } = require('../js/instruccion/asignacion');
     const { break_ } = require('../js/instruccion/break');
+    const { continue_ } = require('../js/instruccion/continue');
     const { switch_ } = require('../js/instruccion/switch');
     const { case_ } = require('../js/instruccion/case');
+    const { return_ } = require('../js/instruccion/return');
 
     //EXPRESIONES
     const { operacion_aritmetica, aritmetica } = require('../js/expresion/aritmetica');
@@ -193,7 +195,9 @@ instruccion
     | 'BREAK' ';' { $$ = {
         nodo: (new break_(@1.first_line, @1.first_column))
     }; }
-    | 'CONTINUE' ';' { $$ = $1; }
+    | 'CONTINUE' ';' { $$ = {
+        nodo: (new continue_(@1.first_line, @1.first_column))
+    }; }
     | sentencia_return { $$ = $1; }
     | 'GRAFICAR' '(' ')' ';' { $$ = {
         text: $1 + $2 + $3 + $4,
@@ -465,10 +469,13 @@ for_normal
 
 sentencia_return
     :'RETURN' ';' { $$ = {
-        text: $1 + " " + $2,
-        escritura: 0
+        nodo: (new return_(null, @1.first_line, @1.first_column))
     }; }
     |'RETURN' expresion ';' {  $$ = {
-        text: $1 + " " + $2.text + $3,
-        escritura: 0
+        nodo: (new return_($2.nodo, @1.first_line, @1.first_column))
+    }; };
+
+declaracion_funciones
+    : 'FUNCTION' 'IDENTIFICADOR' '(' parametros ')' ':' tipo_dato statement { $$ = {
+        nodo: null
     }; };

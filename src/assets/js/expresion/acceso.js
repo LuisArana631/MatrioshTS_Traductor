@@ -10,7 +10,7 @@ export class acceso extends expresion {
         const value = environment.get_variable(this.id);
         console.log();
         if (value == null) {
-            errores.addError(new nodoError("Semántico", "No se encontró dicha variable ó es una variable sin inicializar", this.linea, this.columna, "variable"));
+            errores.addError(new nodoError("Semántico", "No se encontró dicha variable ó es una variable sin inicializar", this.linea, this.columna, "variable " + this.id));
         }
         return {
             valor: value.valor,

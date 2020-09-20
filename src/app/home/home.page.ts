@@ -155,6 +155,30 @@ export class HomePage {
 
       this.conteo_tabs--;
       this.contenido_traduccion = this.contenido_traduccion + tabular + "}" + item.text + "\n";        
+    }else if(item.escritura == 4){  //FUNCTION
+      this.contenido_traduccion += tabular + item.text;
+      
+      let count_atrs = 0;
+      let size_atr = item.atribs.length;
+
+      for(const atr of item.atribs){
+        this.contenido_traduccion += atr.text
+
+        count_atrs++;
+        if(count_atrs < size_atr){
+          this.contenido_traduccion += ","
+        }
+      }
+
+      this.contenido_traduccion += "{\n";
+      this.conteo_tabs++;
+
+      for(const sub_item of item.instr){
+        this.concatenar_traduccion(sub_item);
+      }
+
+      this.conteo_tabs--;
+      this.contenido_traduccion = this.contenido_traduccion + tabular + "}\n";
     }
   }
 

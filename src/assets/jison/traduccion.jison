@@ -673,3 +673,17 @@ sentencia_return
         text: $1 + " " + $2.text + $3,
         escritura: 0
     }; };
+
+declaracion_funciones
+    : 'FUNCTION' 'IDENTIFICADOR' '(' parametros ')' ':' tipo_dato statement { $$ = {
+        text: $1 + " " + $2 + $3 + $4.text + $5 + $6 + $7,
+        escritura: 1,
+        instr: $8
+    }; }; 
+
+parametros
+    : parametros parametro { $1.push($2); $$ = $1; }
+    | parametro { $$ = [$1]; };
+
+parametro
+    :
