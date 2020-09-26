@@ -51,13 +51,19 @@ export class HomePage {
   str_ast:string;
 
   constructor() {
+    this.limpiar_consola();
+  }
+
+  limpiar_consola(){
+    this.contenido_consola = "";
+    this.contenido_consola = "PS MatrioshTS>";
   }
 
   parser_traduccion(){      
     if(this.fuente != undefined){
       try{          
         /* NOTIFICAR EN CONSOLA */
-        this.contenido_consola = this.contenido_consola + " Traducción realizada con éxito. \nPS MatrioshTS>" 
+        this.contenido_consola = this.contenido_consola + " Traducción realizada con éxito. \nPS MatrioshTS>";
         this.conteo_tabs = 0;
 
         errores.clear();
@@ -85,7 +91,13 @@ export class HomePage {
     this.contenido_traduccion = "";
     for(const item of this.ast){
       if(item != undefined){
-        this.concatenar_traduccion(item);
+        try{
+          this.concatenar_traduccion(item);  
+        }catch(error){
+          console.log(item);
+          console.log(error);
+          this.contenido_consola = this.contenido_consola + " ERROR CON TRADUCCION -> " +error + "\nITEM: "+ item.text + "\nPS MatrioshTS>"
+        }        
       }          
     }
   }
@@ -138,9 +150,8 @@ export class HomePage {
           for(const sub_item of item.els){
             this.concatenar_traduccion(sub_item);
           } 
-
-          this.contenido_traduccion = this.contenido_traduccion + "}\n";
-          this.conteo_tabs--;
+          this.conteo_tabs--;   
+          this.contenido_traduccion = this.contenido_traduccion + tabular + "}\n";                 
         }else{ //SIN ELSE
           this.contenido_traduccion = this.contenido_traduccion + "\n";         
         }
@@ -157,6 +168,7 @@ export class HomePage {
       this.conteo_tabs--;
       this.contenido_traduccion = this.contenido_traduccion + tabular + "}" + item.text + "\n";        
     }else if(item.escritura == 4){  //FUNCTION
+
       this.contenido_traduccion += tabular + item.text;
       
       let count_atrs = 0;
@@ -184,7 +196,23 @@ export class HomePage {
       }
 
       this.conteo_tabs--;
+      this.conteo_tabs--;
       this.contenido_traduccion = this.contenido_traduccion + tabular + "}\n";
+    }else if(item.escritura == 5){  //LLAMADA
+      this.contenido_traduccion += tabular + item.text;
+      
+      let count_param = 0;
+      for(const param_item of item.param){
+        if(count_param == 0){
+          this.contenido_traduccion += param_item.text;
+        }else{
+          this.contenido_traduccion += "," + param_item.text;
+        }
+        count_param++;
+      }
+
+      this.contenido_traduccion += ");\n";
+
     }
   }
 
@@ -316,7 +344,7 @@ export class HomePage {
   cargar_tabla_funciones(){
     try{
       this.listaSimbolos = [];
-      this.listaFuncionesEjecutar.push.apply(Array.from(this.env.get_funciones()));
+      this.listaFuncionesEjecutar = Array.from(this.env.get_funciones());
     }catch(er){
       console.log(er);
       this.contenido_consola = this.contenido_consola + " " + er + " \nPS MatrioshTS> ";

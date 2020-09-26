@@ -51,7 +51,9 @@ export class instrucciones_ extends instruccion{
                 }
 
                 if(elemento.valor != undefined){
-                    elemento_str += elemento.valor + "\n";
+                    if(elemento.valor != ""){
+                        elemento_str += elemento.valor + "\n";
+                    }                    
                 }
             }catch(error){
                 errores.addError(new nodoError("Semántico", error, instr.linea, instr.columna, "error"));

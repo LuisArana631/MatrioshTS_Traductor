@@ -1,6 +1,5 @@
 import { expresion } from '../abstract/expresion';
 import { retorno, tipo } from '../abstract/valores';
-import { ambiente } from '../herramientas/ambiente';
 
 export class dato_literal extends expresion{
     constructor(private valor:any, private tipo:number, linea:number, columna:number){

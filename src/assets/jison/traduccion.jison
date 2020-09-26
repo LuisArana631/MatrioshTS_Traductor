@@ -45,12 +45,14 @@ cadenasimple (\'[^']*\')
 {tabulador}             return 'TABULADOR'
 {retornocarro}          return 'RETORNOCARRO'
 {barrainvertida}        return 'BARRAINVERTIDA'
-{comillasimple}         return 'COMILLASIMPLE'
-{comilladoble}          return 'COMILLADOBLE'
 
 /* CADENAS */
 {cadenadoble}           { /*yytext = yytext.substr( 1 , yyleng-2 );*/ return 'CADENA'; }
 {cadenasimple}          { /*yytext = yytext.substr( 1 , yyleng-2 );*/ return 'CADENA'; }     
+
+
+{comillasimple}         return 'COMILLASIMPLE'
+{comilladoble}          return 'COMILLADOBLE'
 
 /* TIPOS DE DATOS */
 "string"                return 'STRING'
@@ -107,6 +109,9 @@ cadenasimple (\'[^']*\')
 "console.log"           return 'PRINT'
 "graficar_ts"           return 'GRAFICAR'
 
+"true"                  return 'TRUE'
+"false"                 return 'FALSE'
+
 /* CARACTERES ESPECIALES */
 "{"                     return '{'
 "}"                     return '}'
@@ -121,8 +126,8 @@ cadenasimple (\'[^']*\')
 "."                     return '.'
 
 /* DATOS */
-{entero}                return 'ENTERO'
 {decimal}               return 'DECIMAL'
+{entero}                return 'ENTERO'
 {identificador}         return 'IDENTIFICADOR'
 {booleano}              return 'BOOLEANO'
 
@@ -157,6 +162,11 @@ instruccion
     | declaracion_funciones { $$ = $1; }
     | declaracion_types { $$ = $1; }
     | asignacion { $$ = $1; }
+    | llamada ';' { $$ = {
+        text: $1.text,
+        param: $1.param,
+        escritura: 5
+    }; }
     | dato_valor '++' ';' { $$ = {
         text: $1.text + $2 + $3,
         escritura: 0,
@@ -186,7 +196,6 @@ instruccion
     | for_normal { $$ = $1; }
     | for_in { $$ = $1; }
     | for_of { $$ = $1; }
-    | llamada ';' { $$ = $1; }
     | 'BREAK' ';' { $$ = {
         text: $1 + $2,
         escritura: 0
@@ -208,7 +217,7 @@ instruccion
 
 asignacion     
     : 'IDENTIFICADOR' '=' expresion ';' { $$ = {
-        text: $1 + $2 + $3.text,
+        text: $1 + $2 + $3.text + $4,
         escritura: 0
     }; };
 
@@ -544,16 +553,42 @@ dato_valor
             tipo: "variable"
         }
     }; }
-    | llamada { $$ = $1; };
+    | llamada { 
+        let parametros_str = "";
+        let c_p = 0;
+
+        for(let p of $1.param){
+            if(c_p != 0){
+                parametros_str += "," + p.text;
+            }else{
+                parametros_str += p.text;
+            }
+
+            c_p++;
+        };
+
+        $$ = {
+        text: $1.text + parametros_str + ")",
+        valor: 0,
+
+        expresion: {
+            dato: $1.id,
+            tipo: "llamada"
+        }
+    }; };
 
 llamada
     : 'IDENTIFICADOR' '(' ')' { $$ = {
-        text: $1 + $2 + $3,
-        escritura: 0
+        text: $1 + $2,
+        param: [],
+        escritura: 0,
+        id: $1
     }; }
     | 'IDENTIFICADOR' '(' lista_exp_par ')' { $$ = {
-        text: $1 + $2 + $3 + $4,
-        escritura: 0
+        text: $1 + $2,
+        param: $3,
+        escritura: 5,
+        id: $1
     }; };
 
 lista_exp_par
@@ -590,7 +625,8 @@ else
     : 'ELSE' if { $$ = $2; }
     | 'ELSE' statement { $$ = $2; }
     | /* epsilon */ { $$ = {
-        text: ""
+        text: "",
+        escritura: 0
     }; };
 
 statement
@@ -686,13 +722,15 @@ declaracion_funciones
         escritura: 4,
         instr: $8,
         atribs: $4
-    }; }
+    }; 
+    tabla_simbolos.push_simbolo(new nodoSimbolo($7, $2, name_function[name_function.length-1], undefined, undefined, "@function",  @1.first_line, @1.first_column, 0)); }
     | 'FUNCTION' 'IDENTIFICADOR' '(' ')' ':' tipo_dato statement { $$ = {
         text: $1 + " " + $2 + $3,
         tipo_dato_f: $6,
         escritura: 4,
         instr: $7
-    }; }; 
+    }; 
+    tabla_simbolos.push_simbolo(new nodoSimbolo($6, $2, name_function[name_function.length-1], undefined, undefined, "@function",  @1.first_line, @1.first_column, 0)); }; 
 
 parametros
     : parametros ',' parametro { $1.push($3); $$ = $1; }

@@ -16,10 +16,18 @@ export class logica extends expresion {
         this.tipo = tipo;
     }
     ejecutar(environment) {
-        let operacion_izquierda = this.izquierda.ejecutar(environment);
-        let operacion_derecha = this.derecha.ejecutar(environment);
+        let operacion_izquierda;
+        let operacion_derecha;
+        if (this.izquierda) {
+            operacion_izquierda = this.izquierda.ejecutar(environment);
+        }
+        if (this.derecha) {
+            operacion_derecha = this.derecha.ejecutar(environment);
+        }
         let resultado;
-        let tipo_guia = this.determinar_tipo(operacion_izquierda.tipo, operacion_derecha.tipo);
+        let tipo_guia = operacion_izquierda.tipo;
+        if (operacion_izquierda != null && operacion_derecha != null)
+            tipo_guia = this.determinar_tipo(operacion_izquierda.tipo, operacion_derecha.tipo);
         if (this.tipo == operacion_logica.OR) {
             if (tipo_guia == tipo.BOOLEAN) {
                 resultado = {

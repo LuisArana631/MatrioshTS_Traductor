@@ -314,7 +314,7 @@ case 57:
 break;
 case 58:
  this.$ = {
-        nodo: (new logica($$[$0-1].nodo, null, operacion_logica.NEGAR, _$[$0-1].first_line, _$[$0-1].first_column))
+        nodo: (new logica($$[$0].nodo, null, operacion_logica.NEGAR, _$[$0-1].first_line, _$[$0-1].first_column))
     }; 
 break;
 case 61: case 62:
@@ -1075,13 +1075,13 @@ case 5:return 'RETORNOCARRO'
 break;
 case 6:return 'BARRAINVERTIDA'
 break;
-case 7:return 'COMILLASIMPLE'
+case 7: /*yy_.yytext = yy_.yytext.substr( 1 , yy_.yyleng-2 );*/ return 64; 
 break;
-case 8:return 'COMILLADOBLE'
+case 8: /*yy_.yytext = yy_.yytext.substr( 1 , yy_.yyleng-2 );*/ return 64; 
 break;
-case 9: /*yy_.yytext = yy_.yytext.substr( 1 , yy_.yyleng-2 );*/ return 64; 
+case 9:return 'COMILLASIMPLE'
 break;
-case 10: /*yy_.yytext = yy_.yytext.substr( 1 , yy_.yyleng-2 );*/ return 64; 
+case 10:return 'COMILLADOBLE'
 break;
 case 11:return 72
 break;
@@ -1173,7 +1173,7 @@ case 54:return 30
 break;
 case 55:return 27
 break;
-case 56:return  'TRUE'
+case 56:return 65
 break;
 case 57:return 66
 break;
@@ -1199,9 +1199,9 @@ case 67:return 29
 break;
 case 68:return '.'
 break;
-case 69:return 62
+case 69:return 63
 break;
-case 70:return 63
+case 70:return 62
 break;
 case 71:return 32
 break;
@@ -1213,7 +1213,7 @@ case 74:errores.addError(new nodoError("Lexico","Caracter desconocido",yy_.yyllo
 break;
 }
 },
-rules: [/^(?:\s+)/,/^(?:\/\/.*)/,/^(?:[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/])/,/^(?:(\\))/,/^(?:(\\))/,/^(?:(\\))/,/^(?:(\\\\))/,/^(?:(\\'))/,/^(?:(\\"))/,/^(?:(("[^"]*")))/,/^(?:(('[^']*')\/\/.*[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]))/,/^(?:string\b)/,/^(?:number\b)/,/^(?:boolean\b)/,/^(?:void\b)/,/^(?:type\b)/,/^(?:Array\b)/,/^(?:\*\*)/,/^(?:--)/,/^(?:\+\+)/,/^(?:\+)/,/^(?:-)/,/^(?:\*)/,/^(?:\/)/,/^(?:%)/,/^(?:>=)/,/^(?:<=)/,/^(?:>)/,/^(?:<)/,/^(?:==)/,/^(?:!=)/,/^(?:&&)/,/^(?:\|\|)/,/^(?:!)/,/^(?:\?)/,/^(?:if\b)/,/^(?:else\b)/,/^(?:switch\b)/,/^(?:case\b)/,/^(?:default\b)/,/^(?:while\b)/,/^(?:do\b)/,/^(?:for\b)/,/^(?:in\b)/,/^(?:of\b)/,/^(?:push\b)/,/^(?:pop\b)/,/^(?:length\b)/,/^(?:let\b)/,/^(?:const\b)/,/^(?:break\b)/,/^(?:continue\b)/,/^(?:return\b)/,/^(?:function\b)/,/^(?:console\.log\b)/,/^(?:graficar_ts\b)/,/^(?:true\b)/,/^(?:false\b)/,/^(?:\{)/,/^(?:\})/,/^(?:\[)/,/^(?:\])/,/^(?:=)/,/^(?:,)/,/^(?:;)/,/^(?::)/,/^(?:\()/,/^(?:\))/,/^(?:\.)/,/^(?:([0-9]+))/,/^(?:([0-9]+\.[0-9]+))/,/^(?:(([a-zA-Z_])[a-zA-Z0-9_]*))/,/^(?:{booleano})/,/^(?:$)/,/^(?:.)/],
+rules: [/^(?:\s+)/,/^(?:\/\/.*)/,/^(?:[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/])/,/^(?:(\\))/,/^(?:(\\))/,/^(?:(\\))/,/^(?:(\\\\))/,/^(?:(("[^"]*")))/,/^(?:(('[^']*')\/\/.*[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]))/,/^(?:(\\'))/,/^(?:(\\"))/,/^(?:string\b)/,/^(?:number\b)/,/^(?:boolean\b)/,/^(?:void\b)/,/^(?:type\b)/,/^(?:Array\b)/,/^(?:\*\*)/,/^(?:--)/,/^(?:\+\+)/,/^(?:\+)/,/^(?:-)/,/^(?:\*)/,/^(?:\/)/,/^(?:%)/,/^(?:>=)/,/^(?:<=)/,/^(?:>)/,/^(?:<)/,/^(?:==)/,/^(?:!=)/,/^(?:&&)/,/^(?:\|\|)/,/^(?:!)/,/^(?:\?)/,/^(?:if\b)/,/^(?:else\b)/,/^(?:switch\b)/,/^(?:case\b)/,/^(?:default\b)/,/^(?:while\b)/,/^(?:do\b)/,/^(?:for\b)/,/^(?:in\b)/,/^(?:of\b)/,/^(?:push\b)/,/^(?:pop\b)/,/^(?:length\b)/,/^(?:let\b)/,/^(?:const\b)/,/^(?:break\b)/,/^(?:continue\b)/,/^(?:return\b)/,/^(?:function\b)/,/^(?:console\.log\b)/,/^(?:graficar_ts\b)/,/^(?:true\b)/,/^(?:false\b)/,/^(?:\{)/,/^(?:\})/,/^(?:\[)/,/^(?:\])/,/^(?:=)/,/^(?:,)/,/^(?:;)/,/^(?::)/,/^(?:\()/,/^(?:\))/,/^(?:\.)/,/^(?:([0-9]+\.[0-9]+))/,/^(?:([0-9]+))/,/^(?:(([a-zA-Z_])[a-zA-Z0-9_]*))/,/^(?:{booleano})/,/^(?:$)/,/^(?:.)/],
 conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74],"inclusive":true}}
 });
 return lexer;

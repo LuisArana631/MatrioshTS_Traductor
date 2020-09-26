@@ -34,7 +34,10 @@ export class aritmetica extends expresion{
         }        
 
         let resultado:retorno;
-        let tipo_guia = this.determinar_tipo(operacion_izquierda.tipo, operacion_derecha.tipo);        
+        let tipo_guia = operacion_izquierda.tipo;
+
+        if(this.derecha != null && this.izquierda != null)
+            tipo_guia = this.determinar_tipo(operacion_izquierda.tipo, operacion_derecha.tipo);        
 
         if(this.tipo == operacion_aritmetica.SUMA){
             if(tipo_guia == tipo.NUMBER){
@@ -171,6 +174,8 @@ export class aritmetica extends expresion{
                     valor: (0-operacion_izquierda.valor),
                     tipo: tipo.NUMBER
                 };
+                console.log("hola dios soy yo de nuevo");
+                console.log(resultado.valor);
             }else if(tipo_guia == tipo.STRING){
                 errores.addError(new nodoError("Semántico", "No se puede realizar potencia", this.linea, this.columna, "string"));
             }else if(tipo_guia == tipo.BOOLEAN){

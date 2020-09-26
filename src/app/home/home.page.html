@@ -10,6 +10,10 @@
                 <ion-icon slot="icon-only" name="play-outline"></ion-icon>
             </ion-button>
 
+            <ion-button (click)="limpiar_consola()">
+                <ion-icon slot="icon-only" name="close-circle-outline"></ion-icon>
+            </ion-button>
+
         </ion-buttons>
 
         <ion-icon name="logo-javascript" style="width: 35px; height: 35px; display:inline-block; margin-left: 1%;"></ion-icon>
@@ -36,19 +40,16 @@
         </ion-row>
     </div>
 
-
     <!-- CONSOLA -->
     <div style="padding:1%; padding-top:0;">
         <ion-item>
 
             <ion-label position="stacked">
                 <ion-icon name="terminal-outline"></ion-icon> Terminal</ion-label>
-            <ion-textarea readonly #myInput rows="9 ">PS MatrioshTS> {{contenido_consola}}
+            <ion-textarea readonly #myInput rows="9 ">{{contenido_consola}}
             </ion-textarea>
         </ion-item>
     </div>
-
-
 
 
     <!-- TABS PARA MOSTRAR CONTENIDO EXTRA -->

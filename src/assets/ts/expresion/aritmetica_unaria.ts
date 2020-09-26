@@ -53,8 +53,8 @@ export class aritmetica_unitaria extends expresion{
             }else{  //NO SE INCLUYE ID
                 errores.addError(new nodoError("Semántico", "Solo se puede decrementar variables", this.linea, this.columna, "Dato erroneo"))
             }
-        }    
-        
+        }
+
         return null;
     }
 }

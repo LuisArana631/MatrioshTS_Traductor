@@ -66,12 +66,13 @@ cadenasimple (\'[^']*\')
 {tabulador}             return 'TABULADOR'
 {retornocarro}          return 'RETORNOCARRO'
 {barrainvertida}        return 'BARRAINVERTIDA'
-{comillasimple}         return 'COMILLASIMPLE'
-{comilladoble}          return 'COMILLADOBLE'
 
 /* CADENAS */
 {cadenadoble}           { /*yytext = yytext.substr( 1 , yyleng-2 );*/ return 'CADENA'; }
 {cadenasimple}          { /*yytext = yytext.substr( 1 , yyleng-2 );*/ return 'CADENA'; }     
+
+{comillasimple}         return 'COMILLASIMPLE'
+{comilladoble}          return 'COMILLADOBLE'
 
 /* TIPOS DE DATOS */
 "string"                return 'STRING'
@@ -128,7 +129,7 @@ cadenasimple (\'[^']*\')
 "console.log"           return 'PRINT'
 "graficar_ts"           return 'GRAFICAR'
 
-"true"                  return  'TRUE'
+"true"                  return 'TRUE'
 "false"                 return 'FALSE'
 
 /* CARACTERES ESPECIALES */
@@ -145,8 +146,8 @@ cadenasimple (\'[^']*\')
 "."                     return '.'
 
 /* DATOS */
-{entero}                return 'ENTERO'
 {decimal}               return 'DECIMAL'
+{entero}                return 'ENTERO'
 {identificador}         return 'IDENTIFICADOR'
 {booleano}              return 'BOOLEANO'
 
@@ -348,7 +349,7 @@ expresion
         nodo: (new logica($1.nodo, $3.nodo, operacion_logica.AND, @1.first_line, @1.first_column))
     }; }
     | '!' expresion { $$ = {
-        nodo: (new logica($1.nodo, null, operacion_logica.NEGAR, @1.first_line, @1.first_column))
+        nodo: (new logica($2.nodo, null, operacion_logica.NEGAR, @1.first_line, @1.first_column))
     }; }
     | dato_valor { $$ = $1; };
 
