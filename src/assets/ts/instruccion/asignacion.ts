@@ -17,6 +17,10 @@ export class asignacion_ extends instruccion{
 
         if(val_insert.tipo != variable_receptora.tipo){
             errores.addError(new nodoError("Semántico", "No se puede insertar " + val_insert.tipo + " a una variable tipo " + variable_receptora.tipo, this.linea, this.columna, "Tipos incorrectos"));
+            return;
+        }else if(variable_receptora.Perm == 0){
+            errores.addError(new nodoError("Semántico", "No se puede insertar " + val_insert.tipo + " a una variable constante", this.linea, this.columna, "Tipo Const"));
+            return;
         }
 
         environment.update_variable(this.id_receptor, val_insert.valor);

@@ -24,7 +24,8 @@ export class HomePage {
   //LISTA ERRORES
   listaErrores:nodoError[] = [];
   listaSimbolos:nodoSimbolo[] = [];
-  listaSimbolosEjecutar:any[] = [];
+  listaFuncionesEjecutar:any[] = new Array;
+  listaSimbolosEjecutar:any[] = new Array;
 
   //AMBIENTE
   env = new ambiente(null);  
@@ -159,18 +160,23 @@ export class HomePage {
       this.contenido_traduccion += tabular + item.text;
       
       let count_atrs = 0;
-      let size_atr = item.atribs.length;
+      let size_atr = 0; 
 
-      for(const atr of item.atribs){
-        this.contenido_traduccion += atr.text
+      if(item.atribs){
+        size_atr = item.atribs.length;
 
-        count_atrs++;
-        if(count_atrs < size_atr){
-          this.contenido_traduccion += ","
+        for(const atr of item.atribs){
+          this.contenido_traduccion += atr.text;
+
+          count_atrs++;
+          if(count_atrs < size_atr){
+            this.contenido_traduccion += ","
+          }
         }
       }
 
-      this.contenido_traduccion += "{\n";
+      this.contenido_traduccion += "):" + item.tipo_dato_f + "{\n";
+
       this.conteo_tabs++;
 
       for(const sub_item of item.instr){
@@ -195,6 +201,7 @@ export class HomePage {
   cargar_tabla_simbolos(){
     try{          
       this.listaSimbolosEjecutar = [];
+      this.listaFuncionesEjecutar = [];
       this.listaSimbolos = tabla_simbolos.get_simbolos();
       tabla_simbolos.clear();
     }catch(er){
@@ -206,7 +213,7 @@ export class HomePage {
   ejecutar_codigo(){    
     let num_prints = 0;
     for(const item of this.ast){
-      if(item != undefined){
+      if(item != undefined){        
         const resultado_instr = item.nodo.ejecutar(this.env); 
         if(resultado_instr != null || resultado_instr != undefined){
             this.contenido_consola +=resultado_instr.valor + "\n";  
@@ -237,7 +244,8 @@ export class HomePage {
       }    
 
       this.cargar_errores();
-      this.cargar_simbolos_ejecucion();      
+      this.cargar_simbolos_ejecucion();   
+      this.cargar_tabla_funciones();   
     }else if(this.fuente != undefined){ //EJECUTAR FUENTE
       try{          
         errores.clear();
@@ -253,6 +261,7 @@ export class HomePage {
 
       this.cargar_errores();
       this.cargar_simbolos_ejecucion();
+      this.cargar_tabla_funciones();
     }else{
       this.contenido_consola = this.contenido_consola + " ERROR -> No se realizó la ejecución porque no hay código. \nPS MatrioshTS>" 
     }
@@ -266,23 +275,31 @@ export class HomePage {
   graficar_ast(){    
     let count_instr:number = 0;
 
-    this.str_ast = "digraph { _inicio_ [label=\"Inicio\"];\n"
-    this.str_ast += "_instrucciones_ [label=\"Instrucciones\"];\n"
-    this.str_ast += "_inicio_ -> _instrucciones_ ;\n"
+
+    this.str_ast = "";
+    this.str_ast = "digraph { _inicio_ [label=\"Inicio\"];\n";
+    this.str_ast += "_instrucciones0_ [label=\"Instrucciones\"];\n";
+    this.str_ast += "_inicio_ -> _instrucciones0_ ;\n";
 
     for(const item of this.ast){
       if(item != undefined){
         this.str_ast += "instruccion_" +count_instr + " [label=\"Instruccion\"];\n";
-        this.str_ast += "_instrucciones_ -> instruccion_" + count_instr + ";\n"
+        this.str_ast += "_instrucciones" + count_instr + "_ -> instruccion_" + count_instr + ";\n";
+
+        let instr_next:number = count_instr + 1;
+        this.str_ast += "_instrucciones" + instr_next + "_ [label=\"Instrucciones\"];\n";
+        this.str_ast += "_instrucciones" + count_instr + "_ -> _instrucciones" + instr_next + "_;\n";
 
         this.graficar_instruccion(item, count_instr, 0, "instruccion_"+count_instr);
 
         count_instr++;
+
       }          
     }
 
     this.str_ast += "}";
 
+    console.log(this.str_ast);
     graphviz(this.div_ast).renderDot(this.str_ast);
   }
 
@@ -292,8 +309,18 @@ export class HomePage {
       this.listaSimbolosEjecutar = Array.from(this.env.get_variables());      
     }catch(er){
       console.log(er);
-        this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> " 
+        this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> ";
     }    
+  }
+  
+  cargar_tabla_funciones(){
+    try{
+      this.listaSimbolos = [];
+      this.listaFuncionesEjecutar.push.apply(Array.from(this.env.get_funciones()));
+    }catch(er){
+      console.log(er);
+      this.contenido_consola = this.contenido_consola + " " + er + " \nPS MatrioshTS> ";
+    }
   }
 
   graficar_instruccion(item:any, instr_num:number, sub_instr:number, padre:string){    
@@ -317,27 +344,38 @@ export class HomePage {
 
       this.str_ast += "condicion_" + sub_instr + instr_num + " [label = \"Condicion\"];\n";
       this.str_ast += name_if + "-> condicion_" + sub_instr + instr_num + ";\n";      
-      this.graficar_expresion(item.condicion, instr_num, sub_instr+1, "condicion_"+sub_instr+instr_num);
+      this.graficar_expresion(item.condicion, instr_num, sub_instr+10, "condicion_"+sub_instr+instr_num);
 
-      let name_instrucciones = "instrucciones_" + sub_instr + instr_num;
+      let count_instrucciones = 0;
+      let name_instrucciones = "instrucciones_" + sub_instr + instr_num + count_instrucciones;
       this.str_ast += name_instrucciones + "[label = \"Instrucciones\"];\n";
       
       this.str_ast += name_if + "->" + name_instrucciones + ";\n";
       for(let instr_item of item.instrucciones){
-        this.graficar_instruccion(instr_item, instr_num, sub_instr+2, name_instrucciones);
+        let new_name_instr = "instruccion_" + sub_instr + instr_num + count_instrucciones;
+        this.str_ast += new_name_instr + "[label = \"Instruccion\"];\n";
+        this.str_ast += "instrucciones_" + sub_instr + instr_num + count_instrucciones + " -> " + new_name_instr + ";\n";
+        
+        let next_instr = count_instrucciones + 1;
+        this.str_ast += "instrucciones_" + next_instr + instr_num + next_instr + "[label = \"Instrucciones\"];\n";
+        this.str_ast += "instrucciones_" + sub_instr + instr_num + count_instrucciones + " -> instrucciones_" + next_instr + instr_num + next_instr + ";\n";
+
+        this.graficar_instruccion(instr_item, instr_num, sub_instr+20, new_name_instr);
+
         sub_instr++;
+        count_instrucciones++;
       }
 
       if(item.else.condicion){  //ES ELSE IF
         this.str_ast += "else_" + sub_instr + instr_num + "[label = \"Else\"];\n";
         this.str_ast += name_if + "-> else_" + sub_instr + instr_num + ";\n";
-        this.graficar_instruccion(item.else, instr_num, sub_instr+3, "else_" + sub_instr + instr_num);
+        this.graficar_instruccion(item.else, instr_num, sub_instr+30, "else_" + sub_instr + instr_num);
       }else if(item.else.text != ""){  //ELSE 
         let name_else = "else_" + sub_instr + instr_num;
         this.str_ast += name_else + "[label = \"Else\"];\n";
         this.str_ast += name_if + "->" + name_else + ";\n";
         for(let instr_item of item.else){
-          this.graficar_instruccion(instr_item, instr_num, sub_instr+4, "else_"+sub_instr+instr_num);
+          this.graficar_instruccion(instr_item, instr_num, sub_instr+40, "else_"+sub_instr+instr_num);
           sub_instr++;
         }
       }            
@@ -346,12 +384,12 @@ export class HomePage {
     }else if(item.tipo == "dowhile_"){  //AST DO WHILE
 
     }else if(item.tipo == "incremento"){  //AST INCREMENTO  
-      this.graficar_expresion(item.expresion, instr_num, sub_instr+1, "instruccion_" + instr_num);
+      this.graficar_expresion(item.expresion, instr_num, sub_instr+50, "instruccion_" + instr_num);
     }else if(item.tipo == "print"){
       this.str_ast += "print_" + sub_instr + instr_num + " [label = \"Console.log\"];\n";
       this.str_ast += padre + "-> print_"+sub_instr + instr_num + ";\n";
 
-      this.graficar_expresion(item.expresion, instr_num, sub_instr + 1, "print_" + sub_instr + instr_num);
+      this.graficar_expresion(item.expresion, instr_num, sub_instr + 50, "print_" + sub_instr + instr_num);
     }else if(item.tipo == "for_"){
       
     }
@@ -366,8 +404,8 @@ export class HomePage {
       this.str_ast += "dato_" + sub_instr + instr_num + " [label = \"Dato\"];\n";
       this.str_ast += nombre_expresion + " -> " + "dato_" + sub_instr + instr_num + ";\n";
 
-      this.str_ast += item.dato + sub_instr + instr_num + " [label = \"" + item.dato +"\"];\n";
-      this.str_ast += "dato_" + sub_instr + instr_num + " -> " + item.dato + sub_instr + instr_num + ";\n";
+      this.str_ast += item.dato.replace(/['"]+/g, '') + sub_instr + instr_num + " [label = \"" + item.dato.replace(/['"]+/g, '') +"\"];\n";
+      this.str_ast += "dato_" + sub_instr + instr_num + " -> " + item.dato.replace(/['"]+/g, '') + sub_instr + instr_num + ";\n";
 
       this.str_ast += item.tipo + sub_instr + instr_num + " [label = \"" + item.tipo +"\"];\n";
       this.str_ast += "dato_" + sub_instr + instr_num + " -> " + item.tipo + sub_instr + instr_num + ";\n";

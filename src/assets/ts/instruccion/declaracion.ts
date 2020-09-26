@@ -11,8 +11,9 @@ export class declaracion extends instruccion{
     private _valor:expresion;
     private _tipo:tipo;
     private _tipostr:string;
+    private _permiso:number;
 
-    constructor(id:string, valor:expresion, linea:number, columna:number, tipo_:string){
+    constructor(id:string, valor:expresion, linea:number, columna:number, tipo_:string, permiso:string){
         super(linea, columna);
         this._id = id;
         this._valor = valor;     
@@ -30,6 +31,12 @@ export class declaracion extends instruccion{
             this._tipo = tipo.TYPES;
         }else if(tipo_ === ""){
             this._tipo = tipo.NULL;
+        }
+
+        if(permiso === "let"){
+            this._permiso = 1;
+        }else{
+            this._permiso = 0;
         }
     }
 
@@ -63,12 +70,19 @@ export class declaracion extends instruccion{
             }
         }   
 
+        if(valor.valor == "" || valor == undefined || valor == null){
+            if(this._permiso == 0){
+                errores.addError( new nodoError("Semántico", "No se puede dejar con valor nulo una constante", this.linea, this.columna, "Constante"));
+                return;
+            }
+        }
+
         if(this._tipo == valor.tipo){
-            ambiente_.guardar_variable(this._id, valor.valor, this._tipo, this._tipostr, this.linea, this.columna);
+            ambiente_.guardar_variable(this._id, valor.valor, this._tipo, this._tipostr, this.linea, this.columna, this._permiso);
         }else if(this._tipo == null || this._tipo == undefined){
-            ambiente_.guardar_variable(this._id, valor.valor, valor.tipo, this.convert_string_num(valor.tipo), this.linea, this.columna);
+            ambiente_.guardar_variable(this._id, valor.valor, valor.tipo, this.convert_string_num(valor.tipo), this.linea, this.columna, this._permiso);
         }else if((this._tipo == null || this._tipo == undefined) && (valor.tipo == 4)){
-            ambiente_.guardar_variable(this._id, valor.valor,valor.tipo, this.convert_string_num(valor.tipo), this.linea, this.columna);
+            ambiente_.guardar_variable(this._id, valor.valor,valor.tipo, this.convert_string_num(valor.tipo), this.linea, this.columna, this._permiso);
         }else{
             errores.addError( new nodoError("Semántico", "No se puede asignar el tipo: " + valor.tipo + " a un tipo: " + this._tipo, this.linea, this.columna, ""));
         }

@@ -19,6 +19,30 @@ export class instrucciones_ extends instruccion {
         for (const instr of this.codigo) {
             try {
                 const elemento = instr.nodo.ejecutar(nuevo_ambiente);
+                if (elemento.type == "Break") {
+                    if (func_padre == 0) { //DOWHILE
+                    }
+                    else if (func_padre == 1) { //FOR
+                    }
+                    else if (func_padre == 2) { //IF
+                    }
+                    else if (func_padre == 3) { //WHILE
+                    }
+                    else if (func_padre == 4) { //SWITCH
+                    }
+                }
+                else if (elemento.type == "Continue") {
+                    if (func_padre == 0) { //DOWHILE
+                    }
+                    else if (func_padre == 1) { //FOR
+                    }
+                    else if (func_padre == 2) { //IF
+                    }
+                    else if (func_padre == 3) { //WHILE
+                    }
+                    else if (func_padre == 4) { //SWITCH
+                    }
+                }
                 if (elemento.valor != undefined) {
                     elemento_str += elemento.valor + "\n";
                 }

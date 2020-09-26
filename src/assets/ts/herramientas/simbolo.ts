@@ -1,21 +1,30 @@
 import { tipo } from '../abstract/valores';
-import { tipos } from './tablatipos';
 
 export class simbolo{
     private _valor:any;
     private _id:string;
     private _tipo:tipo;
+    private _perm:number;
     private _tipostr:string;
     private _linea:number;
     private _columna:number;
 
-    constructor(valor:any, id:string, tipo:tipo, tipostr:string, linea:number, columna:number){
+    constructor(valor:any, id:string, tipo:tipo, tipostr:string, linea:number, columna:number, perm:number){
         this._valor = valor;
         this._id = id;
         this._tipo = tipo;
         this._tipostr = tipostr;
         this._linea = linea;
         this._columna = columna;
+        this._perm = perm;
+    }
+
+    get Perm():number{
+        return this._perm;
+    }
+
+    set Perm(perm:number){
+        this._perm = perm;
     }
 
     get valor():any{

@@ -17,6 +17,8 @@
     const { switch_ } = require('../js/instruccion/switch');
     const { case_ } = require('../js/instruccion/case');
     const { return_ } = require('../js/instruccion/return');
+    const { function_ } = require('../js/instruccion/function');
+    const { llamada_ } = require('../js/instruccion/llamada');
 
     //EXPRESIONES
     const { operacion_aritmetica, aritmetica } = require('../js/expresion/aritmetica');
@@ -179,6 +181,7 @@ instruccion
     | declaracion_funciones { $$ = $1; }
     | declaracion_types { $$ = $1; }
     | asignacion { $$ = $1; }
+    | llamada ';' { $$ = $1; }
     | dato_valor '++' ';' { $$ = {
         nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.INCREMENTO, $1.id, @1.first_line, @1.first_column))
     }; }
@@ -216,28 +219,28 @@ asignacion
 
 declaracion_variables
     : tipo_restriccion 'IDENTIFICADOR' ';' { $$ = {
-        nodo: (new declaracion($2, null, @1.first_line, @1.first_column, null)),
+        nodo: (new declaracion($2, null, @1.first_line, @1.first_column, null, $1)),
 
         tipo: "declaracion_variable",
         restriccion: $1,
         id: $2
     }; }
     | tipo_restriccion 'IDENTIFICADOR' '=' expresion ';' { $$ = {
-        nodo: (new declaracion($2, $4.nodo, @1.first_line, @1.first_column, null)),
+        nodo: (new declaracion($2, $4.nodo, @1.first_line, @1.first_column, null, $1)),
 
         tipo: "declaracion_variable",
         restriccion: $1,
         id: $2,        
     }; }
     | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato ';' { $$ = {
-        nodo: (new declaracion($2, null, @1.first_line, @1.first_column, $4)),
+        nodo: (new declaracion($2, null, @1.first_line, @1.first_column, $4, $1)),
 
         tipo: "declaracion_variable",
         restriccion: $1,
         id: $2
     }; }
     | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato '=' expresion ';' { $$ = {
-        nodo: (new declaracion($2, $6.nodo, @1.first_line, @1.first_column, $4)),
+        nodo: (new declaracion($2, $6.nodo, @1.first_line, @1.first_column, $4, $1)),
 
         tipo: "declaracion_variable",
         restriccion: $1,
@@ -374,13 +377,15 @@ dato_valor
 
 llamada
     : 'IDENTIFICADOR' '(' ')' { $$ = {
-        text: $1 + $2 + $3,
-        escritura: 0
+        nodo: (new llamada_($1, [], @1.first_line, @1.first_column))
     }; }
-    | 'IDENTIFICADOR' '(' parametros ')' { $$ = {
-        text: $1 + $2 + $3 + $4,
-        escritura: 0
+    | 'IDENTIFICADOR' '(' lista_exp_par ')' { $$ = {
+        nodo: (new llamada_($1, $3, @1.first_line, @1.first_column))
     }; };
+
+lista_exp_par
+    : lista_exp_par ',' expresion { $1.push($3); $$ = $1; }
+    | expresion { $$ = [$1]; };
 
 tipo_restriccion
     : 'LET' { $$ = $1; }
@@ -477,5 +482,18 @@ sentencia_return
 
 declaracion_funciones
     : 'FUNCTION' 'IDENTIFICADOR' '(' parametros ')' ':' tipo_dato statement { $$ = {
-        nodo: null
+        nodo: (new function_($2, $8.nodo, $4, @1.first_line, @1.first_column, $7))
+    }; }
+    | 'FUNCTION' 'IDENTIFICADOR' '(' ')' ':' tipo_dato statement { $$ = {
+        nodo: (new function_($2, $7.nodo, [], @1.first_line, @1.first_column, $6))
+    }; }; 
+
+parametros
+    : parametros ',' parametro { $1.push($3); $$ = $1; }
+    | parametro { $$ = [$1]; };
+
+parametro
+    : 'IDENTIFICADOR' ':' tipo_dato { $$ = {
+        id: $1,
+        tipo: $3
     }; };

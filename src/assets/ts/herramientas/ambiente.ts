@@ -1,25 +1,45 @@
 import { tipo } from '../abstract/valores';
 import { simbolo } from '../herramientas/simbolo';
+import { function_ } from '../instruccion/function';
 
 export class ambiente{
     private _variables:Map<string, simbolo>;
+    private _funciones:Map<string, function_>
     
     constructor(public prev:ambiente|null){
         this._variables = new Map();
+        this._funciones = new Map();
     }
 
-    public guardar_variable(id:string, valor:any, tipo:tipo, tipostr:string, linea:number, columna:number){
+    public guardar_function(id:string, funcion:function_){
+        this._funciones.set(id, funcion);
+    }
+
+    public guardar_variable(id:string, valor:any, tipo:tipo, tipostr:string, linea:number, columna:number, permiso:number){
         let enviroment:ambiente|null = this;
 
         while(enviroment != null){
             if(enviroment._variables.has(id)){
-                enviroment._variables.set(id, new simbolo(valor, id, tipo, tipostr, linea, columna));
+                enviroment._variables.set(id, new simbolo(valor, id, tipo, tipostr, linea, columna, permiso));
                 return;
             }
-            enviroment = enviroment.prev;
+            enviroment = enviroment.prev;  
         }
 
-        this._variables.set(id, new simbolo(valor, id, tipo, tipostr, linea, columna));
+        this._variables.set(id, new simbolo(valor, id, tipo, tipostr, linea, columna, permiso));
+    }
+
+    public get_function(id:string):function_|undefined|null{
+        let env:ambiente|null = this;
+
+        while(env != null){
+            if(env._funciones.has(id)){
+                return env._funciones.get(id);
+            }
+            env = env.prev;
+        }
+
+        return undefined;
     }
 
     public get_variable(id:string):simbolo|undefined|null{
@@ -41,6 +61,7 @@ export class ambiente{
 
         while(enviroment != null){
             if(enviroment._variables.has(id)){
+                console.log(enviroment);
                 //padre = enviroment;
                 return null;
             }
@@ -65,9 +86,15 @@ export class ambiente{
         }
     }
 
+    public get_funciones():any{
+        let env:ambiente|null = this;
+
+        return env._funciones.values();
+    }
+
     public get_variables():any{
         let enviroment:ambiente|null = this;
-
+        this.get_padre("x");
         return enviroment._variables.values();
     }
 

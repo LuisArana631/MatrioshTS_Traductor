@@ -186,6 +186,7 @@ instruccion
     | for_normal { $$ = $1; }
     | for_in { $$ = $1; }
     | for_of { $$ = $1; }
+    | llamada ';' { $$ = $1; }
     | 'BREAK' ';' { $$ = {
         text: $1 + $2,
         escritura: 0
@@ -550,10 +551,14 @@ llamada
         text: $1 + $2 + $3,
         escritura: 0
     }; }
-    | 'IDENTIFICADOR' '(' parametros ')' { $$ = {
+    | 'IDENTIFICADOR' '(' lista_exp_par ')' { $$ = {
         text: $1 + $2 + $3 + $4,
         escritura: 0
     }; };
+
+lista_exp_par
+    : lista_exp_par ',' expresion { $1.push($3); $$ = $1; }
+    | expresion { $$ = [$1]; };
 
 tipo_restriccion
     : 'LET' { $$ = $1; }
@@ -676,14 +681,25 @@ sentencia_return
 
 declaracion_funciones
     : 'FUNCTION' 'IDENTIFICADOR' '(' parametros ')' ':' tipo_dato statement { $$ = {
-        text: $1 + " " + $2 + $3 + $4.text + $5 + $6 + $7,
-        escritura: 1,
-        instr: $8
+        text: $1 + " " + $2 + $3,
+        tipo_dato_f: $7,
+        escritura: 4,
+        instr: $8,
+        atribs: $4
+    }; }
+    | 'FUNCTION' 'IDENTIFICADOR' '(' ')' ':' tipo_dato statement { $$ = {
+        text: $1 + " " + $2 + $3,
+        tipo_dato_f: $6,
+        escritura: 4,
+        instr: $7
     }; }; 
 
 parametros
-    : parametros parametro { $1.push($2); $$ = $1; }
+    : parametros ',' parametro { $1.push($3); $$ = $1; }
     | parametro { $$ = [$1]; };
 
 parametro
-    :
+    : 'IDENTIFICADOR' ':' tipo_dato { $$ = {
+        text: $1 + $2 + $3,
+        escritura: 0
+    }; }; 

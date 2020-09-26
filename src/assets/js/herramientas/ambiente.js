@@ -3,17 +3,31 @@ export class ambiente {
     constructor(prev) {
         this.prev = prev;
         this._variables = new Map();
+        this._funciones = new Map();
     }
-    guardar_variable(id, valor, tipo, tipostr, linea, columna) {
+    guardar_function(id, funcion) {
+        this._funciones.set(id, funcion);
+    }
+    guardar_variable(id, valor, tipo, tipostr, linea, columna, permiso) {
         let enviroment = this;
         while (enviroment != null) {
             if (enviroment._variables.has(id)) {
-                enviroment._variables.set(id, new simbolo(valor, id, tipo, tipostr, linea, columna));
+                enviroment._variables.set(id, new simbolo(valor, id, tipo, tipostr, linea, columna, permiso));
                 return;
             }
             enviroment = enviroment.prev;
         }
-        this._variables.set(id, new simbolo(valor, id, tipo, tipostr, linea, columna));
+        this._variables.set(id, new simbolo(valor, id, tipo, tipostr, linea, columna, permiso));
+    }
+    get_function(id) {
+        let env = this;
+        while (env != null) {
+            if (env._funciones.has(id)) {
+                return env._funciones.get(id);
+            }
+            env = env.prev;
+        }
+        return undefined;
     }
     get_variable(id) {
         let enviroment = this;
@@ -30,6 +44,7 @@ export class ambiente {
         let padre;
         while (enviroment != null) {
             if (enviroment._variables.has(id)) {
+                console.log(enviroment);
                 //padre = enviroment;
                 return null;
             }
@@ -47,8 +62,13 @@ export class ambiente {
             environment = environment.prev;
         }
     }
+    get_funciones() {
+        let env = this;
+        return env._funciones.values();
+    }
     get_variables() {
         let enviroment = this;
+        this.get_padre("x");
         return enviroment._variables.values();
     }
     get_global() {
