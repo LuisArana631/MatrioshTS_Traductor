@@ -3,6 +3,7 @@ import { ambiente } from '../herramientas/ambiente';
 
 import { errores } from '../error/errores';
 import { nodoError } from '../error/error';
+import { element } from 'protractor';
 
 export class instrucciones_ extends instruccion{
     constructor(private codigo:Array<any>, linea:number, columna:number){
@@ -24,37 +25,53 @@ export class instrucciones_ extends instruccion{
             try{
                 const elemento = instr.nodo.ejecutar(nuevo_ambiente);
 
-                if(elemento.type == "Break"){
-                    if(func_padre == 0){    //DOWHILE
-
-                    }else if(func_padre == 1){  //FOR
-
-                    }else if(func_padre == 2){  //IF
+                if(elemento){
                         
-                    }else if(func_padre == 3){  //WHILE
-
-                    }else if(func_padre == 4){  //SWITCH
-                        
+                    if(elemento.type == "Break"){
+                        if(func_padre == 0){    //DOWHILE
+                            return {
+                                valor: elemento_str,
+                                tipo: 1
+                            };
+                        }else if(func_padre == 1){  //FOR
+                            return {
+                                valor: elemento_str,
+                                tipo: 1
+                            };
+                        }else if(func_padre == 2){  //IF
+                            errores.addError(new nodoError("Semántico", "Debe ir en un ciclo", instr.linea, instr.columna, "Error"));
+                        }else if(func_padre == 3){  //WHILE 
+                            return {
+                                valor: elemento_str,
+                                tipo: 1
+                            };
+                        }else if(func_padre == 4){  //SWITCH
+                            return {
+                                valor: elemento_str,
+                                tipo: 1
+                            };
+                        }
+                    }else if(elemento.type == "Continue"){
+                        if(func_padre == 0){    //DOWHILE
+                            //nada
+                        }else if(func_padre == 1){  //FOR
+                            //nada
+                        }else if(func_padre == 2){  //IF
+                            //nada
+                        }else if(func_padre == 3){  //WHILE
+                            //nada
+                        }else if(func_padre == 4){  //SWITCH
+                            //nada
+                        }
                     }
-                }else if(elemento.type == "Continue"){
-                    if(func_padre == 0){    //DOWHILE
-                        
-                    }else if(func_padre == 1){  //FOR
 
-                    }else if(func_padre == 2){  //IF
-                        
-                    }else if(func_padre == 3){  //WHILE
-
-                    }else if(func_padre == 4){  //SWITCH
-                        
+                    
+                    if(elemento.valor != undefined){
+                        if(elemento.valor != ""){
+                            elemento_str += elemento.valor + "\n";
+                        }                    
                     }
-                }
-
-                if(elemento.valor != undefined){
-                    if(elemento.valor != ""){
-                        elemento_str += elemento.valor + "\n";
-                    }                    
-                }
+                }                
             }catch(error){
                 errores.addError(new nodoError("Semántico", error, instr.linea, instr.columna, "error"));
             }

@@ -12,6 +12,7 @@ import * as ejecutar_code from '../../assets/jison/ejecutar';
 
 import { graphviz } from 'd3-graphviz';
 import { wasmFolder } from '@hpcc-js/wasm';
+import { expresion } from '../../assets/ts/abstract/expresion';
 
 //GRAFICOS
 @Component({
@@ -372,7 +373,7 @@ export class HomePage {
 
       this.str_ast += "condicion_" + sub_instr + instr_num + " [label = \"Condicion\"];\n";
       this.str_ast += name_if + "-> condicion_" + sub_instr + instr_num + ";\n";      
-      this.graficar_expresion(item.condicion, instr_num, sub_instr+10, "condicion_"+sub_instr+instr_num);
+      this.graficar_expresion(item.condicion, instr_num, sub_instr+100, "condicion_"+sub_instr+instr_num);
 
       let count_instrucciones = 0;
       let name_instrucciones = "instrucciones_" + sub_instr + instr_num + count_instrucciones;
@@ -388,7 +389,7 @@ export class HomePage {
         this.str_ast += "instrucciones_" + next_instr + instr_num + next_instr + "[label = \"Instrucciones\"];\n";
         this.str_ast += "instrucciones_" + sub_instr + instr_num + count_instrucciones + " -> instrucciones_" + next_instr + instr_num + next_instr + ";\n";
 
-        this.graficar_instruccion(instr_item, instr_num, sub_instr+20, new_name_instr);
+        this.graficar_instruccion(instr_item, instr_num, sub_instr+200, new_name_instr);
 
         sub_instr++;
         count_instrucciones++;
@@ -397,30 +398,235 @@ export class HomePage {
       if(item.else.condicion){  //ES ELSE IF
         this.str_ast += "else_" + sub_instr + instr_num + "[label = \"Else\"];\n";
         this.str_ast += name_if + "-> else_" + sub_instr + instr_num + ";\n";
-        this.graficar_instruccion(item.else, instr_num, sub_instr+30, "else_" + sub_instr + instr_num);
+        this.graficar_instruccion(item.else, instr_num, sub_instr+300, "else_" + sub_instr + instr_num);
       }else if(item.else.text != ""){  //ELSE 
         let name_else = "else_" + sub_instr + instr_num;
         this.str_ast += name_else + "[label = \"Else\"];\n";
         this.str_ast += name_if + "->" + name_else + ";\n";
         for(let instr_item of item.else){
-          this.graficar_instruccion(instr_item, instr_num, sub_instr+40, "else_"+sub_instr+instr_num);
+          this.graficar_instruccion(instr_item, instr_num, sub_instr+400, "else_"+sub_instr+instr_num);
           sub_instr++;
         }
       }            
     }else if(item.tipo == "while_"){  //AST WHILE
+      this.str_ast += "while_" + instr_num + sub_instr + "[label = \"While\"];\n";
+      this.str_ast += padre  + " -> while_" + instr_num + sub_instr + ";\n";
 
+      this.str_ast += "cond_" + instr_num + sub_instr + "[label = \"Condicion\"];\n";
+      this.str_ast += "while_" + instr_num + sub_instr + " -> cond_" + instr_num + sub_instr + ";\n";
+
+      this.graficar_expresion(item.cond, instr_num, sub_instr+900, "cond_"+instr_num+sub_instr);      
+
+      this.str_ast += "__instrucciones" + instr_num + sub_instr + "[label = \"Instrucciones\"];\n";
+      this.str_ast += "while_" + instr_num + sub_instr + " -> __instrucciones" + instr_num + sub_instr + ";\n";
+
+      for(let instr_item of item.instr){
+        this.str_ast += "__instruccion" + instr_num + sub_instr + "[label = \"Instruccion\"];\n";
+        this.str_ast += "__instrucciones" + instr_num + sub_instr + " -> __instruccion" +  instr_num + sub_instr + ";\n";
+
+        let next_instr = sub_instr +1;
+
+        this.str_ast += "__instrucciones" + instr_num + next_instr + "[label = \"Instrucciones\"];\n";
+        this.str_ast += "__instrucciones" + instr_num + sub_instr + " -> __instrucciones" + instr_num + next_instr + ";\n";
+
+        this.graficar_instruccion(instr_item, instr_num, sub_instr + 1000, "__instruccion" + instr_num + sub_instr);
+
+        sub_instr++;
+      }
     }else if(item.tipo == "dowhile_"){  //AST DO WHILE
+      this.str_ast += "dowhile_" + instr_num + sub_instr + "[label = \"Do While\"];\n";
+      this.str_ast += padre  + " -> dowhile_" + instr_num + sub_instr + ";\n";
 
+      this.str_ast += "cond_" + instr_num + sub_instr + "[label = \"Condicion\"];\n";
+      this.str_ast += "dowhile_" + instr_num + sub_instr + " -> cond_" + instr_num + sub_instr + ";\n";
+
+      this.graficar_expresion(item.cond, instr_num, sub_instr+900, "cond_"+instr_num+sub_instr);      
+
+      this.str_ast += "__instrucciones" + instr_num + sub_instr + "[label = \"Instrucciones\"];\n";
+      this.str_ast += "dowhile_" + instr_num + sub_instr + " -> __instrucciones" + instr_num + sub_instr + ";\n";
+
+      for(let instr_item of item.instr){
+        this.str_ast += "__instruccion" + instr_num + sub_instr + "[label = \"Instruccion\"];\n";
+        this.str_ast += "__instrucciones" + instr_num + sub_instr + " -> __instruccion" +  instr_num + sub_instr + ";\n";
+
+        let next_instr = sub_instr +1;
+
+        this.str_ast += "__instrucciones" + instr_num + next_instr + "[label = \"Instrucciones\"];\n";
+        this.str_ast += "__instrucciones" + instr_num + sub_instr + " -> __instrucciones" + instr_num + next_instr + ";\n";
+
+        this.graficar_instruccion(instr_item, instr_num, sub_instr + 1100, "__instruccion" + instr_num + sub_instr);
+
+        sub_instr++;
+      }
     }else if(item.tipo == "incremento"){  //AST INCREMENTO  
-      this.graficar_expresion(item.expresion, instr_num, sub_instr+50, "instruccion_" + instr_num);
+      this.graficar_expresion(item.expresion, instr_num, sub_instr+500, "instruccion_" + instr_num);
+      sub_instr++;
     }else if(item.tipo == "print"){
       this.str_ast += "print_" + sub_instr + instr_num + " [label = \"Console.log\"];\n";
       this.str_ast += padre + "-> print_"+sub_instr + instr_num + ";\n";
 
-      this.graficar_expresion(item.expresion, instr_num, sub_instr + 50, "print_" + sub_instr + instr_num);
+      this.graficar_expresion(item.expresion, instr_num, sub_instr + 600, "print_" + sub_instr + instr_num);
+      sub_instr++;
     }else if(item.tipo == "for_"){
+      this.str_ast += "for_" + sub_instr + instr_num + "[label = \"For\"];\n";
+      this.str_ast += padre + " -> for_" + sub_instr  + instr_num + ";\n";
+
+      this.str_ast += "instrucciones__" + sub_instr + instr_num + "[label = \"Instrucciones\"];\n";
+      this.str_ast += "for_" + sub_instr + instr_num + " -> instrucciones__" + sub_instr + instr_num + ";\n";      
+
+      for(let for_instr of item.instr){
+        this.str_ast += "instruccion__" + sub_instr + instr_num + "[label = \"Instruccion\"];\n";
+        this.str_ast += "instrucciones__" + sub_instr + instr_num + " -> instruccion__" + sub_instr + instr_num + ";\n";
+
+        let next_for = sub_instr + 1;
+
+        this.str_ast += "instrucciones__" + next_for + instr_num + " [label = \"Instrucciones\"];\n";
+        this.str_ast += "instrucciones__" + sub_instr + instr_num + " -> instrucciones__" + next_for + instr_num + ";\n";
+
+        this.graficar_instruccion(for_instr, instr_num, sub_instr, "instruccion__" + sub_instr + instr_num);
+      }
+    }else if(item.tipo == "llamada"){
+      this.str_ast += "call_" + sub_instr + instr_num + "[label = \"Llamada\" ];\n";
+      this.str_ast += padre + " ->  call_" + sub_instr + instr_num + ";\n";
+
+      this.str_ast += "id_" + sub_instr + instr_num + "[label = \"" + item.dato + "\"];\n";
+      this.str_ast += "call_" + sub_instr + instr_num + " -> id_" + sub_instr + instr_num + ";\n";
+
+      let count_param = 0;
+
+      this.str_ast += "parametros_" + sub_instr + instr_num + count_param + "[label = \"Parametros\"];\n";
+      this.str_ast += "call_" + sub_instr + instr_num + " -> parametros_" + sub_instr + instr_num + count_param + ";\n";     
+
+      let copia_sub_instr = sub_instr;
       
+      for(let param_item of item.param){
+        this.str_ast += "parametro_"  + sub_instr + instr_num + count_param + "[label = \"Parametro\"];\n";
+        this.str_ast += "parametros_" + sub_instr + instr_num + count_param + " -> parametro_" + sub_instr + instr_num + count_param + ";\n";
+
+        let next_param = count_param + 1;
+
+        this.str_ast += "parametros_" + sub_instr + instr_num + next_param + "[label  = \"Parametros\"];\n";
+        this.str_ast += "parametros_" + sub_instr + instr_num + count_param + " -> parametros_" + sub_instr + instr_num + next_param + ";\n";        
+
+        this.graficar_expresion(param_item.expresion, instr_num, copia_sub_instr + 700, "parametro_" + sub_instr + instr_num + count_param);
+
+        count_param++;
+        copia_sub_instr++;
+      }
+    }else if(item.tipo == "switch_"){
+      this.str_ast += "switch_" + sub_instr + instr_num + "[label = \"Switch\"];\n";
+      this.str_ast += padre + " -> switch_" + sub_instr + instr_num + ";\n";
+
+      this.str_ast += "cond_" + instr_num + sub_instr + "[label = \"Condicion\"];\n";
+      this.str_ast += "switch_" + sub_instr + instr_num + " -> cond_" + instr_num + sub_instr + ";\n";
+
+      this.graficar_expresion(item.cond, instr_num, sub_instr+1200, "cond_"+instr_num+sub_instr);      
+
+      this.str_ast += "__cases" + instr_num + sub_instr + "[label = \"Cases\"];\n";
+      this.str_ast += "switch_" + sub_instr + instr_num + " -> __cases" + instr_num + sub_instr + ";\n";
+
+      for(let instr_item of item.instr){
+        this.str_ast += "__case" + instr_num + sub_instr + "[label = \"Case\"];\n";
+        this.str_ast += "__cases" + instr_num + sub_instr + " -> __case" +  instr_num + sub_instr + ";\n";
+
+        let next_instr = sub_instr +1;
+
+        this.str_ast += "__cases" + instr_num + next_instr + "[label = \"Cases\"];\n";
+        this.str_ast += "__cases" + instr_num + sub_instr + " -> __cases" + instr_num + next_instr + ";\n";
+
+        this.str_ast += "__exp" + instr_num + sub_instr + " [label = \"Condicion\"];\n";
+        this.str_ast += "__case" + instr_num + sub_instr + " -> __exp" + instr_num + sub_instr + ";\n";
+
+        this.graficar_expresion(instr_item.expresion, instr_num, sub_instr + 1400, "__exp"+instr_num+sub_instr);
+
+        for(let sub_instr_item of instr_item.instr){
+          this.graficar_instruccion(sub_instr_item, instr_num, sub_instr + 1300, "__case" + instr_num + sub_instr);
+        }        
+ 
+        sub_instr++;
+      }
+    }else if(item.tipo == "break"){
+      this.str_ast += "break_" + sub_instr + instr_num + "[label = \"Break\"];\n";
+      this.str_ast += padre + " -> break_" + sub_instr + instr_num + ";\n";
+    }else if(item.tipo == "continue"){
+      this.str_ast += "continue_" + sub_instr + instr_num + "[label = \"Continue\"];\n";
+      this.str_ast += padre + " -> continue_" + sub_instr + instr_num + ";\n";
+    }else if(item.tipo == "asignar"){
+      this.str_ast += "asignar_" + sub_instr + instr_num + "[label = \"Asignacion\"];\n";
+      this.str_ast += padre + " -> asignar_" + sub_instr + instr_num + ";\n";
+
+      this.str_ast += "id_" + sub_instr + instr_num + "[label = \"" + item.id + "\"];\n";
+      this.str_ast += "asignar_" + sub_instr + instr_num + " -> id_" + sub_instr + instr_num + ";\n";
+
+      this.graficar_expresion(item.expresion, instr_num, sub_instr + 800, "asignar_" + sub_instr + instr_num);
+    }else if(item.tipo == "arreglo"){
+      this.str_ast += "arreglo_" + sub_instr + instr_num + "[label = \"Arreglo\"];\n";
+      this.str_ast += padre + " -> arreglo_"+ sub_instr + instr_num + ";\n";
+
+      this.str_ast += "id_" + sub_instr + instr_num + "[label = \""+ item.id +"\"];\n";
+      this.str_ast += "arreglo_" + sub_instr + instr_num + " -> id_" + sub_instr + instr_num + ";\n";
+
+      if(item.tipo){
+        this.str_ast += "tipo_" + sub_instr + instr_num + "[label = \"" + item.tipo + "\"];\n";
+        this.str_ast += "arreglo_" + sub_instr + instr_num + " -> tipo_" + sub_instr + instr_num + ";\n";
+      }
+    }else if(item.tipo == "funcion"){
+      let name_fun = "_funcion_" + sub_instr + instr_num;
+      this.str_ast += name_fun + "[label = \"Funcion\"];\n";
+      this.str_ast += padre + " -> _funcion_" + sub_instr + instr_num + ";\n";
+
+      this.str_ast += "_id_"  + sub_instr + instr_num + "[label = \"" + item.id + "\"];\n";
+      this.str_ast += name_fun + " -> _id_" + sub_instr + instr_num + ";\n";
+
+      if(item.param){
+        this.str_ast += "_params_" + sub_instr + instr_num + "[label = \"Parametros\"];\n";        
+        this.str_ast += "_funcion_" + sub_instr + instr_num + " -> _params_" + sub_instr + instr_num + ";\n";
+
+        for(let param_func of item.param){
+          this.str_ast += "_param_" + sub_instr + instr_num + "[label = \"Parametro\"];\n";
+          this.str_ast += "_params_" + sub_instr + instr_num + " -> _param_" + sub_instr + instr_num + ";\n";
+
+          let next_param = sub_instr + 1;
+          
+          this.str_ast += "_params_" + next_param + instr_num + "[label = \"Parametros\"];\n";
+          this.str_ast += "_params_" + sub_instr + instr_num + " -> _params_" + next_param + instr_num + ";\n";
+
+          this.str_ast += "_id__" + sub_instr + instr_num + "[label = \"" + param_func.id + "\"];\n";
+          this.str_ast += "_param_" + sub_instr + instr_num +" -> _id__" + sub_instr + instr_num + ";\n";
+
+          this.str_ast += "_tipo__" + sub_instr + instr_num + "[label = \"" + param_func.tipo + "\"];\n";
+          this.str_ast += "_param_" + sub_instr + instr_num + " -> _tipo__" + sub_instr + instr_num + ";\n";
+
+          sub_instr++;
+        }
+
+        this.str_ast += "_instrucciones__" + sub_instr + instr_num + "[label = \"Instrucciones\"];\n";
+        this.str_ast += name_fun + " -> _instrucciones__" + sub_instr + instr_num + ";\n";
+
+        for(let instr_item of item.instr){
+          this.str_ast += "_instruccion__" + sub_instr + instr_num + "[label = \"Instruccion\"];\n";
+          this.str_ast += "_instrucciones__" + sub_instr + instr_num + " -> _instruccion__" + sub_instr + instr_num + ";\n";
+
+          let next_instr_num = sub_instr + 1;
+
+          this.str_ast += "_instrucciones__" + next_instr_num + instr_num + "[label = \"Instrucciones\"];\n";
+          this.str_ast += "_instrucciones__" + sub_instr + instr_num + " -> _instrucciones__" + next_instr_num + instr_num + ";\n";
+
+          this.graficar_instruccion(instr_item, instr_num, sub_instr, "_instruccion__" + sub_instr +  instr_num);
+
+          sub_instr++;
+        }
+      }
+      
+    }else if(item.tipo == "return_"){
+      this.str_ast += "return_" + sub_instr + instr_num + "[label = \"Return\"];\n";
+      this.str_ast += padre + " -> return_" + sub_instr + instr_num + ";\n";
+
+      this.graficar_expresion(item.expresion, instr_num, sub_instr+1400, "return_" +sub_instr+instr_num);
+      sub_instr++;
     }
+
+
   }
 
   graficar_expresion(item:any, instr_num:number, sub_instr:number, padre:string){
@@ -432,8 +638,8 @@ export class HomePage {
       this.str_ast += "dato_" + sub_instr + instr_num + " [label = \"Dato\"];\n";
       this.str_ast += nombre_expresion + " -> " + "dato_" + sub_instr + instr_num + ";\n";
 
-      this.str_ast += item.dato.replace(/['"]+/g, '') + sub_instr + instr_num + " [label = \"" + item.dato.replace(/['"]+/g, '') +"\"];\n";
-      this.str_ast += "dato_" + sub_instr + instr_num + " -> " + item.dato.replace(/['"]+/g, '') + sub_instr + instr_num + ";\n";
+      this.str_ast += "\"" + item.dato.replace(/['"]+/g, '') + sub_instr + instr_num + "\"" + " [label = \"" + item.dato.replace(/['"]+/g, '') +"\"];\n";
+      this.str_ast += "dato_" + sub_instr + instr_num + " -> " + "\"" + item.dato.replace(/['"]+/g, '') + sub_instr + instr_num + "\"" + ";\n";
 
       this.str_ast += item.tipo + sub_instr + instr_num + " [label = \"" + item.tipo +"\"];\n";
       this.str_ast += "dato_" + sub_instr + instr_num + " -> " + item.tipo + sub_instr + instr_num + ";\n";
@@ -444,10 +650,12 @@ export class HomePage {
       
       if(item.derecho){
         this.graficar_expresion(item.derecho, instr_num, sub_instr+1, nombre_expresion);
+        sub_instr++;
       }   
 
       if(item.izquierdo){        
-        this.graficar_expresion(item.izquierdo, instr_num, sub_instr+2, nombre_expresion);
+        this.graficar_expresion(item.izquierdo, instr_num, sub_instr+4, nombre_expresion);
+        sub_instr++;
       }
     }
 

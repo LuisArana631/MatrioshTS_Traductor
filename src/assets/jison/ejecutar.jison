@@ -184,10 +184,22 @@ instruccion
     | asignacion { $$ = $1; }
     | llamada ';' { $$ = $1; }
     | dato_valor '++' ';' { $$ = {
-        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.INCREMENTO, $1.id, @1.first_line, @1.first_column))
+        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.INCREMENTO, $1.id, @1.first_line, @1.first_column)),
+
+        tipo: "incremento",
+        expresion: {
+            izquierdo: $1.expresion,
+            operador: $2
+        }
     }; }
     | dato_valor '--' ';' { $$ = {
-        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.DECREMENTO, $1.id, @1.first_line, @1.first_column))
+        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.DECREMENTO, $1.id, @1.first_line, @1.first_column)),
+
+        tipo: "incremento",
+        expresion: {
+            izquierdo: $1.expresion,
+            operador: $2
+        }
     }; }
     | if { $$ = $1; }
     | while { $$ = $1; }
@@ -197,10 +209,15 @@ instruccion
     | for_in { $$ = $1; }
     | for_of { $$ = $1; }
     | 'BREAK' ';' { $$ = {
-        nodo: (new break_(@1.first_line, @1.first_column))
+        nodo: (new break_(@1.first_line, @1.first_column)),
+
+        tipo: "break"
     }; }
     | 'CONTINUE' ';' { $$ = {
-        nodo: (new continue_(@1.first_line, @1.first_column))
+        nodo: (new continue_(@1.first_line, @1.first_column)),
+
+        
+        tipo: "continue"
     }; }
     | sentencia_return { $$ = $1; }
     | 'GRAFICAR' '(' ')' ';' { $$ = {
@@ -208,13 +225,20 @@ instruccion
         escritura: 0
     }; }
     | 'PRINT' '(' expresion ')' ';' { $$ = {
-        nodo: (new print($3.nodo, @1.first_line, @1.first_column))
+        nodo: (new print($3.nodo, @1.first_line, @1.first_column)),
+
+        tipo: "print",
+        expresion: $3.expresion
     }; }    
     | error { errores.addError(new nodoError("Sintáctico","Se esperaba una instrucción y se encontró ",this._$.first_line,this._$.first_column,$1)); $$ = undefined; };
 
 asignacion     
     : 'IDENTIFICADOR' '=' expresion ';' { $$ = {
         nodo: (new asignacion_($3.nodo, $1, @1.first_line, @1.first_column)),
+        
+        
+        tipo: "asignar",
+        expresion: $3.expresion,
         id: $1
     }; };
 
@@ -231,7 +255,8 @@ declaracion_variables
 
         tipo: "declaracion_variable",
         restriccion: $1,
-        id: $2,        
+        id: $2,
+        expresion: $4.expresion        
     }; }
     | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato ';' { $$ = {
         nodo: (new declaracion($2, null, @1.first_line, @1.first_column, $4, $1)),
@@ -245,29 +270,47 @@ declaracion_variables
 
         tipo: "declaracion_variable",
         restriccion: $1,
-        id: $2
+        id: $2,
+        expresion: $6.expresion
     }; };
 
 declaracion_arreglos
     : tipo_restriccion 'IDENTIFICADOR' ':' lista_dimensiones ';' { $$ = {
         text: $1.text + " " + $2 + $3 + $4.text + $5,
         escritura: 0,
+
+        tipo: "arreglo",
+        id:  $2
     }; }
     | tipo_restriccion 'IDENTIFICADOR' ':' lista_dimensiones '=' 'valores_arreglo' ';' { $$ = {
         text: $1.text + " " + $2 + $3 + $4.text + $5 + $6.text + $7,
-        escritura: 0
+        escritura: 0,
+
+        tipo: "arreglo",
+        id:  $2
     }; }
     | tipo_restriccion 'IDENTIFICADOR' ':' 'ARRAY' '<' 'tipo_dato' '>' ';' { $$ = {
         text: $1.text + " " + $2 + $3 + $4 + $5 + $5 + $6 + $7,
-        escritura: 0
+        escritura: 0,
+
+        tipo: "arreglo",
+        id:  $2,
+        tipo: $6
     }; }
     | tipo_restriccion 'IDENTIFICADOR' ':' 'ARRAY' '<' 'tipo_dato' '>' '=' 'valores_arreglo' ';' { $$ = {
         text: $1.text + " " + $2 + $3 + $4 + $5 + $5 + $6 + $7 + $8.text + $9,
-        escritura: 0
+        escritura: 0,
+
+        tipo: "arreglo",
+        id:  $2,
+        tipo: $6
     }; }
     | tipo_restriccion 'IDENTIFICADOR' '=' 'valores_arreglo' ';' { $$ = {
         text: $1.text + " " + $2 + $3 + $4.text + $5,
-        escritura: 0
+        escritura: 0,
+
+        tipo: "arreglo",
+        id:  $2
     }; };
 
 lista_dimensiones
@@ -298,81 +341,216 @@ atributo
 
 expresion
     : expresion '+' expresion { $$ = {
-        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.SUMA, @1.first_line, @1.first_column))
+        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.SUMA, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '-' expresion { $$ = {
-        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.RESTA, @1.first_line, @1.first_column))
+        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.RESTA, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
+        
     }; }
     | expresion '*' expresion { $$ = {
-        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.MULTIPLICACION, @1.first_line, @1.first_column))
+        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.MULTIPLICACION, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }    
     | expresion '/' expresion { $$ = {
-        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.DIVISION, @1.first_line, @1.first_column))
+        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.DIVISION, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '%' expresion { $$ = {
-        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.MODULO, @1.first_line, @1.first_column))
+        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.MODULO, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '**' expresion { $$ = {
-        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.POTENCIA, @1.first_line, @1.first_column))
+        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.POTENCIA, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | dato_valor '++' { $$ = {
-        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.INCREMENTO, $1.id, @1.first_line, @1.first_column))
+        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.INCREMENTO, $1.id, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            operador: $2
+        }
     }; }
     | dato_valor '--' { $$ = {
-        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.DECREMENTO, $1.id, @1.first_line, @1.first_column))
+        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.DECREMENTO, $1.id, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            operador: $2
+        }
     }; }
     | '-' expresion { $$ = {
-        nodo: (new aritmetica($2.nodo, null, operacion_aritmetica.NEGAR, @1.first_line, @1.first_column))
+        nodo: (new aritmetica($2.nodo, null, operacion_aritmetica.NEGAR, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $2.expresion,
+            operador: $1
+        }
     }; } 
     | expresion '<' expresion { $$ = {
-        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.MENOR, @1.first_line, @1.first_column))
+        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.MENOR, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '>' expresion { $$ = {
-        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.MAYOR, @1.first_line, @1.first_column))
+        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.MAYOR, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '<=' expresion { $$ = {
-        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.MENOR_IGUAL, @1.first_line, @1.first_column))
+        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.MENOR_IGUAL, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '>=' expresion { $$ = {
-        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.MAYOR_IGUAL, @1.first_line, @1.first_column))
+        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.MAYOR_IGUAL, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '!=' expresion { $$ = {
-        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.NO_IGUAL, @1.first_line, @1.first_column))
+        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.NO_IGUAL, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '==' expresion { $$ = {
-        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.IGUAL, @1.first_line, @1.first_column))
+        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.IGUAL, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '||' expresion { $$ = {
-        nodo: (new logica($1.nodo, $3.nodo, operacion_logica.OR, @1.first_line, @1.first_column))
+        nodo: (new logica($1.nodo, $3.nodo, operacion_logica.OR, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | expresion '&&' expresion { $$ = {
-        nodo: (new logica($1.nodo, $3.nodo, operacion_logica.AND, @1.first_line, @1.first_column))
+        nodo: (new logica($1.nodo, $3.nodo, operacion_logica.AND, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $1.expresion,
+            derecho: $3.expresion,
+            operador: $2
+        }
     }; }
     | '!' expresion { $$ = {
-        nodo: (new logica($2.nodo, null, operacion_logica.NEGAR, @1.first_line, @1.first_column))
+        nodo: (new logica($2.nodo, null, operacion_logica.NEGAR, @1.first_line, @1.first_column)),
+
+        expresion: {
+            izquierdo: $2.expresion,
+            operador: $1
+        }
     }; }
     | dato_valor { $$ = $1; };
 
 dato_valor
     : '(' expresion ')' { $$ = $2; }
     | 'ENTERO' { $$ = {
-        nodo: (new dato_literal($1, 0, @1.first_line, @1.first_column))
+        nodo: (new dato_literal($1, 0, @1.first_line, @1.first_column)),
+
+        expresion: {
+            dato: $1,
+            tipo: "number"
+        }
     }; }
     | 'DECIMAL' { $$ = {
-        nodo: (new dato_literal($1, 0, @1.first_line, @1.first_column))
+        nodo: (new dato_literal($1, 0, @1.first_line, @1.first_column)),
+
+        expresion: {
+            dato: $1,
+            tipo: "number"
+        }   
     }; }
     | 'CADENA' { $$ = {
-        nodo: (new dato_literal($1.replace(/\"/g,""), 1, @1.first_line, @1.first_column))
+        nodo: (new dato_literal($1.replace(/\"/g,""), 1, @1.first_line, @1.first_column)),
+
+        expresion: {
+            dato: $1,
+            tipo: "string"
+        }
     }; }
     | 'IDENTIFICADOR' { $$ = {
         nodo: (new acceso($1, @1.first_line, @1.first_column)),
-        id: $1
+        id: $1,
+        
+        expresion: {
+            dato: $1,
+            tipo: "variable"
+        }
     }; }
     | 'TRUE' {  $$ = {
-        nodo: (new dato_literal($1, 2, @1.first_line, @1.first_column))
+        nodo: (new dato_literal($1, 2, @1.first_line, @1.first_column)),
+
+        expresion: {
+            dato: $1,
+            tipo: "boolean"
+        }
     }; }
     | 'FALSE' { $$ = {
-        nodo: (new dato_literal($1, 2, @1.first_line, @1.first_column))
+        nodo: (new dato_literal($1, 2, @1.first_line, @1.first_column)),
+
+        expresion: {
+            dato: $1,
+            tipo: "boolean"
+        }
     }; }
     | llamada { $$ = $1; };
 
@@ -401,7 +579,12 @@ tipo_dato
 
 if
     : 'IF' '(' expresion ')' statement else { $$ = {
-        nodo: (new if_($3.nodo, $5.nodo, $6.nodo, @1.first_line, @1.first_column))
+        nodo: (new if_($3.nodo, $5.nodo, $6.nodo, @1.first_line, @1.first_column)),
+
+            tipo: "if_",
+            condicion: $3.expresion,
+            instrucciones: $5.instr,
+            else: $6
     }; };
 
 else
@@ -413,30 +596,45 @@ else
 
 statement
     : '{' instrucciones '}' { $$ = {
-       nodo: (new instrucciones_($2,  @1.first_line, @1.first_column))
+       nodo: (new instrucciones_($2,  @1.first_line, @1.first_column)),
+       instr: $2
     }; }
     | '{' '}' { $$ = {
-        nodo: (new instrucciones_(new Array(),  @1.first_line, @1.first_column))
+        nodo: (new instrucciones_(new Array(),  @1.first_line, @1.first_column)),
+        instr: new Array()
     }; };
 
 statement_switch
     : instrucciones { $$ = {
-        nodo: (new instrucciones_($1,  @1.first_line, @1.first_column))
+        nodo: (new instrucciones_($1,  @1.first_line, @1.first_column)),
+        instr: $1
     }; };
 
 while
     : 'WHILE' '(' expresion ')' statement { $$ = {
-        nodo: (new while_($3.nodo, $5.nodo, @1.first_line, @1.first_column))
+        nodo: (new while_($3.nodo, $5.nodo, @1.first_line, @1.first_column)),        
+
+        tipo: "while_",
+        cond: $3.expresion,
+        instr: $5.instr
     }; };
 
 do_while
     : 'DO' statement 'WHILE' '(' expresion ')' ';' { $$ = {        
-        nodo: (new dowhile_($5.nodo, $2.nodo, @1.first_linea, @1.first_column))
+        nodo: (new dowhile_($5.nodo, $2.nodo, @1.first_linea, @1.first_column)),        
+
+        tipo: "dowhile_",
+        cond: $5.expresion,
+        instr: $2.instr
     }; };
 
 switch
     : 'SWITCH' '(' expresion ')' '{' cases '}' { $$ = {
-        nodo: (new switch_($3.nodo, $6, @1.first_line, @1.first_column))
+        nodo: (new switch_($3.nodo, $6, @1.first_line, @1.first_column)),
+        
+        tipo: "switch_",
+        instr: $6.instr,
+        cond: $3.expresion
     }; };
 
 cases 
@@ -445,48 +643,73 @@ cases
 
 case
     : 'CASE' expresion ':' statement_switch { $$ = {
-        nodo: (new case_($2.nodo, $4.nodo, @1.first_line, @1.first_column))
+        nodo: (new case_($2.nodo, $4.nodo, @1.first_line, @1.first_column)),
+
+        expresion: $2.expresion
     }; };
 
 for_in
     :'FOR' '(' tipo_restriccion 'IDENTIFICADOR' 'IN' 'IDENTIFICADOR' ')' statement { $$ = {
         text: $1 + $2 + $3 + " " + $4 + " " + $5 + " " + $6 + $7,
         escritura: 1,
-        instr: $8
+        instr: $8.instr
     }; };
 
 for_of
     :'FOR' '(' tipo_restriccion 'IDENTIFICADOR' 'OF' 'IDENTIFICADOR' ')' statement { $$ = {
         text: $1 + " " + $2 + $3 + " " + $4 + " " + $5 + " " + $6 + $7,
         escritura: 1,
-        instr: $8
+        instr: $8.instr
     }; };
 
 for_normal
     :'FOR' '(' declaracion_variables expresion ';' expresion ')' statement { $$ = {
-        nodo: (new for_($4.nodo, $6.nodo, $3.nodo, $8.nodo, $3.id, @1.first_line, @1.first_column))
+        nodo: (new for_($4.nodo, $6.nodo, $3.nodo, $8.nodo, $3.id, @1.first_line, @1.first_column)),        
+
+        tipo: "for_",
+        instr: $8
     }; }
     | 'FOR' '(' asignacion expresion ';' expresion ')' statement { $$ = {
-        nodo: (new for_($4.nodo, $6.nodo, $3.nodo, $8.nodo, $3.id, @1.first_line, @1.first_column))
+        nodo: (new for_($4.nodo, $6.nodo, $3.nodo, $8.nodo, $3.id, @1.first_line, @1.first_column)),        
+
+        tipo: "for_",
+        instr: $8
     }; }
     | 'FOR' '(' 'IDENTIFICADOR' ';' expresion ';' expresion ')' statement { $$ = {
-        nodo: (new for_($5.nodo, $7.nodo, null, $9.nodo, $3, @1.first_line, @1.first_column))
+        nodo: (new for_($5.nodo, $7.nodo, null, $9.nodo, $3, @1.first_line, @1.first_column)),
+        
+        tipo: "for_",
+        instr: $8
     }; };
 
 sentencia_return
     :'RETURN' ';' { $$ = {
-        nodo: (new return_(null, @1.first_line, @1.first_column))
+        nodo: (new return_(null, @1.first_line, @1.first_column)),
+
+        tipo: "return_"
     }; }
     |'RETURN' expresion ';' {  $$ = {
-        nodo: (new return_($2.nodo, @1.first_line, @1.first_column))
+        nodo: (new return_($2.nodo, @1.first_line, @1.first_column)),
+
+        tipo: "return_",
+        expresion: $2.expresion
     }; };
 
 declaracion_funciones
     : 'FUNCTION' 'IDENTIFICADOR' '(' parametros ')' ':' tipo_dato statement { $$ = {
-        nodo: (new function_($2, $8.nodo, $4, @1.first_line, @1.first_column, $7))
+        nodo: (new function_($2, $8.nodo, $4, @1.first_line, @1.first_column, $7)),
+
+        tipo: "funcion",
+        id: $2,
+        param: $4,
+        instr: $8.instr
     }; }
     | 'FUNCTION' 'IDENTIFICADOR' '(' ')' ':' tipo_dato statement { $$ = {
-        nodo: (new function_($2, $7.nodo, [], @1.first_line, @1.first_column, $6))
+        nodo: (new function_($2, $7.nodo, [], @1.first_line, @1.first_column, $6)),
+
+        tipo: "funcion",
+        id: $2,
+        instr: $7.instr
     }; }; 
 
 parametros

@@ -163,9 +163,12 @@ instruccion
     | declaracion_types { $$ = $1; }
     | asignacion { $$ = $1; }
     | llamada ';' { $$ = {
-        text: $1.text,
+        text: $1.text,        
+        escritura: 5,
+
+        tipo: "llamada",
         param: $1.param,
-        escritura: 5
+        dato: $1.id
     }; }
     | dato_valor '++' ';' { $$ = {
         text: $1.text + $2 + $3,
@@ -198,9 +201,16 @@ instruccion
     | for_of { $$ = $1; }
     | 'BREAK' ';' { $$ = {
         text: $1 + $2,
-        escritura: 0
+        escritura: 0,
+
+        tipo: "break"
     }; }
-    | 'CONTINUE' ';' { $$ = $1; }
+    | 'CONTINUE' ';' { $$ = {
+        text: $1 + $2,
+        escritura: 0,
+
+        tipo: "continue"
+    }; }
     | sentencia_return { $$ = $1; }
     | 'GRAFICAR' '(' ')' ';' { $$ = {
         text: $1 + $2 + $3 + $4,
@@ -218,7 +228,11 @@ instruccion
 asignacion     
     : 'IDENTIFICADOR' '=' expresion ';' { $$ = {
         text: $1 + $2 + $3.text + $4,
-        escritura: 0
+        escritura: 0,
+
+        tipo: "asignar",
+        expresion: $3.expresion,
+        id: $1
     }; };
 
 declaracion_variables
@@ -261,34 +275,45 @@ declaracion_variables
         id: $2,
         expresion: $6.expresion
     }; 
-    tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, $6.valor,  @1.first_line, @1.first_column, 0)); }
-    | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato '=' '{' '}' ';' { $$ = {
-        text: $1 + " " + $2 + $3 + $4 + $5,
-        escritura: 1,
-        instr: $7
-    }; 
-    tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, $6.valor,  @1.first_line, @1.first_column, 0)); };
+    tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, $6.valor,  @1.first_line, @1.first_column, 0)); } };
 
 declaracion_arreglos
     : tipo_restriccion 'IDENTIFICADOR' ':' lista_dimensiones ';' { $$ = {
-        text: $1.text + " " + $2 + $3 + $4.text + $5,
-        escritura: 0
+        text: $1 + " " + $2 + $3 + $4.text + $5,
+        escritura: 0,
+
+        tipo: "arreglo",
+        id:  $2
     }; }
     | tipo_restriccion 'IDENTIFICADOR' ':' lista_dimensiones '=' 'valores_arreglo' ';' { $$ = {
-        text: $1.text + " " + $2 + $3 + $4.text + $5 + $6.text + $7,
-        escritura: 0
+        text: $1 + " " + $2 + $3 + $4.text + $5 + $6.text + $7,
+        escritura: 0,
+
+        tipo: "arreglo",
+        id:  $2
     }; }
     | tipo_restriccion 'IDENTIFICADOR' ':' 'ARRAY' '<' 'tipo_dato' '>' ';' { $$ = {
-        text: $1.text + " " + $2 + $3 + $4 + $5 + $5 + $6 + $7,
-        escritura: 0
+        text: $1 + " " + $2 + $3 + $4 + $5 + $5 + $6 + $7,
+        escritura: 0,
+
+        tipo: "arreglo",
+        id:  $2,
+        tipo: $6
     }; }
     | tipo_restriccion 'IDENTIFICADOR' ':' 'ARRAY' '<' 'tipo_dato' '>' '=' 'valores_arreglo' ';' { $$ = {
-        text: $1.text + " " + $2 + $3 + $4 + $5 + $5 + $6 + $7 + $8.text + $9,
-        escritura: 0
+        text: $1 + " " + $2 + $3 + $4 + $5 + $5 + $6 + $7 + $8.text + $9,
+        escritura: 0,
+
+        tipo: "arreglo",
+        id:  $2,
+        tipo: $6
     }; }
     | tipo_restriccion 'IDENTIFICADOR' '=' 'valores_arreglo' ';' { $$ = {
-        text: $1.text + " " + $2 + $3 + $4.text + $5,
-        escritura: 0
+        text: $1 + " " + $2 + $3 + $4.text + $5,
+        escritura: 0,
+
+        tipo: "arreglo",
+        id:  $2
     }; };
 
 lista_dimensiones
@@ -636,14 +661,20 @@ statement
 while
     : 'WHILE' '(' expresion ')' statement { $$ = {
         text: $1 + $2 + $3.text + $4,
-        escritura: 1,
+        escritura: 1,        
+
+        tipo: "while_",
+        cond: $3.expresion,
         instr: $5
     }; };
 
 do_while
     : 'DO' statement 'WHILE' '(' expresion ')' ';' { $$ = {        
         text: $3 + $4 + $5.text + $6 + $7,
-        escritura: 3,
+        escritura: 3,        
+
+        tipo: "dowhile_",
+        cond: $5.expresion,
         instr: $2
     }; };
 
@@ -651,7 +682,10 @@ switch
     : 'SWITCH' '(' expresion ')' '{' cases '}' { $$ = {
         text: $1 + $2 + $3.text + $4,
         escritura: 1,
-        instr: $6
+        
+        tipo: "switch_",
+        instr: $6,
+        cond: $3.expresion
     }; };
 
 cases 
@@ -662,7 +696,9 @@ case
     : 'CASE' expresion ':' instrucciones { $$ = {
         text: $1 + " " + $2.text + $3,
         escritura: 1,
-        instr: $4
+        instr: $4,
+
+        expresion: $2.expresion
     }; };
 
 for_in
@@ -682,52 +718,61 @@ for_of
 for_normal
     :'FOR' '(' declaracion_variables expresion ';' expresion ')' statement { $$ = {
         text: $1 + $2 + $3.text + " " + $4.text + $5 + $6.text + $7,
-        escritura: 1,
-        instr: $8,
+        escritura: 1,        
 
         tipo: "for_",
-        
+        instr: $8
     }; }
     | 'FOR' '(' asignacion expresion ';' expresion ')' statement { $$ = {
         text: $1 + $2 + $3.text + " " + $4.text + $5 + $6.text + $7,
-        escritura: 1,
-        instr: $8,
+        escritura: 1,        
 
         tipo: "for_",
-        
+        instr: $8
     }; }
     |'FOR' '(' 'INDETIFICADOR' ';' expresion ';' expresion ')' statement { $$ = {
         text: $1 + $2 + $3.text + " " + $4.text + $5 + $6.text + $7,
         escritura: 1,
-        instr: $8,
-
-        tipo: "for_",
         
+        tipo: "for_",
+        instr: $8
     }; };
 
 sentencia_return
     :'RETURN' ';' { $$ = {
         text: $1 + " " + $2,
-        escritura: 0
+        escritura: 0,
+
+        tipo: "return_"
     }; }
     |'RETURN' expresion ';' {  $$ = {
         text: $1 + " " + $2.text + $3,
-        escritura: 0
+        escritura: 0,
+
+        tipo: "return_",
+        expresion: $2.expresion
     }; };
 
 declaracion_funciones
     : 'FUNCTION' 'IDENTIFICADOR' '(' parametros ')' ':' tipo_dato statement { $$ = {
         text: $1 + " " + $2 + $3,
         tipo_dato_f: $7,
-        escritura: 4,
-        instr: $8,
-        atribs: $4
+        escritura: 4,        
+        atribs: $4,
+
+        tipo: "funcion",
+        id: $2,
+        param: $4,
+        instr: $8
     }; 
     tabla_simbolos.push_simbolo(new nodoSimbolo($7, $2, name_function[name_function.length-1], undefined, undefined, "@function",  @1.first_line, @1.first_column, 0)); }
     | 'FUNCTION' 'IDENTIFICADOR' '(' ')' ':' tipo_dato statement { $$ = {
         text: $1 + " " + $2 + $3,
         tipo_dato_f: $6,
         escritura: 4,
+
+        tipo: "funcion",
+        id: $2,
         instr: $7
     }; 
     tabla_simbolos.push_simbolo(new nodoSimbolo($6, $2, name_function[name_function.length-1], undefined, undefined, "@function",  @1.first_line, @1.first_column, 0)); }; 
@@ -739,5 +784,8 @@ parametros
 parametro
     : 'IDENTIFICADOR' ':' tipo_dato { $$ = {
         text: $1 + $2 + $3,
-        escritura: 0
+        escritura: 0,
+
+        id: $1,
+        tipo: $3
     }; }; 

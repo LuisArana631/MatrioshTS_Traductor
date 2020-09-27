@@ -100,22 +100,39 @@ case 9: case 60:
 break;
 case 10:
  this.$ = {
-        nodo: (new aritmetica_unitaria($$[$0-2].nodo, operacion_unitaria.INCREMENTO, $$[$0-2].id, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new aritmetica_unitaria($$[$0-2].nodo, operacion_unitaria.INCREMENTO, $$[$0-2].id, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        tipo: "incremento",
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 11:
  this.$ = {
-        nodo: (new aritmetica_unitaria($$[$0-2].nodo, operacion_unitaria.DECREMENTO, $$[$0-2].id, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new aritmetica_unitaria($$[$0-2].nodo, operacion_unitaria.DECREMENTO, $$[$0-2].id, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        tipo: "incremento",
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 19:
  this.$ = {
-        nodo: (new break_(_$[$0-1].first_line, _$[$0-1].first_column))
+        nodo: (new break_(_$[$0-1].first_line, _$[$0-1].first_column)),
+
+        tipo: "break"
     }; 
 break;
 case 20:
  this.$ = {
-        nodo: (new continue_(_$[$0-1].first_line, _$[$0-1].first_column))
+        nodo: (new continue_(_$[$0-1].first_line, _$[$0-1].first_column)),
+
+        
+        tipo: "continue"
     }; 
 break;
 case 22:
@@ -126,7 +143,10 @@ case 22:
 break;
 case 23:
  this.$ = {
-        nodo: (new print($$[$0-2].nodo, _$[$0-4].first_line, _$[$0-4].first_column))
+        nodo: (new print($$[$0-2].nodo, _$[$0-4].first_line, _$[$0-4].first_column)),
+
+        tipo: "print",
+        expresion: $$[$0-2].expresion
     }; 
 break;
 case 24:
@@ -135,6 +155,10 @@ break;
 case 25:
  this.$ = {
         nodo: (new asignacion_($$[$0-1].nodo, $$[$0-3], _$[$0-3].first_line, _$[$0-3].first_column)),
+        
+        
+        tipo: "asignar",
+        expresion: $$[$0-1].expresion,
         id: $$[$0-3]
     }; 
 break;
@@ -153,7 +177,8 @@ case 27:
 
         tipo: "declaracion_variable",
         restriccion: $$[$0-4],
-        id: $$[$0-3],        
+        id: $$[$0-3],
+        expresion: $$[$0-1].expresion        
     }; 
 break;
 case 28:
@@ -171,37 +196,46 @@ case 29:
 
         tipo: "declaracion_variable",
         restriccion: $$[$0-6],
-        id: $$[$0-5]
+        id: $$[$0-5],
+        expresion: $$[$0-1].expresion
     }; 
 break;
-case 30:
+case 30: case 34:
  this.$ = {
         text: $$[$0-4].text + " " + $$[$0-3] + $$[$0-2] + $$[$0-1].text + $$[$0],
         escritura: 0,
+
+        tipo: "arreglo",
+        id:  $$[$0-3]
     }; 
 break;
 case 31:
  this.$ = {
         text: $$[$0-6].text + " " + $$[$0-5] + $$[$0-4] + $$[$0-3].text + $$[$0-2] + $$[$0-1].text + $$[$0],
-        escritura: 0
+        escritura: 0,
+
+        tipo: "arreglo",
+        id:  $$[$0-5]
     }; 
 break;
 case 32:
  this.$ = {
         text: $$[$0-7].text + " " + $$[$0-6] + $$[$0-5] + $$[$0-4] + $$[$0-3] + $$[$0-3] + $$[$0-2] + $$[$0-1],
-        escritura: 0
+        escritura: 0,
+
+        tipo: "arreglo",
+        id:  $$[$0-6],
+        tipo: $$[$0-2]
     }; 
 break;
 case 33:
  this.$ = {
         text: $$[$0-9].text + " " + $$[$0-8] + $$[$0-7] + $$[$0-6] + $$[$0-5] + $$[$0-5] + $$[$0-4] + $$[$0-3] + $$[$0-2].text + $$[$0-1],
-        escritura: 0
-    }; 
-break;
-case 34:
- this.$ = {
-        text: $$[$0-4].text + " " + $$[$0-3] + $$[$0-2] + $$[$0-1].text + $$[$0],
-        escritura: 0
+        escritura: 0,
+
+        tipo: "arreglo",
+        id:  $$[$0-8],
+        tipo: $$[$0-4]
     }; 
 break;
 case 35:
@@ -229,118 +263,258 @@ case 40:
 break;
 case 41:
  this.$ = {
-        nodo: (new aritmetica($$[$0-2].nodo, $$[$0].nodo, operacion_aritmetica.SUMA, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new aritmetica($$[$0-2].nodo, $$[$0].nodo, operacion_aritmetica.SUMA, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            derecho: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 42:
  this.$ = {
-        nodo: (new aritmetica($$[$0-2].nodo, $$[$0].nodo, operacion_aritmetica.RESTA, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new aritmetica($$[$0-2].nodo, $$[$0].nodo, operacion_aritmetica.RESTA, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            derecho: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
+        
     }; 
 break;
 case 43:
  this.$ = {
-        nodo: (new aritmetica($$[$0-2].nodo, $$[$0].nodo, operacion_aritmetica.MULTIPLICACION, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new aritmetica($$[$0-2].nodo, $$[$0].nodo, operacion_aritmetica.MULTIPLICACION, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            derecho: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 44:
  this.$ = {
-        nodo: (new aritmetica($$[$0-2].nodo, $$[$0].nodo, operacion_aritmetica.DIVISION, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new aritmetica($$[$0-2].nodo, $$[$0].nodo, operacion_aritmetica.DIVISION, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            derecho: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 45:
  this.$ = {
-        nodo: (new aritmetica($$[$0-2].nodo, $$[$0].nodo, operacion_aritmetica.MODULO, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new aritmetica($$[$0-2].nodo, $$[$0].nodo, operacion_aritmetica.MODULO, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            derecho: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 46:
  this.$ = {
-        nodo: (new aritmetica($$[$0-2].nodo, $$[$0].nodo, operacion_aritmetica.POTENCIA, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new aritmetica($$[$0-2].nodo, $$[$0].nodo, operacion_aritmetica.POTENCIA, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            derecho: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 47:
  this.$ = {
-        nodo: (new aritmetica_unitaria($$[$0-1].nodo, operacion_unitaria.INCREMENTO, $$[$0-1].id, _$[$0-1].first_line, _$[$0-1].first_column))
+        nodo: (new aritmetica_unitaria($$[$0-1].nodo, operacion_unitaria.INCREMENTO, $$[$0-1].id, _$[$0-1].first_line, _$[$0-1].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-1].expresion,
+            operador: $$[$0]
+        }
     }; 
 break;
 case 48:
  this.$ = {
-        nodo: (new aritmetica_unitaria($$[$0-1].nodo, operacion_unitaria.DECREMENTO, $$[$0-1].id, _$[$0-1].first_line, _$[$0-1].first_column))
+        nodo: (new aritmetica_unitaria($$[$0-1].nodo, operacion_unitaria.DECREMENTO, $$[$0-1].id, _$[$0-1].first_line, _$[$0-1].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-1].expresion,
+            operador: $$[$0]
+        }
     }; 
 break;
 case 49:
  this.$ = {
-        nodo: (new aritmetica($$[$0].nodo, null, operacion_aritmetica.NEGAR, _$[$0-1].first_line, _$[$0-1].first_column))
+        nodo: (new aritmetica($$[$0].nodo, null, operacion_aritmetica.NEGAR, _$[$0-1].first_line, _$[$0-1].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 50:
  this.$ = {
-        nodo: (new relacional($$[$0-2].nodo, $$[$0].nodo, operacion_relacional.MENOR, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new relacional($$[$0-2].nodo, $$[$0].nodo, operacion_relacional.MENOR, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            derecho: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 51:
  this.$ = {
-        nodo: (new relacional($$[$0-2].nodo, $$[$0].nodo, operacion_relacional.MAYOR, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new relacional($$[$0-2].nodo, $$[$0].nodo, operacion_relacional.MAYOR, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            derecho: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 52:
  this.$ = {
-        nodo: (new relacional($$[$0-2].nodo, $$[$0].nodo, operacion_relacional.MENOR_IGUAL, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new relacional($$[$0-2].nodo, $$[$0].nodo, operacion_relacional.MENOR_IGUAL, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            derecho: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 53:
  this.$ = {
-        nodo: (new relacional($$[$0-2].nodo, $$[$0].nodo, operacion_relacional.MAYOR_IGUAL, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new relacional($$[$0-2].nodo, $$[$0].nodo, operacion_relacional.MAYOR_IGUAL, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            derecho: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 54:
  this.$ = {
-        nodo: (new relacional($$[$0-2].nodo, $$[$0].nodo, operacion_relacional.NO_IGUAL, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new relacional($$[$0-2].nodo, $$[$0].nodo, operacion_relacional.NO_IGUAL, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            derecho: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 55:
  this.$ = {
-        nodo: (new relacional($$[$0-2].nodo, $$[$0].nodo, operacion_relacional.IGUAL, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new relacional($$[$0-2].nodo, $$[$0].nodo, operacion_relacional.IGUAL, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            derecho: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 56:
  this.$ = {
-        nodo: (new logica($$[$0-2].nodo, $$[$0].nodo, operacion_logica.OR, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new logica($$[$0-2].nodo, $$[$0].nodo, operacion_logica.OR, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            derecho: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 57:
  this.$ = {
-        nodo: (new logica($$[$0-2].nodo, $$[$0].nodo, operacion_logica.AND, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new logica($$[$0-2].nodo, $$[$0].nodo, operacion_logica.AND, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0-2].expresion,
+            derecho: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
 case 58:
  this.$ = {
-        nodo: (new logica($$[$0].nodo, null, operacion_logica.NEGAR, _$[$0-1].first_line, _$[$0-1].first_column))
+        nodo: (new logica($$[$0].nodo, null, operacion_logica.NEGAR, _$[$0-1].first_line, _$[$0-1].first_column)),
+
+        expresion: {
+            izquierdo: $$[$0].expresion,
+            operador: $$[$0-1]
+        }
     }; 
 break;
-case 61: case 62:
+case 61:
  this.$ = {
-        nodo: (new dato_literal($$[$0], 0, _$[$0].first_line, _$[$0].first_column))
+        nodo: (new dato_literal($$[$0], 0, _$[$0].first_line, _$[$0].first_column)),
+
+        expresion: {
+            dato: $$[$0],
+            tipo: "number"
+        }
+    }; 
+break;
+case 62:
+ this.$ = {
+        nodo: (new dato_literal($$[$0], 0, _$[$0].first_line, _$[$0].first_column)),
+
+        expresion: {
+            dato: $$[$0],
+            tipo: "number"
+        }   
     }; 
 break;
 case 63:
  this.$ = {
-        nodo: (new dato_literal($$[$0].replace(/\"/g,""), 1, _$[$0].first_line, _$[$0].first_column))
+        nodo: (new dato_literal($$[$0].replace(/\"/g,""), 1, _$[$0].first_line, _$[$0].first_column)),
+
+        expresion: {
+            dato: $$[$0],
+            tipo: "string"
+        }
     }; 
 break;
 case 64:
  this.$ = {
         nodo: (new acceso($$[$0], _$[$0].first_line, _$[$0].first_column)),
-        id: $$[$0]
+        id: $$[$0],
+        
+        expresion: {
+            dato: $$[$0],
+            tipo: "variable"
+        }
     }; 
 break;
 case 65:
   this.$ = {
-        nodo: (new dato_literal($$[$0], 2, _$[$0].first_line, _$[$0].first_column))
+        nodo: (new dato_literal($$[$0], 2, _$[$0].first_line, _$[$0].first_column)),
+
+        expresion: {
+            dato: $$[$0],
+            tipo: "boolean"
+        }
     }; 
 break;
 case 66:
  this.$ = {
-        nodo: (new dato_literal($$[$0], 2, _$[$0].first_line, _$[$0].first_column))
+        nodo: (new dato_literal($$[$0], 2, _$[$0].first_line, _$[$0].first_column)),
+
+        expresion: {
+            dato: $$[$0],
+            tipo: "boolean"
+        }
     }; 
 break;
 case 68:
@@ -358,7 +532,12 @@ case 70: case 101:
 break;
 case 79:
  this.$ = {
-        nodo: (new if_($$[$0-3].nodo, $$[$0-1].nodo, $$[$0].nodo, _$[$0-5].first_line, _$[$0-5].first_column))
+        nodo: (new if_($$[$0-3].nodo, $$[$0-1].nodo, $$[$0].nodo, _$[$0-5].first_line, _$[$0-5].first_column)),
+
+            tipo: "if_",
+            condicion: $$[$0-3].expresion,
+            instrucciones: $$[$0-1].instr,
+            else: $$[$0]
     }; 
 break;
 case 82:
@@ -368,81 +547,118 @@ case 82:
 break;
 case 83:
  this.$ = {
-       nodo: (new instrucciones_($$[$0-1],  _$[$0-2].first_line, _$[$0-2].first_column))
+       nodo: (new instrucciones_($$[$0-1],  _$[$0-2].first_line, _$[$0-2].first_column)),
+       instr: $$[$0-1]
     }; 
 break;
 case 84:
  this.$ = {
-        nodo: (new instrucciones_(new Array(),  _$[$0-1].first_line, _$[$0-1].first_column))
+        nodo: (new instrucciones_(new Array(),  _$[$0-1].first_line, _$[$0-1].first_column)),
+        instr: new Array()
     }; 
 break;
 case 85:
  this.$ = {
-        nodo: (new instrucciones_($$[$0],  _$[$0].first_line, _$[$0].first_column))
+        nodo: (new instrucciones_($$[$0],  _$[$0].first_line, _$[$0].first_column)),
+        instr: $$[$0]
     }; 
 break;
 case 86:
  this.$ = {
-        nodo: (new while_($$[$0-2].nodo, $$[$0].nodo, _$[$0-4].first_line, _$[$0-4].first_column))
+        nodo: (new while_($$[$0-2].nodo, $$[$0].nodo, _$[$0-4].first_line, _$[$0-4].first_column)),        
+
+        tipo: "while_",
+        cond: $$[$0-2].expresion,
+        instr: $$[$0].instr
     }; 
 break;
 case 87:
  this.$ = {        
-        nodo: (new dowhile_($$[$0-2].nodo, $$[$0-5].nodo, _$[$0-6].first_linea, _$[$0-6].first_column))
+        nodo: (new dowhile_($$[$0-2].nodo, $$[$0-5].nodo, _$[$0-6].first_linea, _$[$0-6].first_column)),        
+
+        tipo: "dowhile_",
+        cond: $$[$0-2].expresion,
+        instr: $$[$0-5].instr
     }; 
 break;
 case 88:
  this.$ = {
-        nodo: (new switch_($$[$0-4].nodo, $$[$0-1], _$[$0-6].first_line, _$[$0-6].first_column))
+        nodo: (new switch_($$[$0-4].nodo, $$[$0-1], _$[$0-6].first_line, _$[$0-6].first_column)),
+        
+        tipo: "switch_",
+        instr: $$[$0-1].instr,
+        cond: $$[$0-4].expresion
     }; 
 break;
 case 91:
  this.$ = {
-        nodo: (new case_($$[$0-2].nodo, $$[$0].nodo, _$[$0-3].first_line, _$[$0-3].first_column))
+        nodo: (new case_($$[$0-2].nodo, $$[$0].nodo, _$[$0-3].first_line, _$[$0-3].first_column)),
+
+        expresion: $$[$0-2].expresion
     }; 
 break;
 case 92:
  this.$ = {
         text: $$[$0-7] + $$[$0-6] + $$[$0-5] + " " + $$[$0-4] + " " + $$[$0-3] + " " + $$[$0-2] + $$[$0-1],
         escritura: 1,
-        instr: $$[$0]
+        instr: $$[$0].instr
     }; 
 break;
 case 93:
  this.$ = {
         text: $$[$0-7] + " " + $$[$0-6] + $$[$0-5] + " " + $$[$0-4] + " " + $$[$0-3] + " " + $$[$0-2] + $$[$0-1],
         escritura: 1,
-        instr: $$[$0]
+        instr: $$[$0].instr
     }; 
 break;
 case 94: case 95:
  this.$ = {
-        nodo: (new for_($$[$0-4].nodo, $$[$0-2].nodo, $$[$0-5].nodo, $$[$0].nodo, $$[$0-5].id, _$[$0-7].first_line, _$[$0-7].first_column))
+        nodo: (new for_($$[$0-4].nodo, $$[$0-2].nodo, $$[$0-5].nodo, $$[$0].nodo, $$[$0-5].id, _$[$0-7].first_line, _$[$0-7].first_column)),        
+
+        tipo: "for_",
+        instr: $$[$0]
     }; 
 break;
 case 96:
  this.$ = {
-        nodo: (new for_($$[$0-4].nodo, $$[$0-2].nodo, null, $$[$0].nodo, $$[$0-6], _$[$0-8].first_line, _$[$0-8].first_column))
+        nodo: (new for_($$[$0-4].nodo, $$[$0-2].nodo, null, $$[$0].nodo, $$[$0-6], _$[$0-8].first_line, _$[$0-8].first_column)),
+        
+        tipo: "for_",
+        instr: $$[$0-1]
     }; 
 break;
 case 97:
  this.$ = {
-        nodo: (new return_(null, _$[$0-1].first_line, _$[$0-1].first_column))
+        nodo: (new return_(null, _$[$0-1].first_line, _$[$0-1].first_column)),
+
+        tipo: "return_"
     }; 
 break;
 case 98:
   this.$ = {
-        nodo: (new return_($$[$0-1].nodo, _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new return_($$[$0-1].nodo, _$[$0-2].first_line, _$[$0-2].first_column)),
+
+        tipo: "return_",
+        expresion: $$[$0-1].expresion
     }; 
 break;
 case 99:
  this.$ = {
-        nodo: (new function_($$[$0-6], $$[$0].nodo, $$[$0-4], _$[$0-7].first_line, _$[$0-7].first_column, $$[$0-1]))
+        nodo: (new function_($$[$0-6], $$[$0].nodo, $$[$0-4], _$[$0-7].first_line, _$[$0-7].first_column, $$[$0-1])),
+
+        tipo: "funcion",
+        id: $$[$0-6],
+        param: $$[$0-4],
+        instr: $$[$0].instr
     }; 
 break;
 case 100:
  this.$ = {
-        nodo: (new function_($$[$0-5], $$[$0].nodo, [], _$[$0-6].first_line, _$[$0-6].first_column, $$[$0-1]))
+        nodo: (new function_($$[$0-5], $$[$0].nodo, [], _$[$0-6].first_line, _$[$0-6].first_column, $$[$0-1])),
+
+        tipo: "funcion",
+        id: $$[$0-5],
+        instr: $$[$0].instr
     }; 
 break;
 case 103:
