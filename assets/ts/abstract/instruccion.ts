@@ -25,5 +25,5 @@ export abstract class instruccion{
         this._columna = columna;
     }   
 
-    public abstract ejecutar(environment:ambiente):any;    
+    public abstract ejecutar(environment:ambiente, a?:number):any;    
 }

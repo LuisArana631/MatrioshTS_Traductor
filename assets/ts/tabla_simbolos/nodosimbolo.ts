@@ -1,17 +1,25 @@
 import { tipo } from '../abstract/valores';
 
-export class nodoSimbolo{
+export class nodoSimbolo{    
+    //DATOS GLOBALES
     private _tipo:tipo;
     private _id:string;
-    private _ambiente:string;
-    private _instrucciones:any;
+    private _ambiente:string;    
     private _linea:number;
     private _columna:number;
-    private _valor:any;
-    private _parametros:any;
     private _tipostr:string;
 
-    constructor(tipo_:string, id:string, ambiente:string, instrucciones:any, parametros:any, valor:any, linea:number, columna:number){
+    //FUNCIONES
+    private _instrucciones:any;
+    private _parametros:any;
+
+    //VARIABLES
+    private _valor:any;
+
+    //AREGLOS
+    private _dimension:number;  
+
+    constructor(tipo_:string, id:string, ambiente:string, instrucciones:any, parametros:any, valor:any, linea:number, columna:number, dimension:number){
 
         if(tipo_ === "string"){
             this._tipo = tipo.STRING;
@@ -24,7 +32,7 @@ export class nodoSimbolo{
         }else if(tipo_ === "types"){
             this._tipo = tipo.TYPES;
         }else if(tipo_ === ""){
-            this._tipo = tipo.ANY;
+            this._tipo = tipo.NULL;
         }
         
         this._tipostr = tipo_;
@@ -74,6 +82,12 @@ export class nodoSimbolo{
         return this._columna;
     }
 
+    get Dimension():number{
+        return this._dimension;
+    }
+
+
+
     set Tipostr(_tipo:string){
         this._tipostr = _tipo;
     }
@@ -108,6 +122,10 @@ export class nodoSimbolo{
 
     set Columna(columna:number){
         this._columna = columna;
+    }
+
+    set Dimension(dimension:number){
+        this._dimension = dimension;
     }
 
 }

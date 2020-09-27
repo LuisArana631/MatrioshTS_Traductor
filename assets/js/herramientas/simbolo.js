@@ -1,8 +1,18 @@
 export class simbolo {
-    constructor(valor, id, tipo) {
+    constructor(valor, id, tipo, tipostr, linea, columna, perm) {
         this._valor = valor;
         this._id = id;
         this._tipo = tipo;
+        this._tipostr = tipostr;
+        this._linea = linea;
+        this._columna = columna;
+        this._perm = perm;
+    }
+    get Perm() {
+        return this._perm;
+    }
+    set Perm(perm) {
+        this._perm = perm;
     }
     get valor() {
         return this._valor;
