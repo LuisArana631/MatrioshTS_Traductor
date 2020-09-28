@@ -19,6 +19,10 @@
     const { return_ } = require('../js/instruccion/return');
     const { function_ } = require('../js/instruccion/function');
     const { llamada_ } = require('../js/instruccion/llamada');
+    const { arreglo } = require('../js/instruccion/arreglo');
+    const { length_ } = require('../js/instruccion/length');
+    const { pop_ } = require('../js/instruccion/pop');
+    const { push_ } = require('../js/instruccion/push');
 
     //EXPRESIONES
     const { operacion_aritmetica, aritmetica } = require('../js/expresion/aritmetica');
@@ -229,7 +233,9 @@ instruccion
 
         tipo: "print",
         expresion: $3.expresion
-    }; }    
+    }; }  
+    | pop_funcion ';' { $$ = $1; }
+    | push_funcion ';' { $$ = $1; }  
     | error { errores.addError(new nodoError("Sintáctico","Se esperaba una instrucción y se encontró ",this._$.first_line,this._$.first_column,$1)); $$ = undefined; };
 
 asignacion     
@@ -274,44 +280,44 @@ declaracion_variables
         expresion: $6.expresion
     }; };
 
+length_funcion
+    : 'IDENTIFICADOR' '.' 'LENGTH' { $$ = {
+        nodo: (new length_($1, @1.first_line, @1.first_column))
+    }; };
+
+pop_funcion 
+    : 'IDENTIFICADOR' '.' 'POP' '(' ')' { $$ = {
+        nodo: (new pop_($1, @1.first_linea, @1.first_column))
+    }; };
+
+push_funcion
+    : 'IDENTIFICADOR' '.' 'PUSH' '(' expresion ')' { $$ = {
+        nodo: (new push_($1, $5.nodo, @1.first_linea, @1.first_column))
+    }; };
+
 declaracion_arreglos
-    : tipo_restriccion 'IDENTIFICADOR' ':' lista_dimensiones ';' { $$ = {
-        text: $1.text + " " + $2 + $3 + $4.text + $5,
-        escritura: 0,
+    : tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato lista_dimensiones ';' { $$ = {
+        nodo: (new arreglo($2, null, @1.first_linea, @1.first_column, $4, $1)),
+
+        tipo: "arreglo",
+        id:  $2
+    };  }
+    | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato lista_dimensiones '=' '[' 'valores_arreglo' ']' ';' { $$ = {
+        nodo: (new arreglo($2, $8, @1.first_linea, @1.first_column, $4, $1)),        
 
         tipo: "arreglo",
         id:  $2
     }; }
-    | tipo_restriccion 'IDENTIFICADOR' ':' lista_dimensiones '=' 'valores_arreglo' ';' { $$ = {
-        text: $1.text + " " + $2 + $3 + $4.text + $5 + $6.text + $7,
-        escritura: 0,
-
-        tipo: "arreglo",
-        id:  $2
-    }; }
-    | tipo_restriccion 'IDENTIFICADOR' ':' 'ARRAY' '<' 'tipo_dato' '>' ';' { $$ = {
-        text: $1.text + " " + $2 + $3 + $4 + $5 + $5 + $6 + $7,
-        escritura: 0,
-
-        tipo: "arreglo",
-        id:  $2,
-        tipo: $6
-    }; }
-    | tipo_restriccion 'IDENTIFICADOR' ':' 'ARRAY' '<' 'tipo_dato' '>' '=' 'valores_arreglo' ';' { $$ = {
-        text: $1.text + " " + $2 + $3 + $4 + $5 + $5 + $6 + $7 + $8.text + $9,
-        escritura: 0,
-
-        tipo: "arreglo",
-        id:  $2,
-        tipo: $6
-    }; }
-    | tipo_restriccion 'IDENTIFICADOR' '=' 'valores_arreglo' ';' { $$ = {
-        text: $1.text + " " + $2 + $3 + $4.text + $5,
-        escritura: 0,
+    | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato lista_dimensiones  '=' lista_dimensiones ';' { $$ = {
+        nodo: (new arreglo($2, null , @1.first_linea, @1.first_column, $4, $1)),
 
         tipo: "arreglo",
         id:  $2
     }; };
+
+valores_arreglo
+    : valores_arreglo ',' expresion { $1.push($3); $$ = $1; }
+    | expresion { $$ = [$1]; };
 
 lista_dimensiones
     : lista_dimensiones '[' ']' { $$ = {
@@ -552,7 +558,10 @@ dato_valor
             tipo: "boolean"
         }
     }; }
-    | llamada { $$ = $1; };
+    | llamada { $$ = $1; }
+    | length_funcion { $$ = $1; }
+    | pop_funcion { $$ = $1; }
+    | push_funcion { $$ = $1; };
 
 llamada
     : 'IDENTIFICADOR' '(' ')' { $$ = {
