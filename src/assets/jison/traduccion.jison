@@ -7,7 +7,7 @@
     const { tabla_simbolos } = require('../js/tabla_simbolos/tablasimbolos');
 
     let name_function = new Array;
-    name_function.push("Global");    
+    name_function.push("global");    
 %}
 
 %lex
@@ -223,6 +223,14 @@ instruccion
         tipo: "print",
         expresion: $3.expresion
     }; }    
+    | pop_funcion ';' { $$ = {
+        text: $1.text + $2,
+        escritura: 0
+    }; }
+    | push_funcion ';' { $$ = {
+        text: $1.text + $2,
+        escritura: 0
+    }; }
     | error { errores.addError(new nodoError("Sintáctico","Se esperaba una instrucción y se encontró ",this._$.first_line,this._$.first_column,$1)); $$ = undefined; };
 
 asignacion     
@@ -277,44 +285,64 @@ declaracion_variables
     }; 
     tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, $6.valor,  @1.first_line, @1.first_column, 0)); } };
 
-declaracion_arreglos
-    : tipo_restriccion 'IDENTIFICADOR' ':' lista_dimensiones ';' { $$ = {
-        text: $1 + " " + $2 + $3 + $4.text + $5,
-        escritura: 0,
-
-        tipo: "arreglo",
-        id:  $2
-    }; }
-    | tipo_restriccion 'IDENTIFICADOR' ':' lista_dimensiones '=' 'valores_arreglo' ';' { $$ = {
-        text: $1 + " " + $2 + $3 + $4.text + $5 + $6.text + $7,
-        escritura: 0,
-
-        tipo: "arreglo",
-        id:  $2
-    }; }
-    | tipo_restriccion 'IDENTIFICADOR' ':' 'ARRAY' '<' 'tipo_dato' '>' ';' { $$ = {
-        text: $1 + " " + $2 + $3 + $4 + $5 + $5 + $6 + $7,
-        escritura: 0,
-
-        tipo: "arreglo",
-        id:  $2,
-        tipo: $6
-    }; }
-    | tipo_restriccion 'IDENTIFICADOR' ':' 'ARRAY' '<' 'tipo_dato' '>' '=' 'valores_arreglo' ';' { $$ = {
-        text: $1 + " " + $2 + $3 + $4 + $5 + $5 + $6 + $7 + $8.text + $9,
-        escritura: 0,
-
-        tipo: "arreglo",
-        id:  $2,
-        tipo: $6
-    }; }
-    | tipo_restriccion 'IDENTIFICADOR' '=' 'valores_arreglo' ';' { $$ = {
-        text: $1 + " " + $2 + $3 + $4.text + $5,
-        escritura: 0,
-
-        tipo: "arreglo",
-        id:  $2
+length_funcion
+    : 'IDENTIFICADOR' '.' 'LENGTH' { $$ = {
+        text: $1 + $2 + $3,
+        escritura: 0
     }; };
+
+pop_funcion 
+    : 'IDENTIFICADOR' '.' 'POP' '(' ')' { $$ = {
+        text: $1 + $2 + $3 + $4 + $5,
+        escritura: 0
+    }; };
+
+push_funcion
+    : 'IDENTIFICADOR' '.' 'PUSH' '(' expresion ')' { $$ = {
+        text: $1 + $2 + $3 + $4 + $5.text + $6,
+        escritura: 0
+    }; };
+
+declaracion_arreglos
+    : tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato lista_dimensiones ';' { $$ = {
+        text: $1 + " " + $2 + $3 + $4 + $5.text + $6,
+        escritura: 0,
+
+        tipo: "arreglo",
+        id:  $2
+    }; 
+    tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, "@arreglo", @1.first_line, @1.first_column, 0)); }
+    | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato lista_dimensiones '=' '[' 'valores_arreglo' ']' ';' { 
+        let str_items = "";
+        let count_items = 0;
+        for(let item of $8){
+            if(count_items > 0){
+                str_items += "," + item.text
+            }else{
+                str_items += item.text
+            }
+            count_items++;
+        }
+        $$ = {
+        text: $1 + " " + $2 + $3 + $4 + $5.text + $6 + $7 + str_items + $9 + $10,
+        escritura: 0,
+
+        tipo: "arreglo",
+        id:  $2
+    }; 
+    tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, "@arreglo", @1.first_line, @1.first_column, 0)); }
+    | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato lista_dimensiones  '=' lista_dimensiones ';' { $$ = {
+        text: $1 + " " + $2 + $3 + $4 + $5.text + $6 + $7.text + $8,
+        escritura: 0,
+
+        tipo: "arreglo",
+        id:  $2
+    }; 
+    tabla_simbolos.push_simbolo(new nodoSimbolo($4, $2, name_function[name_function.length-1], undefined, undefined, "@arreglo", @1.first_line, @1.first_column, 0)); };
+
+valores_arreglo
+    : valores_arreglo ',' expresion { $1.push($3); $$ = $1; }
+    | expresion { $$ = [$1]; };
 
 lista_dimensiones
     : lista_dimensiones '[' ']' { $$ = {
@@ -600,7 +628,10 @@ dato_valor
             dato: $1.id,
             tipo: "llamada"
         }
-    }; };
+    }; }
+    | length_funcion { $$ = $1; }
+    | pop_funcion { $$ = $1; }
+    | push_funcion { $$ = $1; };
 
 llamada
     : 'IDENTIFICADOR' '(' ')' { $$ = {

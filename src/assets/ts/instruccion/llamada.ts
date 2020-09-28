@@ -1,6 +1,5 @@
 import { instruccion } from '../abstract/instruccion';
 import { ambiente } from '../herramientas/ambiente';
-import { expresion } from '../abstract/expresion';
 
 export class llamada_ extends instruccion{
     constructor(private id:string, private parametros:Array<any>, linea:number, columna:number){
