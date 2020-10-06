@@ -191,7 +191,7 @@ export class HomePage {
       this.contenido_traduccion += "):" + item.tipo_dato_f + "{\n";
 
       this.conteo_tabs++;
-
+      
       for(const sub_item of item.instr){
         this.concatenar_traduccion(sub_item);
       }
@@ -214,6 +214,16 @@ export class HomePage {
 
       this.contenido_traduccion += ");\n";
 
+    }else if(item.escritura == 6){  //CASES DEFAULT
+      this.contenido_traduccion =  this.contenido_traduccion + tabular +  item.text + "\n";
+      this.conteo_tabs++;
+      
+      for(const sub_item of item.instr){
+        this.concatenar_traduccion(sub_item);
+      }
+
+      this.conteo_tabs--;
+      this.contenido_traduccion = this.contenido_traduccion + tabular +  "\n";
     }
   }
 
@@ -526,23 +536,37 @@ export class HomePage {
       this.str_ast += "switch_" + sub_instr + instr_num + " -> __cases" + instr_num + sub_instr + ";\n";
 
       for(let instr_item of item.instr){
-        this.str_ast += "__case" + instr_num + sub_instr + "[label = \"Case\"];\n";
-        this.str_ast += "__cases" + instr_num + sub_instr + " -> __case" +  instr_num + sub_instr + ";\n";
+        if(instr_item.expresion){
+          this.str_ast += "__case" + instr_num + sub_instr + "[label = \"Case\"];\n";
+          this.str_ast += "__cases" + instr_num + sub_instr + " -> __case" +  instr_num + sub_instr + ";\n";
 
-        let next_instr = sub_instr +1;
+          let next_instr = sub_instr +1;
 
-        this.str_ast += "__cases" + instr_num + next_instr + "[label = \"Cases\"];\n";
-        this.str_ast += "__cases" + instr_num + sub_instr + " -> __cases" + instr_num + next_instr + ";\n";
+          this.str_ast += "__cases" + instr_num + next_instr + "[label = \"Cases\"];\n";
+          this.str_ast += "__cases" + instr_num + sub_instr + " -> __cases" + instr_num + next_instr + ";\n";
 
-        this.str_ast += "__exp" + instr_num + sub_instr + " [label = \"Condicion\"];\n";
-        this.str_ast += "__case" + instr_num + sub_instr + " -> __exp" + instr_num + sub_instr + ";\n";
+          this.str_ast += "__exp" + instr_num + sub_instr + " [label = \"Condicion\"];\n";
+          this.str_ast += "__case" + instr_num + sub_instr + " -> __exp" + instr_num + sub_instr + ";\n";
 
-        this.graficar_expresion(instr_item.expresion, instr_num, sub_instr + 1400, "__exp"+instr_num+sub_instr);
+          this.graficar_expresion(instr_item.expresion, instr_num, sub_instr + 1400, "__exp"+instr_num+sub_instr);
 
-        for(let sub_instr_item of instr_item.instr){
-          this.graficar_instruccion(sub_instr_item, instr_num, sub_instr + 1300, "__case" + instr_num + sub_instr);
-        }        
- 
+          for(let sub_instr_item of instr_item.instr){
+            this.graficar_instruccion(sub_instr_item, instr_num, sub_instr + 1300, "__case" + instr_num + sub_instr);
+          }        
+        }else{
+          this.str_ast += "__default" + instr_num + sub_instr + "[label = \"Default\"];\n";
+          this.str_ast += "__cases" + instr_num + sub_instr + " -> __default" +  instr_num + sub_instr + ";\n";
+
+          let next_instr = sub_instr +1;
+
+          this.str_ast += "__cases" + instr_num + next_instr + "[label = \"Cases\"];\n";
+          this.str_ast += "__cases" + instr_num + sub_instr + " -> __cases" + instr_num + next_instr + ";\n";
+
+          for(let sub_instr_item of instr_item.instr){
+            this.graficar_instruccion(sub_instr_item, instr_num, sub_instr + 1400, "__default" + instr_num + sub_instr);
+          }        
+        }
+
         sub_instr++;
       }
     }else if(item.tipo == "break"){
@@ -599,24 +623,25 @@ export class HomePage {
 
           sub_instr++;
         }
-
-        this.str_ast += "_instrucciones__" + sub_instr + instr_num + "[label = \"Instrucciones\"];\n";
-        this.str_ast += name_fun + " -> _instrucciones__" + sub_instr + instr_num + ";\n";
-
-        for(let instr_item of item.instr){
-          this.str_ast += "_instruccion__" + sub_instr + instr_num + "[label = \"Instruccion\"];\n";
-          this.str_ast += "_instrucciones__" + sub_instr + instr_num + " -> _instruccion__" + sub_instr + instr_num + ";\n";
-
-          let next_instr_num = sub_instr + 1;
-
-          this.str_ast += "_instrucciones__" + next_instr_num + instr_num + "[label = \"Instrucciones\"];\n";
-          this.str_ast += "_instrucciones__" + sub_instr + instr_num + " -> _instrucciones__" + next_instr_num + instr_num + ";\n";
-
-          this.graficar_instruccion(instr_item, instr_num, sub_instr, "_instruccion__" + sub_instr +  instr_num);
-
-          sub_instr++;
-        }
       }
+
+      this.str_ast += "_instrucciones__" + sub_instr + instr_num + "[label = \"Instrucciones\"];\n";
+      this.str_ast += name_fun + " -> _instrucciones__" + sub_instr + instr_num + ";\n";
+
+      for(let instr_item of item.instr){
+        this.str_ast += "_instruccion__" + sub_instr + instr_num + "[label = \"Instruccion\"];\n";
+        this.str_ast += "_instrucciones__" + sub_instr + instr_num + " -> _instruccion__" + sub_instr + instr_num + ";\n";
+
+        let next_instr_num = sub_instr + 1;
+
+        this.str_ast += "_instrucciones__" + next_instr_num + instr_num + "[label = \"Instrucciones\"];\n";
+        this.str_ast += "_instrucciones__" + sub_instr + instr_num + " -> _instrucciones__" + next_instr_num + instr_num + ";\n";
+
+        this.graficar_instruccion(instr_item, instr_num, sub_instr, "_instruccion__" + sub_instr +  instr_num);
+
+        sub_instr++;
+      }
+      
       
     }else if(item.tipo == "return_"){
       this.str_ast += "return_" + sub_instr + instr_num + "[label = \"Return\"];\n";
