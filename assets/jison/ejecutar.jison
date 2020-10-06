@@ -642,7 +642,7 @@ switch
         nodo: (new switch_($3.nodo, $6, @1.first_line, @1.first_column)),
         
         tipo: "switch_",
-        instr: $6.instr,
+        instr: $6,
         cond: $3.expresion
     }; };
 
@@ -654,7 +654,13 @@ case
     : 'CASE' expresion ':' statement_switch { $$ = {
         nodo: (new case_($2.nodo, $4.nodo, @1.first_line, @1.first_column)),
 
-        expresion: $2.expresion
+        expresion: $2.expresion,
+        instr: $4.instr
+    }; }
+    | 'DEFAULT' ':' statement_switch { $$ = {
+        nodo: (new case_(null, $3.nodo, @1.first_line, @1.first_column)),
+
+        instr: $3.instr
     }; };
 
 for_in

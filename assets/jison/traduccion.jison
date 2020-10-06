@@ -183,7 +183,7 @@ instruccion
     }; }
     | dato_valor '--' ';' { $$ = {
         text: $1.text + $2 + $3,
-        escritura: 1,
+        escritura: 0,
         valor: $1.valor--,
 
         tipo: "incremento",
@@ -726,10 +726,15 @@ cases
 case
     : 'CASE' expresion ':' instrucciones { $$ = {
         text: $1 + " " + $2.text + $3,
-        escritura: 1,
+        escritura: 6,
         instr: $4,
 
         expresion: $2.expresion
+    }; }
+    | 'DEFAULT' ':' instrucciones { $$ = {
+        text: $1 + $2,
+        escritura: 6,
+        instr: $3,
     }; };
 
 for_in
