@@ -9,7 +9,7 @@ export class string_c3d extends expresion_c3d {
     }
     traducir(env_, generador_, errores_) {
         const temporal_ = generador_.new_temporal();
-        generador_.add_expresion(temporal_, 'h');
+        generador_.add_code(`${temporal_} = h;`);
         const retorno_ = new retorno(temporal_, true, new tipos_(1));
         for (let i = 0; i < this.valor_.length; i++) {
             generador_.add_set_heap(this.valor_.charCodeAt(i), 'h');
@@ -17,6 +17,7 @@ export class string_c3d extends expresion_c3d {
         }
         generador_.add_set_heap("-1", 'h');
         generador_.next_heap();
+        generador_.add_set_stack(temporal_, 'p');
         return retorno_;
     }
 }

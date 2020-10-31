@@ -9,14 +9,40 @@ export class generador {
         return this.generador_ || (this.generador_ = new this());
     }
     crear_encabezado() {
-        this.codigo_.push("#include <stdio.h>");
-        this.codigo_.push("float heap[16384];");
-        this.codigo_.push("float stack[16384];");
-        this.codigo_.push("float p = 0;");
-        this.codigo_.push("float h = 0;");
+        let encabezado = "#include <stdio.h>\n";
+        encabezado += "float heap[16384];\n";
+        encabezado += "float stack[16384];\n";
+        encabezado += "float p = 0;\n";
+        encabezado += "float h = 0;\n";
+        if (this.temporal_contador > 0) {
+            let texto_ = "float ";
+            for (let i = 0; i < this.temporal_contador; i++) {
+                if (i > 0) {
+                    texto_ += ", t" + i;
+                }
+                else {
+                    texto_ += "t" + i;
+                }
+            }
+            encabezado += texto_ + ";\n";
+        }
+        return encabezado;
     }
     print_(tipo_, valor) {
-        this.codigo_.push(`printf("%${tipo_}", ${valor});`);
+        if (valor.charCodeAt(0) != 116) {
+            this.codigo_.push(`${this.es_funcion}printf("%${tipo_}", ${valor});`);
+        }
+        else {
+            if (tipo_ === "d") {
+                this.codigo_.push(`${this.es_funcion}printf("%${tipo_}",(int) ${valor});`);
+            }
+            else if (tipo_ === "f") {
+                this.codigo_.push(`${this.es_funcion}printf("%${tipo_}",(float) ${valor});`);
+            }
+            else {
+                this.codigo_.push(`${this.es_funcion}printf("%${tipo_}",(char) ${valor});`);
+            }
+        }
     }
     get_temporales() {
         return this.temp_strg;
@@ -80,15 +106,15 @@ export class generador {
         this.codigo_.push(`${this.es_funcion}stack[${index}] = ${valor_};`);
     }
     add_call(id_) {
-        this.codigo_.push(`${this.es_funcion}call ${id_};`);
+        this.codigo_.push(`${this.es_funcion}${id_}();`);
     }
     add_void(id_) {
         this.codigo_.push(`void ${id_}(){`);
         this.es_funcion = "     ";
     }
     add_end_void() {
+        this.codigo_.push(`${this.es_funcion}return;\n}`);
         this.es_funcion = "";
-        this.codigo_.push(`}`);
     }
     free_temp(temp_) {
         if (this.temp_strg.has(temp_)) {

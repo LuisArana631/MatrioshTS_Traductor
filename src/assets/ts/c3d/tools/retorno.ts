@@ -9,6 +9,7 @@ export class retorno{
     true_lbl: string;
     false_lbl: string;
     simbolo_: simbolo_c3d;
+    data_:any;
 
     constructor(valor_:string, temp_:boolean, tipo_:tipos_, simbolo_:simbolo_c3d|null = null){
         this.valor_ = valor_;

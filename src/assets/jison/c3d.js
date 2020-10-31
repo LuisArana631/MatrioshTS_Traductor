@@ -142,7 +142,7 @@ case 22:
 break;
 case 23:
  this.$ = {
-        nodo: (new print($$[$0-2].nodo, _$[$0-4].first_line, _$[$0-4].first_column)),
+        nodo: (new print_($$[$0-2].nodo, _$[$0-4].first_line, _$[$0-4].first_column)),
 
         tipo: "print",
         expresion: $$[$0-2].expresion
@@ -942,6 +942,7 @@ _handle_error:
     const { if_c3d } = require('../js/c3d/instrucciones/if');
     const { while_c3d } = require('../js/c3d/instrucciones/while');
     const { do_while_c3d } = require('../js/c3d/instrucciones/do_while');
+    const { print_ } = require('../js/c3d/instrucciones/print');
 
     //EXPRESIONES
     const { suma } = require('../js/c3d/expresion/suma');

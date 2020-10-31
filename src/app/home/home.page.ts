@@ -110,9 +110,7 @@ export class HomePage {
         this.ast = traductor_c3d.parse(this.fuente);        
         console.log(this.ast);
 
-        this.listaErrores = this.listaErrores.concat(errores.getErrores());
-
-        this.gener_.crear_encabezado();
+        this.listaErrores = this.listaErrores.concat(errores.getErrores());        
 
         this.cargar_nativas();
 
@@ -121,6 +119,7 @@ export class HomePage {
         this.gener_.add_end_void();
 
         this.traduccion = this.gener_.get_code();        
+        this.traduccion = this.gener_.crear_encabezado() + this.traduccion;
         /*---------------------------*/
 
         this.graficar_ast();
@@ -149,6 +148,7 @@ export class HomePage {
     let n_ = new nativas_();
     n_.print_true();
     n_.print_false();
+    n_.print_str();
   }
 
   mostrar_traduccion(){

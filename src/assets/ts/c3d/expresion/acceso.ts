@@ -20,7 +20,6 @@ export class primitivo_ extends expresion_c3d{
             case tipos_dato.NUMBER:
                 return new retorno(this.valor_, false, new tipos_(this.tipo_));
             case tipos_dato.BOOLEAN:
-                console.log(this.valor_);
                 let retorno_ = new retorno(this.valor_  ? '1' : '0', false, new tipos_(this.tipo_));
                 this.true_lbl = this.true_lbl == '' ? generador_.new_label() : this.true_lbl;
                 this.false_lbl = this.false_lbl == '' ? generador_.new_label() : this.false_lbl;

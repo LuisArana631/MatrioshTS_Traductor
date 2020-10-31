@@ -9,6 +9,7 @@
     const { if_c3d } = require('../js/c3d/instrucciones/if');
     const { while_c3d } = require('../js/c3d/instrucciones/while');
     const { do_while_c3d } = require('../js/c3d/instrucciones/do_while');
+    const { print_ } = require('../js/c3d/instrucciones/print');
 
     //EXPRESIONES
     const { suma } = require('../js/c3d/expresion/suma');
@@ -231,7 +232,7 @@ instruccion
         escritura: 0
     }; }
     | 'PRINT' '(' expresion ')' ';' { $$ = {
-        nodo: (new print($3.nodo, @1.first_line, @1.first_column)),
+        nodo: (new print_($3.nodo, @1.first_line, @1.first_column)),
 
         tipo: "print",
         expresion: $3.expresion

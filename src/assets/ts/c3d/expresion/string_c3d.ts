@@ -17,7 +17,7 @@ export class string_c3d extends expresion_c3d{
 
     public traducir(env_:ambiente_c3d, generador_:generador, errores_:Array<nodoError>):retorno{
         const temporal_ = generador_.new_temporal();
-        generador_.add_expresion(temporal_, 'h');
+        generador_.add_code(`${temporal_} = h;`);
 
         const retorno_ = new retorno(temporal_, true, new tipos_(1));
 
@@ -27,6 +27,8 @@ export class string_c3d extends expresion_c3d{
         }
         generador_.add_set_heap("-1", 'h');
         generador_.next_heap();
+
+        generador_.add_set_stack(temporal_, 'p');
 
         return retorno_;   
     }
