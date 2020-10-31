@@ -9,10 +9,14 @@ import { nodoSimbolo } from '../../assets/js/tabla_simbolos/nodosimbolo';
 import { ambiente } from '../../assets/js/herramientas/ambiente';
 import * as analizador from '../../assets/jison/traduccion';
 import * as ejecutar_code from '../../assets/jison/ejecutar';
+import * as traductor_c3d from '../../assets/jison/c3d';
 
 import { graphviz } from 'd3-graphviz';
 import { wasmFolder } from '@hpcc-js/wasm';
-import { expresion } from '../../assets/ts/abstract/expresion';
+import { ambiente_c3d } from '../../assets/ts/c3d/tabla_simbolos/ambiente';
+import { types_ } from '../../assets/ts/c3d/tools/type_';
+import { generador } from '../../assets/ts/c3d/instrucciones/generador';
+import { nativas_ } from '../../assets/ts/c3d/nativas/nativas';
 
 //GRAFICOS
 @Component({
@@ -27,9 +31,12 @@ export class HomePage {
   listaSimbolos:nodoSimbolo[] = [];
   listaFuncionesEjecutar:any[] = new Array;
   listaSimbolosEjecutar:any[] = new Array;
+  listaSimbolosC3D:any[] = new Array;
 
   //AMBIENTE
   env = new ambiente(null);  
+  env_c3d = new ambiente_c3d(null);
+  gener_ = generador.get_instance();
 
   //CONTENEDOR DE TEXTOS
   contenido_traduccion:string = "";
@@ -86,6 +93,62 @@ export class HomePage {
     }else{
       this.contenido_consola = this.contenido_consola + " ERROR -> No se realizó la traducción porque no hay código fuente. \nPS MatrioshTS>" 
     }   
+  }
+
+  parser_traduccion_c3d(){
+    if(this.fuente != undefined){
+      try{
+        this.contenido_consola = this.contenido_consola + " Traducción realizada con éxito. \nPS MatrioshTS>";
+        this.conteo_tabs = 0;
+
+        this.gener_.limpiar_c3d();
+        this.traduccion = "";
+        this.listaErrores = [];
+        errores.clear();
+
+        /*-----EJECUTAR Y MOSTRAR----*/
+        this.ast = traductor_c3d.parse(this.fuente);        
+        console.log(this.ast);
+
+        this.listaErrores = this.listaErrores.concat(errores.getErrores());
+
+        this.gener_.crear_encabezado();
+
+        this.cargar_nativas();
+
+        this.gener_.add_void("main");
+        this.codigo_c3d_sp();       
+        this.gener_.add_end_void();
+
+        this.traduccion = this.gener_.get_code();        
+        /*---------------------------*/
+
+        this.graficar_ast();
+        this.cargar_simbolos_c3d();
+      }catch(er){
+        /* NOTIFICAR ERROR EN TRADUCCIÓN */
+        console.log(er);
+        this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> " 
+      } 
+    }else{
+      this.contenido_consola = this.contenido_consola + " ERROR -> No se realizó la traducción porque no hay código fuente. \nPS MatrioshTS>" 
+    } 
+  }
+
+  cargar_simbolos_c3d(){
+    try{      
+      this.listaSimbolosC3D = [];
+      this.listaSimbolosC3D = Array.from(this.env_c3d.get_variables());  
+    }catch(er){
+      console.log(er);
+        this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> ";
+    }    
+  }
+
+  cargar_nativas(){
+    let n_ = new nativas_();
+    n_.print_true();
+    n_.print_false();
   }
 
   mostrar_traduccion(){
@@ -233,7 +296,7 @@ export class HomePage {
       this.listaErrores = errores.getErrores();
     }catch(er){
       console.log(er);
-        this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> " 
+        this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> ";
     }    
   }
 
@@ -247,6 +310,17 @@ export class HomePage {
       console.log(er);
       this.contenido_consola = this.contenido_consola + " " + er +" \nPS MatrioshTS> " 
     }
+  }
+
+  codigo_c3d_pp(){
+    
+  }
+
+  codigo_c3d_sp(){    
+    this.ast.forEach((item:any) => {
+      if(!(item.nodo instanceof types_))
+        item.nodo.traducir(this.env_c3d, this.gener_, this.listaErrores);
+    });      
   }
 
   ejecutar_codigo(){    
@@ -338,7 +412,6 @@ export class HomePage {
 
     this.str_ast += "}";
 
-    console.log(this.str_ast);
     graphviz(this.div_ast).renderDot(this.str_ast);
   }
 
@@ -413,10 +486,17 @@ export class HomePage {
         let name_else = "else_" + sub_instr + instr_num;
         this.str_ast += name_else + "[label = \"Else\"];\n";
         this.str_ast += name_if + "->" + name_else + ";\n";
-        for(let instr_item of item.else){
-          this.graficar_instruccion(instr_item, instr_num, sub_instr+400, "else_"+sub_instr+instr_num);
-          sub_instr++;
-        }
+        if( item.else instanceof Array){
+          for(let instr_item of item.else){
+            this.graficar_instruccion(instr_item, instr_num, sub_instr+400, "else_"+sub_instr+instr_num);
+            sub_instr++;
+          }
+        }else{
+          for(let instr_item of item.else.instr){
+            this.graficar_instruccion(instr_item, instr_num, sub_instr+400, "else_"+sub_instr+instr_num);
+            sub_instr++;
+          }
+        }        
       }            
     }else if(item.tipo == "while_"){  //AST WHILE
       this.str_ast += "while_" + instr_num + sub_instr + "[label = \"While\"];\n";

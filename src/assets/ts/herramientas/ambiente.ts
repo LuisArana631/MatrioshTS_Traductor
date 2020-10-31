@@ -1,6 +1,6 @@
 import { tipo } from '../abstract/valores';
 import { simbolo } from '../herramientas/simbolo';
-import { function_ } from '../instruccion/function';
+import { function_ } from '../instruccion/function';    
 
 export class ambiente{
     private _variables:Map<string, simbolo>;

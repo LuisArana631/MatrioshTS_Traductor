@@ -4,7 +4,27 @@
     const { errores } = require('../js/error/errores');
 
     //INSTRUCCIONES
-    const { declaracion } = require('../js/instruccion/declaracion');
+    const { declaracion_ } = require('../js/c3d/instrucciones/variables/declaracion');
+    const { statement_ } = require('../js/c3d/instrucciones/statement');
+    const { if_c3d } = require('../js/c3d/instrucciones/if');
+    const { while_c3d } = require('../js/c3d/instrucciones/while');
+    const { do_while_c3d } = require('../js/c3d/instrucciones/do_while');
+
+    //EXPRESIONES
+    const { suma } = require('../js/c3d/expresion/suma');
+    const { resta } = require('../js/c3d/expresion/resta');
+    const { multiplicacion } = require('../js/c3d/expresion/multiplicacion');
+    const { dividir } = require('../js/c3d/expresion/dividir');
+    const { modulo } = require('../js/c3d/expresion/modulo');
+    const { oper_rel, relacionales } = require('../js/c3d/logicas/relacional');
+    const { oper_logica, logicas_ } = require('../js/c3d/logicas/logicas_');
+
+    //DATOS 
+    const { primitivo_ } = require('../js/c3d/expresion/acceso');
+    const { string_c3d } = require('../js/c3d/expresion/string_c3d');
+    const { tipos_ } = require('../js/c3d/tools/tipo');
+//--------------------------------------------------------------------------------------
+    //INSTRUCCIONES
     const { print } = require('../js/instruccion/print');
     const { if_ } = require('../js/instruccion/if');
     const { while_ } = require('../js/instruccion/while');
@@ -25,10 +45,7 @@
     const { push_ } = require('../js/instruccion/push');
 
     //EXPRESIONES
-    const { operacion_aritmetica, aritmetica } = require('../js/expresion/aritmetica');
     const { operacion_unitaria, aritmetica_unitaria } = require('../js/expresion/aritmetica_unaria');
-    const { operacion_relacional, relacional } = require('../js/expresion/relacional');
-    const { operacion_logica, logica } = require('../js/expresion/logica');
 
     //DATOS 
     const { dato_literal } = require('../js/expresion/dato');
@@ -42,14 +59,6 @@ entero  [0-9]+
 decimal [0-9]+"."[0-9]+
 identificador ([a-zA-Z_])[a-zA-Z0-9_]*
 
-/* SECUENCIAS DE ESCAPE */
-saltolinea \\n
-tabulador \\t
-retornocarro \\r
-barrainvertida \\\\
-comillasimple \\\'
-comilladoble \\\"
-
 /* CADENAS */
 cadenadoble (\"[^"]*\")
 cadenasimple (\'[^']*\')
@@ -61,18 +70,9 @@ cadenasimple (\'[^']*\')
 %%
 \s+                   /* EVITAR ESPACIOS EN BLANCO */
 
-/* SECUENCIAS DE ESCAPE */
-{saltolinea}            return 'SALTOLINEA'
-{tabulador}             return 'TABULADOR'
-{retornocarro}          return 'RETORNOCARRO'
-{barrainvertida}        return 'BARRAINVERTIDA'
-
 /* CADENAS */
 {cadenadoble}           { /*yytext = yytext.substr( 1 , yyleng-2 );*/ return 'CADENA'; }
 {cadenasimple}          { /*yytext = yytext.substr( 1 , yyleng-2 );*/ return 'CADENA'; }     
-
-{comillasimple}         return 'COMILLASIMPLE'
-{comilladoble}          return 'COMILLADOBLE'
 
 /* TIPOS DE DATOS */
 "string"                return 'STRING'
@@ -128,6 +128,11 @@ cadenasimple (\'[^']*\')
 "function"              return 'FUNCTION'
 "console.log"           return 'PRINT'
 "graficar_ts"           return 'GRAFICAR'
+"new"                   return 'NEW'
+"CharAt"                return 'CHARAT'
+"ToLowerCase"           return 'TOLOWERCASE'
+"ToUpperCase"           return 'TOUPPERCASE'
+"Concat"                return 'CONCAT' 
 
 "true"                  return 'TRUE'
 "false"                 return 'FALSE'
@@ -163,7 +168,9 @@ cadenasimple (\'[^']*\')
 %left '==', '!='
 %left '>=', '<=', '<', '>'
 %left '+' '-'
-%left '*' '/' '%' '**'
+%left '*' '/' '%' 
+%left '(' ')' '[' ']' '{' '}'
+%left '**'
 
 %start init
 
@@ -215,7 +222,6 @@ instruccion
     }; }
     | 'CONTINUE' ';' { $$ = {
         nodo: (new continue_(@1.first_line, @1.first_column)),
-
         
         tipo: "continue"
     }; }
@@ -245,30 +251,15 @@ asignacion
     }; };
 
 declaracion_variables
-    : tipo_restriccion 'IDENTIFICADOR' ';' { $$ = {
-        nodo: (new declaracion($2, null, @1.first_line, @1.first_column, null, $1)),
-
-        tipo: "declaracion_variable",
-        restriccion: $1,
-        id: $2
-    }; }
-    | tipo_restriccion 'IDENTIFICADOR' '=' expresion ';' { $$ = {
-        nodo: (new declaracion($2, $4.nodo, @1.first_line, @1.first_column, null, $1)),
-
-        tipo: "declaracion_variable",
-        restriccion: $1,
-        id: $2,
-        expresion: $4.expresion        
-    }; }
-    | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato ';' { $$ = {
-        nodo: (new declaracion($2, null, @1.first_line, @1.first_column, $4, $1)),
+    : tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato ';' { $$ = {
+        nodo: (new declaracion_($4.nodo, $2, $1, null, @1.first_line, @1.first_column)),
 
         tipo: "declaracion_variable",
         restriccion: $1,
         id: $2
     }; }
     | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato '=' expresion ';' { $$ = {
-        nodo: (new declaracion($2, $6.nodo, @1.first_line, @1.first_column, $4, $1)),
+        nodo: (new declaracion_($4.nodo, $2, $1, $6.nodo, @1.first_line, @1.first_column)),
 
         tipo: "declaracion_variable",
         restriccion: $1,
@@ -293,19 +284,19 @@ push_funcion
 
 declaracion_arreglos
     : tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato lista_dimensiones ';' { $$ = {
-        nodo: (new arreglo($2, null, @1.first_linea, @1.first_column, $4, $1)),
+        nodo: (new arreglo($2, null, @1.first_linea, @1.first_column, $4.dato, $1)),
 
         tipo: "arreglo",
         id:  $2
     };  }
     | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato lista_dimensiones '=' '[' 'valores_arreglo' ']' ';' { $$ = {
-        nodo: (new arreglo($2, $8, @1.first_linea, @1.first_column, $4, $1)),        
+        nodo: (new arreglo($2, $8, @1.first_linea, @1.first_column, $4.dato, $1)),        
 
         tipo: "arreglo",
         id:  $2
     }; }
     | tipo_restriccion 'IDENTIFICADOR' ':' tipo_dato lista_dimensiones  '=' lista_dimensiones ';' { $$ = {
-        nodo: (new arreglo($2, null , @1.first_linea, @1.first_column, $4, $1)),
+        nodo: (new arreglo($2, null , @1.first_linea, @1.first_column, $4.dato, $1)),
 
         tipo: "arreglo",
         id:  $2
@@ -337,13 +328,13 @@ atributos
 
 atributo
     : 'IDENTIFICADOR' ':' 'tipo_dato' ';' { $$ = {  
-        text: $1 + $2 + $3 + $4,
+        text: $1 + $2 + $3.dato + $4,
         escritura: 0
     }; };
 
 expresion
     : expresion '+' expresion { $$ = {
-        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.SUMA, @1.first_line, @1.first_column)),
+        nodo: (new suma($1.nodo, $3.nodo, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -352,7 +343,7 @@ expresion
         }
     }; }
     | expresion '-' expresion { $$ = {
-        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.RESTA, @1.first_line, @1.first_column)),
+        nodo: (new resta($1.nodo, $3.nodo, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -362,7 +353,7 @@ expresion
         
     }; }
     | expresion '*' expresion { $$ = {
-        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.MULTIPLICACION, @1.first_line, @1.first_column)),
+        nodo: (new  multiplicacion($1.nodo, $3.nodo, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -371,7 +362,7 @@ expresion
         }
     }; }    
     | expresion '/' expresion { $$ = {
-        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.DIVISION, @1.first_line, @1.first_column)),
+        nodo: (new dividir($1.nodo, $3.nodo, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -380,7 +371,7 @@ expresion
         }
     }; }
     | expresion '%' expresion { $$ = {
-        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.MODULO, @1.first_line, @1.first_column)),
+        nodo: (new modulo($1.nodo, $3.nodo, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -422,7 +413,7 @@ expresion
         }
     }; } 
     | expresion '<' expresion { $$ = {
-        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.MENOR, @1.first_line, @1.first_column)),
+        nodo: (new relacionales($1.nodo, $3.nodo, oper_rel.MENOR, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -431,7 +422,7 @@ expresion
         }
     }; }
     | expresion '>' expresion { $$ = {
-        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.MAYOR, @1.first_line, @1.first_column)),
+        nodo: (new relacionales($1.nodo, $3.nodo, oper_rel.MAYOR, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -440,7 +431,7 @@ expresion
         }
     }; }
     | expresion '<=' expresion { $$ = {
-        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.MENOR_IGUAL, @1.first_line, @1.first_column)),
+        nodo: (new relacionales($1.nodo, $3.nodo, oper_rel.MENOR_IGUAL, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -449,7 +440,7 @@ expresion
         }
     }; }
     | expresion '>=' expresion { $$ = {
-        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.MAYOR_IGUAL, @1.first_line, @1.first_column)),
+        nodo: (new relacionales($1.nodo, $3.nodo, oper_rel.MAYOR_IGUAL, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -458,7 +449,7 @@ expresion
         }
     }; }
     | expresion '!=' expresion { $$ = {
-        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.NO_IGUAL, @1.first_line, @1.first_column)),
+        nodo: (new relacionales($1.nodo, $3.nodo, oper_rel.NO_IGUAL, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -467,7 +458,7 @@ expresion
         }
     }; }
     | expresion '==' expresion { $$ = {
-        nodo: (new relacional($1.nodo, $3.nodo, operacion_relacional.IGUAL, @1.first_line, @1.first_column)),
+        nodo: (new relacionales($1.nodo, $3.nodo, oper_rel.IGUAL, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -476,7 +467,7 @@ expresion
         }
     }; }
     | expresion '||' expresion { $$ = {
-        nodo: (new logica($1.nodo, $3.nodo, operacion_logica.OR, @1.first_line, @1.first_column)),
+        nodo: (new logicas_($1.nodo, $3.nodo, oper_logica.OR, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -485,7 +476,7 @@ expresion
         }
     }; }
     | expresion '&&' expresion { $$ = {
-        nodo: (new logica($1.nodo, $3.nodo, operacion_logica.AND, @1.first_line, @1.first_column)),
+        nodo: (new logicas_($1.nodo, $3.nodo, oper_logica.AND, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -494,7 +485,7 @@ expresion
         }
     }; }
     | '!' expresion { $$ = {
-        nodo: (new logica($2.nodo, null, operacion_logica.NEGAR, @1.first_line, @1.first_column)),
+        nodo: (new logicas_($2.nodo, null, oper_logica.NEGAR, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $2.expresion,
@@ -506,7 +497,7 @@ expresion
 dato_valor
     : '(' expresion ')' { $$ = $2; }
     | 'ENTERO' { $$ = {
-        nodo: (new dato_literal($1, 0, @1.first_line, @1.first_column)),
+        nodo: (new primitivo_(0, $1, @1.first_line, @1.first_column)),
 
         expresion: {
             dato: $1,
@@ -514,7 +505,7 @@ dato_valor
         }
     }; }
     | 'DECIMAL' { $$ = {
-        nodo: (new dato_literal($1, 0, @1.first_line, @1.first_column)),
+        nodo: (new primitivo_(0, $1, @1.first_line, @1.first_column)),
 
         expresion: {
             dato: $1,
@@ -522,7 +513,7 @@ dato_valor
         }   
     }; }
     | 'CADENA' { $$ = {
-        nodo: (new dato_literal($1.replace(/\"/g,""), 1, @1.first_line, @1.first_column)),
+        nodo: (new string_c3d(1, $1.replace(/\"/g,""), @1.first_line, @1.first_column)),
 
         expresion: {
             dato: $1,
@@ -539,7 +530,7 @@ dato_valor
         }
     }; }
     | 'TRUE' {  $$ = {
-        nodo: (new dato_literal($1, 2, @1.first_line, @1.first_column)),
+        nodo: (new primitivo_(2, true, @1.first_line, @1.first_column)),
 
         expresion: {
             dato: $1,
@@ -547,7 +538,7 @@ dato_valor
         }
     }; }
     | 'FALSE' { $$ = {
-        nodo: (new dato_literal($1, 2, @1.first_line, @1.first_column)),
+        nodo: (new primitivo_(2, false, @1.first_line, @1.first_column)),
 
         expresion: {
             dato: $1,
@@ -576,15 +567,27 @@ tipo_restriccion
     | 'CONST' { $$ = $1; };
 
 tipo_dato
-    : 'NUMBER' { $$ = $1; }
-    | 'STRING' { $$ = $1; }
-    | 'VOID' { $$ = $1; }
-    | 'BOOLEAN' { $$ = $1; }
+    : 'NUMBER' { $$ = {
+        nodo: (new tipos_(0)),
+        dato: $1
+    }; }
+    | 'STRING' { $$ = {
+        nodo: (new tipos_(1)),
+        dato: $1
+    }; }
+    | 'VOID' { $$ = {
+        nodo: (new tipos_(3)),
+        dato: $1
+    }; }
+    | 'BOOLEAN' { $$ = {
+        nodo: (new tipos_(2)),
+        dato: $1
+    }; }
     | 'IDENTIFICADOR' { $$ = $1; };
 
 if
     : 'IF' '(' expresion ')' statement else { $$ = {
-        nodo: (new if_($3.nodo, $5.nodo, $6.nodo, @1.first_line, @1.first_column)),
+        nodo: (new if_c3d($3.nodo, $5.nodo, $6.nodo, @1.first_line, @1.first_column)),
 
             tipo: "if_",
             condicion: $3.expresion,
@@ -601,11 +604,11 @@ else
 
 statement
     : '{' instrucciones '}' { $$ = {
-       nodo: (new instrucciones_($2,  @1.first_line, @1.first_column)),
+       nodo: (new statement_($2,  @1.first_line, @1.first_column)),
        instr: $2
     }; }
     | '{' '}' { $$ = {
-        nodo: (new instrucciones_(new Array(),  @1.first_line, @1.first_column)),
+        nodo: (new statement_(new Array(),  @1.first_line, @1.first_column)),
         instr: new Array()
     }; };
 
@@ -617,7 +620,7 @@ statement_switch
 
 while
     : 'WHILE' '(' expresion ')' statement { $$ = {
-        nodo: (new while_($3.nodo, $5.nodo, @1.first_line, @1.first_column)),        
+        nodo: (new while_c3d($3.nodo, $5.nodo, @1.first_line, @1.first_column)),        
 
         tipo: "while_",
         cond: $3.expresion,
@@ -626,7 +629,7 @@ while
 
 do_while
     : 'DO' statement 'WHILE' '(' expresion ')' ';' { $$ = {        
-        nodo: (new dowhile_($5.nodo, $2.nodo, @1.first_linea, @1.first_column)),        
+        nodo: (new do_while_c3d($5.nodo, $2.nodo, @1.first_linea, @1.first_column)),        
 
         tipo: "dowhile_",
         cond: $5.expresion,
@@ -708,7 +711,7 @@ sentencia_return
 
 declaracion_funciones
     : 'FUNCTION' 'IDENTIFICADOR' '(' parametros ')' ':' tipo_dato statement { $$ = {
-        nodo: (new function_($2, $8.nodo, $4, @1.first_line, @1.first_column, $7)),
+        nodo: (new function_($2, $8.nodo, $4, @1.first_line, @1.first_column, $7.dato)),
 
         tipo: "funcion",
         id: $2,
@@ -716,7 +719,7 @@ declaracion_funciones
         instr: $8.instr
     }; }
     | 'FUNCTION' 'IDENTIFICADOR' '(' ')' ':' tipo_dato statement { $$ = {
-        nodo: (new function_($2, $7.nodo, [], @1.first_line, @1.first_column, $6)),
+        nodo: (new function_($2, $7.nodo, [], @1.first_line, @1.first_column, $6.dato)),
 
         tipo: "funcion",
         id: $2,
@@ -730,5 +733,5 @@ parametros
 parametro
     : 'IDENTIFICADOR' ':' tipo_dato { $$ = {
         id: $1,
-        tipo: $3
+        tipo: $3.dato
     }; };
