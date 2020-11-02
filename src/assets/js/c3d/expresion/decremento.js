@@ -1,6 +1,6 @@
 import { expresion_c3d } from '../abstract/expresion';
 import { retorno } from '../tools/retorno';
-import { tipos_dato } from '../tools/tipo';
+import { tipos_, tipos_dato } from '../tools/tipo';
 import { nodoError } from '../../error/error';
 export class incremento extends expresion_c3d {
     constructor(right_, linea_, columna_) {
@@ -17,7 +17,7 @@ export class incremento extends expresion_c3d {
             switch (right_.tipo_.tipo) {
                 case tipos_dato.NUMBER:
                     generador_.add_expresion(temp_, 1, +right_.get_valor(), '-');
-                    return new retorno(temp_, true, right_.tipo_);
+                    return new retorno(temp_, true, new tipos_(tipos_dato.NUMBER));
                 default:
                     errores_.push(new nodoError("Semántico", `No se puede decrementar ${right_.tipo_.tipo}`, this.linea_, this.columna_, "Decrementar"));
                     break;

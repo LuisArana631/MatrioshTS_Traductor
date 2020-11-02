@@ -1,6 +1,6 @@
 import { expresion_c3d } from '../abstract/expresion';
 import { retorno } from '../tools/retorno';
-import { tipos_dato } from '../tools/tipo';
+import { tipos_, tipos_dato } from '../tools/tipo';
 import { tipo } from '../../abstract/valores';
 import { nodoError } from '../../error/error';
 export class suma extends expresion_c3d {
@@ -39,12 +39,9 @@ export class suma extends expresion_c3d {
                         generador_.add_label(right_.false_lbl);
                     }
                     generador_.add_expresion(temp_, print_left, print_right, '+');
-                    return new retorno(temp_, true, right_.tipo_.tipo == tipos_dato.NUMBER ? right_.tipo_ : left_.tipo_);
+                    return new retorno(temp_, true, new tipos_(tipos_dato.NUMBER));
                 case tipo.STRING:
-                    const temp_aux = generador_.new_temporal();
-                    generador_.free_temp(temp_aux);
                     if (left_.tipo_.tipo == tipos_dato.BOOLEAN) {
-                        let next_aux = generador_.new_temporal();
                         generador_.next_stack(env_.size + generador_.get_temporales().size);
                         generador_.add_call("bool_toStr");
                         generador_.prev_stack(env_.size + generador_.get_temporales().size);
@@ -63,16 +60,18 @@ export class suma extends expresion_c3d {
                     else if (right_.tipo_.tipo == tipos_dato.NUMBER) {
                     }
                     else {
-                        generador_.add_expresion(temp_aux, 'p', env_.size + 1, '+');
-                        generador_.add_set_stack(temp_aux, left_.get_valor());
-                        generador_.add_expresion(temp_aux, temp_aux, '1', '+');
-                        generador_.add_set_stack(temp_aux, right_.get_valor());
+                        generador_.free_temp(temp_);
+                        let temp_aux = generador_.new_temporal();
+                        let temp_aux2 = generador_.new_temporal();
                         generador_.next_stack(env_.size + generador_.get_temporales().size);
                         generador_.add_call("concat_str");
-                        generador_.add_get_stack(temp_, "p");
+                        generador_.add_expresion(temp_aux, "p", "1", "+");
                         generador_.prev_stack(env_.size + generador_.get_temporales().size);
+                        generador_.add_get_stack(temp_aux2, temp_aux);
+                        generador_.add_expresion(temp_aux, temp_aux, "1", "+");
+                        generador_.add_set_stack(temp_aux2, temp_aux);
                     }
-                    return new retorno(temp_, true, right_.tipo_.tipo == tipos_dato.STRING ? right_.tipo_ : left_.tipo_);
+                    return new retorno(temp_, true, new tipos_(tipos_dato.STRING));
                 default:
                     errores_.push(new nodoError("Semántico", `No se puede sumar ${left_.tipo_.tipo} + ${right_.tipo_.tipo}`, this.linea_, this.columna_, "Suma"));
                     break;

@@ -23,6 +23,12 @@ export class relacionales extends expresion_c3d {
         try {
             const left_oper = this.left_.traducir(env_, generador_, errores_);
             const right_oper = this.righ_.traducir(env_, generador_, errores_);
+            if (left_oper.get_valor().charAt(0) == "t") {
+                generador_.free_temp(left_oper.get_valor());
+            }
+            else if (right_oper.get_valor().charAt(0) == "t") {
+                generador_.free_temp(right_oper.get_valor());
+            }
             let retorno_ = new retorno('', false, new tipos_(2));
             this.true_lbl = this.true_lbl == '' ? generador_.new_label() : this.true_lbl;
             this.false_lbl = this.false_lbl == '' ? generador_.new_label() : this.false_lbl;
@@ -41,6 +47,7 @@ export class relacionales extends expresion_c3d {
                     }
                     else {
                         let temp_return = generador_.new_temporal();
+                        generador_.free_temp(temp_return);
                         generador_.next_stack(env_.size);
                         generador_.add_call("compare_str");
                         generador_.add_get_stack(temp_return, "p");
@@ -111,6 +118,7 @@ export class relacionales extends expresion_c3d {
                     }
                     else {
                         let temp_return = generador_.new_temporal();
+                        generador_.free_temp(temp_return);
                         generador_.next_stack(env_.size + generador_.get_temporales().size);
                         generador_.add_call("compare_str");
                         generador_.add_get_stack(temp_return, "p");
