@@ -149,6 +149,13 @@ export class HomePage {
     n_.print_true();
     n_.print_false();
     n_.print_str();
+    n_.compare_str();
+    n_.concat_str();
+    n_.bool_toStr();
+    n_.int_toStr();
+    n_.dec_toStr();
+    n_.potencia_();
+    n_.int_toChar();
   }
 
   mostrar_traduccion(){

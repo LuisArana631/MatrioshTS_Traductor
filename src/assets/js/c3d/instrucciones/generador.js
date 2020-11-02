@@ -10,12 +10,13 @@ export class generador {
     }
     crear_encabezado() {
         let encabezado = "#include <stdio.h>\n";
-        encabezado += "float heap[16384];\n";
-        encabezado += "float stack[16384];\n";
-        encabezado += "float p = 0;\n";
-        encabezado += "float h = 0;\n";
+        encabezado += "#include <math.h>\n";
+        encabezado += "double heap[16384];\n";
+        encabezado += "double stack[16384];\n";
+        encabezado += "double p = 0;\n";
+        encabezado += "double h = 0;\n";
         if (this.temporal_contador > 0) {
-            let texto_ = "float ";
+            let texto_ = "double ";
             for (let i = 0; i < this.temporal_contador; i++) {
                 if (i > 0) {
                     texto_ += ", t" + i;
@@ -94,16 +95,16 @@ export class generador {
         this.codigo_.push(`${this.es_funcion}p = p - ${size_};`);
     }
     add_get_heap(target_, index) {
-        this.codigo_.push(`${this.es_funcion}${target_} = heap[${index}];`);
+        this.codigo_.push(`${this.es_funcion}${target_} = heap[(int) ${index}];`);
     }
     add_set_heap(valor_, index) {
-        this.codigo_.push(`${this.es_funcion}heap[${index}] = ${valor_};`);
+        this.codigo_.push(`${this.es_funcion}heap[(int) ${index}] = ${valor_};`);
     }
     add_get_stack(target_, index) {
-        this.codigo_.push(`${this.es_funcion}$[${target_}] = stack[${index}];`);
+        this.codigo_.push(`${this.es_funcion}${target_} = stack[(int) ${index}];`);
     }
     add_set_stack(valor_, index) {
-        this.codigo_.push(`${this.es_funcion}stack[${index}] = ${valor_};`);
+        this.codigo_.push(`${this.es_funcion}stack[(int) ${index}] = ${valor_};`);
     }
     add_call(id_) {
         this.codigo_.push(`${this.es_funcion}${id_}();`);

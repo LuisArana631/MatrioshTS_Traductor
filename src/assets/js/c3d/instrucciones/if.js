@@ -9,24 +9,30 @@ export class if_c3d extends instruccion_c3d {
         this.elst = elst;
     }
     traducir(env_, generador_, errores_) {
-        const condicion = this.condicion.traducir(env_, generador_, errores_);
-        if (condicion.tipo_.tipo != tipos_dato.BOOLEAN) {
-            errores_.push(new nodoError("Semántico", "La condición debe ser tipo booleano", this.linea_, this.columna_, "Condición"));
-            return null;
+        try {
+            const condicion = this.condicion.traducir(env_, generador_, errores_);
+            if (condicion.tipo_.tipo != tipos_dato.BOOLEAN) {
+                errores_.push(new nodoError("Semántico", "La condición debe ser tipo booleano", this.linea_, this.columna_, "Condición"));
+                return null;
+            }
+            else {
+                let exit_lbl;
+                generador_.add_label(condicion.true_lbl);
+                this.instrucciones.traducir(env_, generador_, errores_);
+                if (this.elst) {
+                    exit_lbl = generador_.new_label();
+                    generador_.add_goto(exit_lbl);
+                }
+                generador_.add_label(condicion.false_lbl);
+                if (this.elst) {
+                    this.elst.traducir(env_, generador_, errores_);
+                    generador_.add_label(exit_lbl);
+                }
+            }
         }
-        else {
-            let exit_lbl;
-            generador_.add_label(condicion.true_lbl);
-            this.instrucciones.traducir(env_, generador_, errores_);
-            if (this.elst) {
-                exit_lbl = generador_.new_label();
-                generador_.add_goto(exit_lbl);
-            }
-            generador_.add_label(condicion.false_lbl);
-            if (this.elst) {
-                this.elst.traducir(env_, generador_, errores_);
-                generador_.add_label(exit_lbl);
-            }
+        catch (error) {
+            errores_.push(new nodoError("Semántico", error, this.linea_, this.columna_, "Desconocido"));
+            return;
         }
     }
 }

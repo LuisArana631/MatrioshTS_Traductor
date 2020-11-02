@@ -117,7 +117,7 @@ case 11:
         expresion: {
             izquierdo: $$[$0-2].expresion,
             operador: $$[$0-1]
-        }
+        }   
     }; 
 break;
 case 19:
@@ -265,7 +265,6 @@ case 45:
             derecho: $$[$0].expresion,
             operador: $$[$0-1]
         }
-        
     }; 
 break;
 case 46:
@@ -462,7 +461,7 @@ case 65:
 break;
 case 66:
  this.$ = {
-        nodo: (new string_c3d(1, $$[$0].replace(/\"/g,""), _$[$0].first_line, _$[$0].first_column)),
+        nodo: (new string_c3d(1, $$[$0].replace(/\"/g,"").replace(/\'/g,""), _$[$0].first_line, _$[$0].first_column)),
 
         expresion: {
             dato: $$[$0],
@@ -1314,109 +1313,109 @@ var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
 case 0:/* EVITAR ESPACIOS EN BLANCO */
 break;
-case 1: /*yy_.yytext = yy_.yytext.substr( 1 , yy_.yyleng-2 );*/ return 71; 
+case 1: yy_.yytext = yy_.yytext.replace("\\n", "\n").replace("\\\\","\\").replace("\\r", "\r").replace("\\t","\t");/*yy_.yytext = yy_.yytext.substr( 1 , yy_.yyleng-2 );*/ return 71; 
 break;
-case 2: /*yy_.yytext = yy_.yytext.substr( 1 , yy_.yyleng-2 );*/ return 71; 
+case 2:return 78
 break;
-case 3:return 78
+case 3:return 77
 break;
-case 4:return 77
+case 4:return 80
 break;
-case 5:return 80
+case 5:return 79
 break;
-case 6:return 79
+case 6:return 49
 break;
-case 7:return 49
+case 7:return 'ARRAY'
 break;
-case 8:return 'ARRAY'
+case 8:return 59
 break;
-case 9:return 59
+case 9:return 16
 break;
-case 10:return 16
+case 10:return 15
 break;
-case 11:return 15
+case 11:return 54
 break;
-case 12:return 54
+case 12:return 55
 break;
-case 13:return 55
+case 13:return 56
 break;
-case 14:return 56
+case 14:return 57
 break;
-case 15:return 57
+case 15:return 58
 break;
-case 16:return 58
+case 16:return 63
 break;
-case 17:return 63
+case 17:return 62
 break;
-case 18:return 62
+case 18:return 61
 break;
-case 19:return 61
+case 19:return 60
 break;
-case 20:return 60
+case 20:return 65
 break;
-case 21:return 65
+case 21:return 64
 break;
-case 22:return 64
+case 22:return 67
 break;
-case 23:return 67
+case 23:return 66
 break;
-case 24:return 66
+case 24:return 68
 break;
-case 25:return 68
+case 25:return '?'
 break;
-case 26:return '?'
+case 26:return 81
 break;
-case 27:return 81
+case 27:return 84
 break;
-case 28:return 84
+case 28:return 88
 break;
-case 29:return 88
+case 29:return 91
 break;
-case 30:return 91
+case 30:return 92
 break;
-case 31:return 92
+case 31:return 86
 break;
-case 32:return 86
+case 32:return 87
 break;
-case 33:return 87
+case 33:return 93
 break;
-case 34:return 93
+case 34:return 94
 break;
-case 35:return 94
+case 35:return 95
 break;
-case 36:return 95
+case 36:return 43
 break;
-case 37:return 43
+case 37:return 42
 break;
-case 38:return 42
+case 38:return 41
 break;
-case 39:return 41
+case 39:return 75
 break;
-case 40:return 75
+case 40:return 76
 break;
-case 41:return 76
+case 41:return 24
 break;
-case 42:return 24
+case 42:return 25
 break;
-case 43:return 25
+case 43:return 96
 break;
-case 44:return 96
+case 44:return 97
 break;
-case 45:return 97
+case 45:return 30
 break;
-case 46:return 30
+case 46:return 27
 break;
-case 47:return 27
+case 47:return 'NEW'
 break;
-case 48:return 'NEW'
+case 48:return 'CHARAT'
 break;
-case 49:return 'CHARAT'
+case 49:return 'TOLOWERCASE'
 break;
-case 50:return 'TOLOWERCASE'
+case 50:return 'TOUPPERCASE'
 break;
-case 51:return 'TOUPPERCASE'
+case 51:return 'CONCAT' 
 break;
-case 52:return 'CONCAT' 
+case 52:return 'CONCAT';
 break;
 case 53:return 72
 break;
@@ -1458,7 +1457,7 @@ case 71:errores.addError(new nodoError("Lexico","Caracter desconocido",yy_.yyllo
 break;
 }
 },
-rules: [/^(?:\s+)/,/^(?:(("[^"]*")))/,/^(?:(('[^']*')\/\/.*[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]))/,/^(?:string\b)/,/^(?:number\b)/,/^(?:boolean\b)/,/^(?:void\b)/,/^(?:type\b)/,/^(?:Array\b)/,/^(?:\*\*)/,/^(?:--)/,/^(?:\+\+)/,/^(?:\+)/,/^(?:-)/,/^(?:\*)/,/^(?:\/)/,/^(?:%)/,/^(?:>=)/,/^(?:<=)/,/^(?:>)/,/^(?:<)/,/^(?:==)/,/^(?:!=)/,/^(?:&&)/,/^(?:\|\|)/,/^(?:!)/,/^(?:\?)/,/^(?:if\b)/,/^(?:else\b)/,/^(?:switch\b)/,/^(?:case\b)/,/^(?:default\b)/,/^(?:while\b)/,/^(?:do\b)/,/^(?:for\b)/,/^(?:in\b)/,/^(?:of\b)/,/^(?:push\b)/,/^(?:pop\b)/,/^(?:length\b)/,/^(?:let\b)/,/^(?:const\b)/,/^(?:break\b)/,/^(?:continue\b)/,/^(?:return\b)/,/^(?:function\b)/,/^(?:console\.log\b)/,/^(?:graficar_ts\b)/,/^(?:new\b)/,/^(?:CharAt\b)/,/^(?:ToLowerCase\b)/,/^(?:ToUpperCase\b)/,/^(?:Concat\b)/,/^(?:true\b)/,/^(?:false\b)/,/^(?:\{)/,/^(?:\})/,/^(?:\[)/,/^(?:\])/,/^(?:=)/,/^(?:,)/,/^(?:;)/,/^(?::)/,/^(?:\()/,/^(?:\))/,/^(?:\.)/,/^(?:([0-9]+\.[0-9]+))/,/^(?:([0-9]+))/,/^(?:(([a-zA-Z_])[a-zA-Z0-9_]*))/,/^(?:{booleano})/,/^(?:$)/,/^(?:.)/],
+rules: [/^(?:\s+)/,/^(?:(("[^"]*")|('[^']*')\/\/.*[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]))/,/^(?:string\b)/,/^(?:number\b)/,/^(?:boolean\b)/,/^(?:void\b)/,/^(?:type\b)/,/^(?:Array\b)/,/^(?:\*\*)/,/^(?:--)/,/^(?:\+\+)/,/^(?:\+)/,/^(?:-)/,/^(?:\*)/,/^(?:\/)/,/^(?:%)/,/^(?:>=)/,/^(?:<=)/,/^(?:>)/,/^(?:<)/,/^(?:==)/,/^(?:!=)/,/^(?:&&)/,/^(?:\|\|)/,/^(?:!)/,/^(?:\?)/,/^(?:if\b)/,/^(?:else\b)/,/^(?:switch\b)/,/^(?:case\b)/,/^(?:default\b)/,/^(?:while\b)/,/^(?:do\b)/,/^(?:for\b)/,/^(?:in\b)/,/^(?:of\b)/,/^(?:push\b)/,/^(?:pop\b)/,/^(?:length\b)/,/^(?:let\b)/,/^(?:const\b)/,/^(?:break\b)/,/^(?:continue\b)/,/^(?:return\b)/,/^(?:function\b)/,/^(?:console\.log\b)/,/^(?:graficar_ts\b)/,/^(?:new\b)/,/^(?:CharAt\b)/,/^(?:ToLowerCase\b)/,/^(?:ToUpperCase\b)/,/^(?:Concat\b)/,/^(?:null\b)/,/^(?:true\b)/,/^(?:false\b)/,/^(?:\{)/,/^(?:\})/,/^(?:\[)/,/^(?:\])/,/^(?:=)/,/^(?:,)/,/^(?:;)/,/^(?::)/,/^(?:\()/,/^(?:\))/,/^(?:\.)/,/^(?:([0-9]+\.[0-9]+))/,/^(?:([0-9]+))/,/^(?:(([a-zA-Z_])[a-zA-Z0-9_]*))/,/^(?:{booleano})/,/^(?:$)/,/^(?:.)/],
 conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71],"inclusive":true}}
 });
 return lexer;

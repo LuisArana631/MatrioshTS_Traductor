@@ -16,67 +16,76 @@ export class declaracion_ extends instruccion_c3d {
         }
     }
     traducir(env_, generador_, errores_) {
-        let valor_;
-        if (this.valor == null) {
-            if (this.rest_ == 0) {
-                errores_.push(new nodoError("Semántico", `No se puede dejar una constante (${this.id_}) sin valor`, this.linea_, this.columna_, "Const"));
-                return;
-            }
-            if (this.tipo.tipo == tipos_dato.NUMBER) {
-                valor_ = new retorno('0', false, new tipos_(tipos_dato.NUMBER));
-            }
-            else if (this.tipo.tipo == tipos_dato.BOOLEAN) {
-                valor_ = new retorno('', false, new tipos_(tipos_dato.BOOLEAN));
-            }
-        }
-        else {
-            valor_ = this.valor.traducir(env_, generador_, errores_);
-        }
-        if (!this.mismo_tipo(this.tipo, valor_.tipo_)) {
-            errores_.push(new nodoError("Semántico", `No puedes insertar ${valor_.tipo_} en ${this.tipo.tipo}`, this.linea_, this.columna_, "Datos No Iguales"));
-            return;
-        }
-        /*
-        if(!this.validar_tipo(env_)){
-            return;
-        }*/
-        const new_var = env_.add_variable(this.rest_, this.id_, valor_.tipo_.tipo == tipos_dato.NULL ? this.tipo : valor_.tipo_, false, false, this.linea_, this.columna_);
-        if (!new_var) {
-            errores_.push(new nodoError("Semántico", `La variable ${this.id_} ya existe.`, this.linea_, this.columna_, "Variable Repetida"));
-            return;
-        }
-        else {
-            if (new_var.global_) {
-                if (this.tipo.tipo == tipos_dato.BOOLEAN) {
-                    const temporal_ = generador_.new_label();
-                    generador_.add_label(valor_.true_lbl);
-                    generador_.add_set_stack('1', new_var.pos);
-                    generador_.add_goto(temporal_);
-                    generador_.add_label(valor_.false_lbl);
-                    generador_.add_set_stack('0', new_var.pos);
-                    generador_.add_label(temporal_);
+        try {
+            let valor_;
+            if (this.valor == null) {
+                if (this.rest_ == 0) {
+                    errores_.push(new nodoError("Semántico", `No se puede dejar una constante (${this.id_}) sin valor`, this.linea_, this.columna_, "Const"));
+                    return;
                 }
-                else {
-                    generador_.add_set_stack(valor_.get_valor(), new_var.pos);
+                if (this.tipo.tipo == tipos_dato.NUMBER) {
+                    valor_ = new retorno('0', false, new tipos_(tipos_dato.NUMBER));
+                }
+                else if (this.tipo.tipo == tipos_dato.BOOLEAN) {
+                    valor_ = new retorno('', false, new tipos_(tipos_dato.BOOLEAN));
                 }
             }
             else {
-                const temp_ = generador_.new_temporal();
-                generador_.free_temp(temp_);
-                generador_.add_expresion(temp_, 'p', new_var.pos, '+');
-                if (this.tipo.tipo == tipos_dato.BOOLEAN) {
-                    const temp_lbl = generador_.new_label();
-                    generador_.add_label(valor_.true_lbl);
-                    generador_.add_set_stack('1', temp_);
-                    generador_.add_goto(temp_lbl);
-                    generador_.add_label(valor_.false_lbl);
-                    generador_.add_set_stack('0', temp_);
-                    generador_.add_label(temp_lbl);
+                valor_ = this.valor.traducir(env_, generador_, errores_);
+            }
+            if (valor_.get_valor().charAt(0) == "t") {
+                generador_.free_temp(valor_.get_valor());
+            }
+            if (!this.mismo_tipo(this.tipo, valor_.tipo_)) {
+                errores_.push(new nodoError("Semántico", `No puedes insertar ${valor_.tipo_} en ${this.tipo.tipo}`, this.linea_, this.columna_, "Datos No Iguales"));
+                return;
+            }
+            /*
+            if(!this.validar_tipo(env_)){
+                return;
+            }*/
+            const new_var = env_.add_variable(this.rest_, this.id_, valor_.tipo_.tipo == tipos_dato.NULL ? this.tipo : valor_.tipo_, false, false, this.linea_, this.columna_);
+            if (!new_var) {
+                errores_.push(new nodoError("Semántico", `La variable ${this.id_} ya existe.`, this.linea_, this.columna_, "Variable Repetida"));
+                return;
+            }
+            else {
+                if (new_var.global_) {
+                    if (this.tipo.tipo == tipos_dato.BOOLEAN) {
+                        const temporal_ = generador_.new_label();
+                        generador_.add_label(valor_.true_lbl);
+                        generador_.add_set_stack('1', new_var.pos + 1);
+                        generador_.add_goto(temporal_);
+                        generador_.add_label(valor_.false_lbl);
+                        generador_.add_set_stack('0', new_var.pos + 1);
+                        generador_.add_label(temporal_);
+                    }
+                    else {
+                        generador_.add_set_stack(valor_.get_valor(), new_var.pos + 1 + generador_.get_temporales().size);
+                    }
                 }
                 else {
-                    generador_.add_set_stack(valor_.get_valor(), temp_);
+                    const temp_ = generador_.new_temporal();
+                    generador_.free_temp(temp_);
+                    generador_.add_expresion(temp_, 'p', new_var.pos + 1 + generador_.get_temporales().size, '+');
+                    if (this.tipo.tipo == tipos_dato.BOOLEAN) {
+                        const temp_lbl = generador_.new_label();
+                        generador_.add_label(valor_.true_lbl);
+                        generador_.add_set_stack('1', temp_);
+                        generador_.add_goto(temp_lbl);
+                        generador_.add_label(valor_.false_lbl);
+                        generador_.add_set_stack('0', temp_);
+                        generador_.add_label(temp_lbl);
+                    }
+                    else {
+                        generador_.add_set_stack(valor_.get_valor(), temp_);
+                    }
                 }
             }
+        }
+        catch (error) {
+            errores_.push(new nodoError("Semántico", error, this.linea_, this.columna_, "Desconocido"));
+            return;
         }
     }
     validar_tipo(env_, errores_) {

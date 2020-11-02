@@ -11,19 +11,24 @@ export class do_while_c3d extends instruccion_c3d{
     }
 
     public traducir(env_:ambiente_c3d, generador_:generador, errores_:Array<nodoError>){
-        let lbl_true = generador_.new_label();
-        this.condicion_.true_lbl = lbl_true;
-        generador_.add_label(lbl_true);
+        try{
+            let lbl_true = generador_.new_label();
+            this.condicion_.true_lbl = lbl_true;
+            generador_.add_label(lbl_true);
 
-        this.instrucciones.traducir(env_, generador_, errores_);
+            this.instrucciones.traducir(env_, generador_, errores_);
 
-        const condicion = this.condicion_.traducir(env_, generador_, errores_);    
+            const condicion = this.condicion_.traducir(env_, generador_, errores_);    
 
-        if(condicion.tipo_.tipo != tipos_dato.BOOLEAN){
-            errores_.push(new nodoError("Semántico", "La condición debe ser tipo booleano", this.linea_, this.columna_, "Condicion"));
-            return null;
+            if(condicion.tipo_.tipo != tipos_dato.BOOLEAN){
+                errores_.push(new nodoError("Semántico", "La condición debe ser tipo booleano", this.linea_, this.columna_, "Condicion"));
+                return null;
+            }
+
+            generador_.add_label(condicion.false_lbl);
+        }catch(error){
+            errores_.push(new nodoError("Semántico", error, this.linea_, this.columna_, "Desconocido"));
+            return;
         }
-
-        generador_.add_label(condicion.false_lbl);
     }
 }

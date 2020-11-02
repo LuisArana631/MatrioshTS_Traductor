@@ -61,8 +61,7 @@ decimal [0-9]+"."[0-9]+
 identificador ([a-zA-Z_])[a-zA-Z0-9_]*
 
 /* CADENAS */
-cadenadoble (\"[^"]*\")
-cadenasimple (\'[^']*\')
+str_ (\"[^"]*\")|(\'[^']*\')
 
 /* COMENTARIOS */
 "//".* /* IGNORAR COMENTARIO */
@@ -72,8 +71,7 @@ cadenasimple (\'[^']*\')
 \s+                   /* EVITAR ESPACIOS EN BLANCO */
 
 /* CADENAS */
-{cadenadoble}           { /*yytext = yytext.substr( 1 , yyleng-2 );*/ return 'CADENA'; }
-{cadenasimple}          { /*yytext = yytext.substr( 1 , yyleng-2 );*/ return 'CADENA'; }     
+{str_}          { yytext = yytext.replace("\\n", "\n").replace("\\\\","\\").replace("\\r", "\r").replace("\\t","\t");/*yytext = yytext.substr( 1 , yyleng-2 );*/ return 'CADENA'; }     
 
 /* TIPOS DE DATOS */
 "string"                return 'STRING'
@@ -134,6 +132,7 @@ cadenasimple (\'[^']*\')
 "ToLowerCase"           return 'TOLOWERCASE'
 "ToUpperCase"           return 'TOUPPERCASE'
 "Concat"                return 'CONCAT' 
+"null"                  return 'CONCAT';
 
 "true"                  return 'TRUE'
 "false"                 return 'FALSE'
@@ -207,12 +206,12 @@ instruccion
         expresion: {
             izquierdo: $1.expresion,
             operador: $2
-        }
+        }   
     }; }
     | if { $$ = $1; }
     | while { $$ = $1; }
     | do_while { $$ = $1; }
-    | switch { $$ = $1; }   
+    | switch { $$ = $1; }
     | for_normal { $$ = $1; }
     | for_in { $$ = $1; }
     | for_of { $$ = $1; }
@@ -273,7 +272,7 @@ length_funcion
         nodo: (new length_($1, @1.first_line, @1.first_column))
     }; };
 
-pop_funcion 
+pop_funcion
     : 'IDENTIFICADOR' '.' 'POP' '(' ')' { $$ = {
         nodo: (new pop_($1, @1.first_linea, @1.first_column))
     }; };
@@ -326,7 +325,6 @@ atributos
     : atributos atributo { $1.push($2); $$ = $1; }
     | atributo { $$ = [$1]; };
 
-
 atributo
     : 'IDENTIFICADOR' ':' 'tipo_dato' ';' { $$ = {  
         text: $1 + $2 + $3.dato + $4,
@@ -351,7 +349,6 @@ expresion
             derecho: $3.expresion,
             operador: $2
         }
-        
     }; }
     | expresion '*' expresion { $$ = {
         nodo: (new  multiplicacion($1.nodo, $3.nodo, @1.first_line, @1.first_column)),
@@ -361,7 +358,7 @@ expresion
             derecho: $3.expresion,
             operador: $2
         }
-    }; }    
+    }; }  
     | expresion '/' expresion { $$ = {
         nodo: (new dividir($1.nodo, $3.nodo, @1.first_line, @1.first_column)),
 
@@ -514,7 +511,7 @@ dato_valor
         }   
     }; }
     | 'CADENA' { $$ = {
-        nodo: (new string_c3d(1, $1.replace(/\"/g,""), @1.first_line, @1.first_column)),
+        nodo: (new string_c3d(1, $1.replace(/\"/g,"").replace(/\'/g,""), @1.first_line, @1.first_column)),
 
         expresion: {
             dato: $1,
