@@ -29,6 +29,7 @@ export class suma extends expresion_c3d{
             }
 
             const temp_ = generador_.new_temporal();
+            generador_.free_temp(temp_); 
 
             const tipo_guia = this.determinar_tipo(left_.tipo_.tipo, right_.tipo_.tipo)
             
@@ -72,18 +73,21 @@ export class suma extends expresion_c3d{
 
                     }else if(right_.tipo_.tipo == tipos_dato.NUMBER){
                         
-                    }else{
-                        generador_.free_temp(temp_);                        
+                    }else{                                                             
+
                         let temp_aux = generador_.new_temporal();
                         let temp_aux2 = generador_.new_temporal();
 
+                        generador_.free_temp(temp_aux);
+                        generador_.free_temp(temp_aux2);
+
                         generador_.next_stack(env_.size + generador_.get_temporales().size);
                         generador_.add_call("concat_str");
-                        generador_.add_expresion(temp_aux, "p", "1", "+");
+                        generador_.add_code(`${temp_aux} = p;`);
                         generador_.prev_stack(env_.size + generador_.get_temporales().size);                    
 
                         generador_.add_get_stack(temp_aux2, temp_aux);
-                        generador_.add_expresion(temp_aux, temp_aux, "1", "+");
+                        generador_.add_expresion(temp_aux, temp_aux, env_.size + generador_.get_temporales().size +1, "+");
                         generador_.add_set_stack(temp_aux2, temp_aux);
                     }
                     return new retorno(temp_, true,new tipos_(tipos_dato.STRING));

@@ -24,6 +24,7 @@ export class nativas_{
 
     public print_str(){
         let gen_ = generador.get_instance();
+        
         let index_aux = gen_.new_temporal();
         let mov_heap = gen_.new_temporal();
         let char_val = gen_.new_temporal();
@@ -56,6 +57,7 @@ export class nativas_{
 
     public compare_str(){
         let gen_ = generador.get_instance();
+
         let var_1_index = gen_.new_temporal();
         let var_2_index = gen_.new_temporal();
         let aux_index = gen_.new_temporal();
