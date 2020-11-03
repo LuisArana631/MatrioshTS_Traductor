@@ -53,28 +53,87 @@ export class suma extends expresion_c3d{
                     return new retorno(temp_, true, new tipos_(tipos_dato.NUMBER));
                 case tipo.STRING:                    
                     if(left_.tipo_.tipo == tipos_dato.BOOLEAN){
-                        generador_.next_stack(env_.size + generador_.get_temporales().size);
-                        generador_.add_call("bool_toStr");
-                        
-                        generador_.prev_stack(env_.size + generador_.get_temporales().size);
-                        generador_.next_stack(env_.size + generador_.get_temporales().size);
+                        let temp_aux = generador_.new_temporal();
+                        let temp_aux2 = generador_.new_temporal();
 
-                        generador_.prev_stack(env_.size + generador_.get_temporales().size);
+                        generador_.free_temp(temp_aux);
+                        generador_.free_temp(temp_aux2);
+
+                        /* COLOCAR VALOR DEL BOOLEAN */
+                        if(left_.get_valor() == "1"){
+                            generador_.add_label(left_.true_lbl);
+                            
+                        }else{
+                            generador_.add_label(left_.false_lbl);
+                        }
+
+                        /* PASAR BOOLEAN A STRING */
+
+
+                        /* CONCATENAR STRINGS */
+                        generador_.next_stack(env_.size + generador_.get_temporales().size);
+                        generador_.add_call("concat_str");
+                        generador_.add_code(`${temp_aux} = p;`);
+                        generador_.prev_stack(env_.size + generador_.get_temporales().size);                    
+
+                        generador_.add_get_stack(temp_aux2, temp_aux);
+                        generador_.add_expresion(temp_aux, temp_aux, "1", "+");
+                        generador_.add_set_stack(temp_aux2, temp_aux);
                     }else if(right_.tipo_.tipo == tipos_dato.BOOLEAN){
-                        generador_.next_stack(env_.size + generador_.get_temporales().size);
-                        generador_.add_call("bool_toStr");
+                        let temp_aux = generador_.new_temporal();
+                        let temp_aux2 = generador_.new_temporal();
 
-                        
-                        generador_.prev_stack(env_.size + generador_.get_temporales().size);
-                        generador_.next_stack(env_.size + generador_.get_temporales().size);
+                        generador_.free_temp(temp_aux);
+                        generador_.free_temp(temp_aux2);
 
-                        generador_.prev_stack(env_.size + generador_.get_temporales().size);
+                        /* PASAR BOOLEAN A STRING */
+
+                        /* CONCATENAR STRINGS */
+                        generador_.next_stack(env_.size + generador_.get_temporales().size);
+                        generador_.add_call("concat_str");
+                        generador_.add_code(`${temp_aux} = p;`);
+                        generador_.prev_stack(env_.size + generador_.get_temporales().size);                    
+
+                        generador_.add_get_stack(temp_aux2, temp_aux);
+                        generador_.add_expresion(temp_aux, temp_aux, "1", "+");
+                        generador_.add_set_stack(temp_aux2, temp_aux);
                     }else if(left_.tipo_.tipo == tipos_dato.NUMBER){
+                        let temp_aux = generador_.new_temporal();
+                        let temp_aux2 = generador_.new_temporal();
 
+                        generador_.free_temp(temp_aux);
+                        generador_.free_temp(temp_aux2);
+
+                        /* PASAR NUMERO A STRING */
+
+                        /* CONCATENAR STRINGS */
+                        generador_.next_stack(env_.size + generador_.get_temporales().size);
+                        generador_.add_call("concat_str");
+                        generador_.add_code(`${temp_aux} = p;`);
+                        generador_.prev_stack(env_.size + generador_.get_temporales().size);                    
+
+                        generador_.add_get_stack(temp_aux2, temp_aux);
+                        generador_.add_expresion(temp_aux, temp_aux, "1", "+");
+                        generador_.add_set_stack(temp_aux2, temp_aux);
                     }else if(right_.tipo_.tipo == tipos_dato.NUMBER){
-                        
-                    }else{                                                             
+                        let temp_aux = generador_.new_temporal();
+                        let temp_aux2 = generador_.new_temporal();
 
+                        generador_.free_temp(temp_aux);
+                        generador_.free_temp(temp_aux2);
+
+                        /* PASAR NUMERO A STRING */
+
+                        /* CONCATENAR STRINGS */
+                        generador_.next_stack(env_.size + generador_.get_temporales().size);
+                        generador_.add_call("concat_str");
+                        generador_.add_code(`${temp_aux} = p;`);
+                        generador_.prev_stack(env_.size + generador_.get_temporales().size);                    
+
+                        generador_.add_get_stack(temp_aux2, temp_aux);
+                        generador_.add_expresion(temp_aux, temp_aux, "1", "+");
+                        generador_.add_set_stack(temp_aux2, temp_aux);
+                    }else{                                                             
                         let temp_aux = generador_.new_temporal();
                         let temp_aux2 = generador_.new_temporal();
 
@@ -87,7 +146,7 @@ export class suma extends expresion_c3d{
                         generador_.prev_stack(env_.size + generador_.get_temporales().size);                    
 
                         generador_.add_get_stack(temp_aux2, temp_aux);
-                        generador_.add_expresion(temp_aux, temp_aux, env_.size + generador_.get_temporales().size +1, "+");
+                        generador_.add_expresion(temp_aux, temp_aux, "1", "+");
                         generador_.add_set_stack(temp_aux2, temp_aux);
                     }
                     return new retorno(temp_, true,new tipos_(tipos_dato.STRING));
