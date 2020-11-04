@@ -169,7 +169,6 @@ export class suma extends expresion_c3d{
                         let temp_aux = generador_.new_temporal();
 
                         generador_.free_temp(temp_aux);
-                        generador_.free_temp(temp_);
 
                         /* PASAR NUMERO A STRING */
                         generador_.add_get_stack(temp_aux, env_.size + generador_.get_temporales().size+1);
@@ -184,10 +183,6 @@ export class suma extends expresion_c3d{
                         generador_.add_expresion(temp_aux, temp_aux, "1", "+"); //NOS POSICIONAMOS EN LA POSICIÓN DONDE ESTABA EL VALOR BOOLEANO
                         generador_.add_set_stack(temp_, temp_aux);  //ASIGNAMOS EL NUEVO VALOR RETORNADO
 
-                        generador_.add_code(`${temp_aux} = p;`);
-                        generador_.add_get_stack(temp_, temp_aux); //OBTENEMOS EL VALOR DEL RETURN
-                        generador_.add_expresion(temp_aux, temp_aux, "1", "+"); //NOS POSICIONAMOS EN LA POSICIÓN DONDE ESTABA EL VALOR BOOLEANO
-                        generador_.add_set_stack(temp_, temp_aux);  //ASIGNAMOS EL NUEVO VALOR RETORNADO
 
                         /* CONCATENAR STRINGS */
                         generador_.next_stack(env_.size + generador_.get_temporales().size -1);
