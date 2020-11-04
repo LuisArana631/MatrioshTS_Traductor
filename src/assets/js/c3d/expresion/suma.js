@@ -11,8 +11,41 @@ export class suma extends expresion_c3d {
     }
     traducir(env_, generador_, errores_) {
         try {
+            let aux_temporal;
             const left_ = this.left_oper.traducir(env_, generador_, errores_);
+            /* SI ES BOOLEANO */
+            if (left_.true_lbl != "" && left_.false_lbl != "") {
+                if (left_.get_valor() == "1") {
+                    aux_temporal = generador_.new_temporal();
+                    generador_.add_label(left_.true_lbl);
+                }
+                else if (left_.get_valor() == "0") {
+                    aux_temporal = generador_.new_temporal();
+                    generador_.add_label(left_.false_lbl);
+                }
+            }
+            /* SI ES NUMERO */
+            if (left_.tipo_.tipo == tipos_dato.NUMBER) {
+                aux_temporal = generador_.new_temporal();
+                generador_.add_set_stack(left_.get_valor(), env_.size + generador_.get_temporales().size);
+            }
             const right_ = this.right_oper.traducir(env_, generador_, errores_);
+            /* SI ES BOOLEANO */
+            if (right_.true_lbl != "" && right_.false_lbl != "") {
+                if (right_.get_valor() == "1") {
+                    aux_temporal = generador_.new_temporal();
+                    generador_.add_label(right_.true_lbl);
+                }
+                else if (right_.get_valor() == "0") {
+                    aux_temporal = generador_.new_temporal();
+                    generador_.add_label(right_.false_lbl);
+                }
+            }
+            /* SI ES NUMERO */
+            if (right_.tipo_.tipo == tipos_dato.NUMBER) {
+                aux_temporal = generador_.new_temporal();
+                generador_.add_set_stack(right_.get_valor(), env_.size + generador_.get_temporales().size);
+            }
             if (left_.get_valor().charAt(0) == "t") {
                 generador_.free_temp(left_.get_valor());
             }
@@ -20,107 +53,113 @@ export class suma extends expresion_c3d {
                 generador_.free_temp(right_.get_valor());
             }
             const temp_ = generador_.new_temporal();
-            generador_.free_temp(temp_);
+            generador_.free_temp(aux_temporal);
             const tipo_guia = this.determinar_tipo(left_.tipo_.tipo, right_.tipo_.tipo);
             switch (tipo_guia) {
                 case tipo.NUMBER:
                 case tipo.BOOLEAN:
                     let print_left = left_.get_valor();
                     let print_right = right_.get_valor();
-                    if (left_.true_lbl) {
-                        generador_.add_label(left_.true_lbl);
-                    }
-                    else if (left_.false_lbl) {
-                        generador_.add_label(left_.false_lbl);
-                    }
-                    else if (right_.true_lbl) {
-                        generador_.add_label(right_.true_lbl);
-                    }
-                    else if (left_.false_lbl) {
-                        generador_.add_label(right_.false_lbl);
-                    }
                     generador_.add_expresion(temp_, print_left, print_right, '+');
                     return new retorno(temp_, true, new tipos_(tipos_dato.NUMBER));
                 case tipo.STRING:
                     if (left_.tipo_.tipo == tipos_dato.BOOLEAN) {
                         let temp_aux = generador_.new_temporal();
-                        let temp_aux2 = generador_.new_temporal();
                         generador_.free_temp(temp_aux);
-                        generador_.free_temp(temp_aux2);
                         /* COLOCAR VALOR DEL BOOLEAN */
                         if (left_.get_valor() == "1") {
-                            generador_.add_label(left_.true_lbl);
+                            generador_.add_set_stack("1", env_.size + generador_.get_temporales().size);
                         }
                         else {
-                            generador_.add_label(left_.false_lbl);
+                            generador_.add_set_stack("0", env_.size + generador_.get_temporales().size);
                         }
                         /* PASAR BOOLEAN A STRING */
+                        generador_.next_stack(env_.size + generador_.get_temporales().size - 1);
+                        generador_.add_call("bool_toStr");
+                        generador_.add_code(`${temp_aux} = p;`);
+                        generador_.prev_stack(env_.size + generador_.get_temporales().size - 1);
+                        generador_.add_get_stack(temp_, temp_aux); //OBTENEMOS EL VALOR DEL RETURN
+                        generador_.add_expresion(temp_aux, temp_aux, "1", "+"); //NOS POSICIONAMOS EN LA POSICIÓN DONDE ESTABA EL VALOR BOOLEANO
+                        generador_.add_set_stack(temp_, temp_aux); //ASIGNAMOS EL NUEVO VALOR RETORNADO
                         /* CONCATENAR STRINGS */
-                        generador_.next_stack(env_.size + generador_.get_temporales().size);
+                        generador_.next_stack(env_.size + generador_.get_temporales().size - 1);
                         generador_.add_call("concat_str");
                         generador_.add_code(`${temp_aux} = p;`);
-                        generador_.prev_stack(env_.size + generador_.get_temporales().size);
-                        generador_.add_get_stack(temp_aux2, temp_aux);
+                        generador_.prev_stack(env_.size + generador_.get_temporales().size - 1);
+                        generador_.add_get_stack(temp_, temp_aux);
                         generador_.add_expresion(temp_aux, temp_aux, "1", "+");
-                        generador_.add_set_stack(temp_aux2, temp_aux);
+                        generador_.add_set_stack(temp_, temp_aux);
                     }
                     else if (right_.tipo_.tipo == tipos_dato.BOOLEAN) {
                         let temp_aux = generador_.new_temporal();
-                        let temp_aux2 = generador_.new_temporal();
                         generador_.free_temp(temp_aux);
-                        generador_.free_temp(temp_aux2);
+                        /* COLOCAR VALOR DEL BOOLEAN */
+                        if (right_.get_valor() == "1") {
+                            generador_.add_set_stack("1", env_.size + generador_.get_temporales().size + 1);
+                        }
+                        else {
+                            generador_.add_set_stack("0", env_.size + generador_.get_temporales().size + 1);
+                        }
                         /* PASAR BOOLEAN A STRING */
+                        generador_.add_get_stack(temp_aux, env_.size + generador_.get_temporales().size + 1);
+                        generador_.add_set_stack(temp_aux, env_.size + generador_.get_temporales().size + 2);
+                        generador_.next_stack(env_.size + generador_.get_temporales().size + 1);
+                        generador_.add_call("bool_toStr");
+                        generador_.add_code(`${temp_aux} = p;`);
+                        generador_.prev_stack(env_.size + generador_.get_temporales().size + 1);
                         /* CONCATENAR STRINGS */
-                        generador_.next_stack(env_.size + generador_.get_temporales().size);
+                        generador_.next_stack(env_.size + generador_.get_temporales().size - 1);
                         generador_.add_call("concat_str");
                         generador_.add_code(`${temp_aux} = p;`);
-                        generador_.prev_stack(env_.size + generador_.get_temporales().size);
-                        generador_.add_get_stack(temp_aux2, temp_aux);
+                        generador_.prev_stack(env_.size + generador_.get_temporales().size - 1);
+                        generador_.add_get_stack(temp_, temp_aux);
                         generador_.add_expresion(temp_aux, temp_aux, "1", "+");
-                        generador_.add_set_stack(temp_aux2, temp_aux);
+                        generador_.add_set_stack(temp_, temp_aux);
                     }
                     else if (left_.tipo_.tipo == tipos_dato.NUMBER) {
                         let temp_aux = generador_.new_temporal();
-                        let temp_aux2 = generador_.new_temporal();
                         generador_.free_temp(temp_aux);
-                        generador_.free_temp(temp_aux2);
                         /* PASAR NUMERO A STRING */
+                        generador_.next_stack(env_.size + generador_.get_temporales().size - 1);
+                        generador_.add_call("num_toStr");
+                        generador_.add_code(`${temp_aux} = p;`);
+                        generador_.prev_stack(env_.size + generador_.get_temporales().size - 1);
+                        generador_.add_get_stack(temp_, temp_aux); //OBTENEMOS EL VALOR DEL RETURN
+                        generador_.add_expresion(temp_aux, temp_aux, "1", "+"); //NOS POSICIONAMOS EN LA POSICIÓN DONDE ESTABA EL VALOR BOOLEANO
+                        generador_.add_set_stack(temp_, temp_aux); //ASIGNAMOS EL NUEVO VALOR RETORNADO
                         /* CONCATENAR STRINGS */
-                        generador_.next_stack(env_.size + generador_.get_temporales().size);
+                        generador_.next_stack(env_.size + generador_.get_temporales().size - 1);
                         generador_.add_call("concat_str");
                         generador_.add_code(`${temp_aux} = p;`);
-                        generador_.prev_stack(env_.size + generador_.get_temporales().size);
-                        generador_.add_get_stack(temp_aux2, temp_aux);
+                        generador_.prev_stack(env_.size + generador_.get_temporales().size - 1);
+                        generador_.add_get_stack(temp_, temp_aux);
                         generador_.add_expresion(temp_aux, temp_aux, "1", "+");
-                        generador_.add_set_stack(temp_aux2, temp_aux);
+                        generador_.add_set_stack(temp_, temp_aux);
                     }
                     else if (right_.tipo_.tipo == tipos_dato.NUMBER) {
                         let temp_aux = generador_.new_temporal();
-                        let temp_aux2 = generador_.new_temporal();
                         generador_.free_temp(temp_aux);
-                        generador_.free_temp(temp_aux2);
+                        generador_.free_temp(temp_);
                         /* PASAR NUMERO A STRING */
                         /* CONCATENAR STRINGS */
-                        generador_.next_stack(env_.size + generador_.get_temporales().size);
+                        generador_.next_stack(env_.size + generador_.get_temporales().size - 1);
                         generador_.add_call("concat_str");
                         generador_.add_code(`${temp_aux} = p;`);
-                        generador_.prev_stack(env_.size + generador_.get_temporales().size);
-                        generador_.add_get_stack(temp_aux2, temp_aux);
+                        generador_.prev_stack(env_.size + generador_.get_temporales().size - 1);
+                        generador_.add_get_stack(temp_, temp_aux);
                         generador_.add_expresion(temp_aux, temp_aux, "1", "+");
-                        generador_.add_set_stack(temp_aux2, temp_aux);
+                        generador_.add_set_stack(temp_, temp_aux);
                     }
                     else {
                         let temp_aux = generador_.new_temporal();
-                        let temp_aux2 = generador_.new_temporal();
                         generador_.free_temp(temp_aux);
-                        generador_.free_temp(temp_aux2);
-                        generador_.next_stack(env_.size + generador_.get_temporales().size);
+                        generador_.next_stack(env_.size + generador_.get_temporales().size - 1);
                         generador_.add_call("concat_str");
                         generador_.add_code(`${temp_aux} = p;`);
-                        generador_.prev_stack(env_.size + generador_.get_temporales().size);
-                        generador_.add_get_stack(temp_aux2, temp_aux);
+                        generador_.prev_stack(env_.size + generador_.get_temporales().size - 1);
+                        generador_.add_get_stack(temp_, temp_aux);
                         generador_.add_expresion(temp_aux, temp_aux, "1", "+");
-                        generador_.add_set_stack(temp_aux2, temp_aux);
+                        generador_.add_set_stack(temp_, temp_aux);
                     }
                     return new retorno(temp_, true, new tipos_(tipos_dato.STRING));
                 default:
