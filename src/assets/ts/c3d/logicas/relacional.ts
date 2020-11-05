@@ -29,8 +29,24 @@ export class relacionales extends expresion_c3d{
 
             if(left_oper.get_valor().charAt(0) == "t"){
                 generador_.free_temp(left_oper.get_valor());                
-            }else if(right_oper.get_valor().charAt(0) == "t"){
+            } 
+            if(right_oper.get_valor().charAt(0) == "t"){
                 generador_.free_temp(right_oper.get_valor());
+            }
+
+            if(left_oper.true_lbl != "" && left_oper.false_lbl != ""){
+                if(left_oper.get_valor() == "1"){
+                    generador_.add_label(left_oper.true_lbl);
+                }else if(left_oper.get_valor() == "0"){
+                    generador_.add_label(left_oper.false_lbl);
+                }
+            }
+            if(right_oper.true_lbl != "" && right_oper.false_lbl != ""){
+                if(right_oper.get_valor() == "1"){
+                    generador_.add_label(right_oper.true_lbl);
+                }else if(right_oper.get_valor() == "0"){
+                    generador_.add_label(right_oper.false_lbl);
+                }
             }
 
             let retorno_ = new retorno('', false, new tipos_(2));
@@ -44,9 +60,22 @@ export class relacionales extends expresion_c3d{
             let tipo_guia = this.determinar_tipo(left_oper.tipo_.tipo, right_oper.tipo_.tipo);
 
             if(this.tipo_ == oper_rel.IGUAL){
-                if(tipo_guia == tipo.BOOLEAN || tipo_guia == tipo.NUMBER){
-                    generador_.add_if(left_oper.get_valor(), right_oper.get_valor(), '==', this.true_lbl);
-                    generador_.add_goto(this.false_lbl);
+                if(tipo_guia == tipo.NUMBER){
+                    if(left_oper.tipo_.tipo != tipos_dato.NUMBER || right_oper.tipo_.tipo != tipos_dato.NUMBER){
+                        errores_.push(new nodoError("Semántico", "Solo se puede validar number == number", this.linea_, this.columna_, "String"));
+                        return;
+                    }else{
+                        generador_.add_if(left_oper.get_valor(), right_oper.get_valor(), '==', this.true_lbl);
+                        generador_.add_goto(this.false_lbl);
+                    }
+                }else if(tipo_guia == tipo.BOOLEAN){
+                    if(left_oper.tipo_.tipo != tipos_dato.BOOLEAN || right_oper.tipo_.tipo != tipos_dato.BOOLEAN){
+                        errores_.push(new nodoError("Semántico", "Solo se puede validar boolean == boolean", this.linea_, this.columna_, "String"));
+                        return;
+                    }else{
+                        generador_.add_if(left_oper.get_valor(), right_oper.get_valor(), '==', this.true_lbl);
+                        generador_.add_goto(this.false_lbl);
+                    }
                 }else if(tipo_guia == tipo.STRING){
                     if(left_oper.tipo_.tipo != tipos_dato.STRING || right_oper.tipo_.tipo != tipos_dato.STRING){
                         errores_.push(new nodoError("Semántico", "Solo se puede validar string == string", this.linea_, this.columna_, "String"));
@@ -69,9 +98,14 @@ export class relacionales extends expresion_c3d{
 
                 return retorno_;    
             }else if(this.tipo_ == oper_rel.MAYOR){
-                if(tipo_guia == tipo.BOOLEAN || tipo_guia == tipo.NUMBER){
-                    generador_.add_if(left_oper.get_valor(), right_oper.get_valor(), '>', this.true_lbl);
-                    generador_.add_goto(this.false_lbl);
+                if(tipo_guia == tipo.NUMBER){
+                    if(left_oper.tipo_.tipo != tipos_dato.NUMBER || right_oper.tipo_.tipo != tipos_dato.NUMBER){
+                        errores_.push(new nodoError("Semántico", "Solo se puede validar number > number", this.linea_, this.columna_, "String"));
+                        return;
+                    }else{
+                        generador_.add_if(left_oper.get_valor(), right_oper.get_valor(), '>', this.true_lbl);
+                        generador_.add_goto(this.false_lbl);
+                    }
                 }else{
                     errores_.push(new nodoError("Semántico", "Solo se permite tipos de dato booleano y number en >", this.linea_, this.columna_, "Tipo dato"));
                     return;
@@ -79,29 +113,44 @@ export class relacionales extends expresion_c3d{
 
                 return retorno_;    
             }else if(this.tipo_ == oper_rel.MAYOR_IGUAL){
-                if(tipo_guia == tipo.BOOLEAN || tipo_guia == tipo.NUMBER){
-                    generador_.add_if(left_oper.get_valor(), right_oper.get_valor(), '>=', this.true_lbl);
-                    generador_.add_goto(this.false_lbl);
+                if(tipo_guia == tipo.NUMBER){
+                    if(left_oper.tipo_.tipo != tipos_dato.NUMBER || right_oper.tipo_.tipo != tipos_dato.NUMBER){
+                        errores_.push(new nodoError("Semántico", "Solo se puede validar number >= number", this.linea_, this.columna_, "String"));
+                        return;
+                    }else{
+                        generador_.add_if(left_oper.get_valor(), right_oper.get_valor(), '>=', this.true_lbl);
+                        generador_.add_goto(this.false_lbl);
+                    }
                 }else{
-                    errores_.push(new nodoError("Semántico", "Solo se permite tipos de dato booleano y number en >=", this.linea_, this.columna_, "Tipo dato"));
+                    errores_.push(new nodoError("Semántico", "Solo se permite tipos de dato number en >=", this.linea_, this.columna_, "Tipo dato"));
                     return;
                 }
 
                 return retorno_;    
             }else if(this.tipo_ == oper_rel.MENOR){
-                if(tipo_guia == tipo.BOOLEAN || tipo_guia == tipo.NUMBER){
-                    generador_.add_if(left_oper.get_valor(), right_oper.get_valor(), '<', this.true_lbl);
-                    generador_.add_goto(this.false_lbl);
+                if(tipo_guia == tipo.NUMBER){
+                    if(left_oper.tipo_.tipo != tipos_dato.NUMBER || right_oper.tipo_.tipo != tipos_dato.NUMBER){
+                        errores_.push(new nodoError("Semántico", "Solo se puede validar number < number", this.linea_, this.columna_, "String"));
+                        return;
+                    }else{
+                        generador_.add_if(left_oper.get_valor(), right_oper.get_valor(), '<', this.true_lbl);
+                        generador_.add_goto(this.false_lbl);
+                    }
                 }else{
-                    errores_.push(new nodoError("Semántico", "Solo se permite tipos de dato booleano y number en <", this.linea_, this.columna_, "Tipo dato"));
+                    errores_.push(new nodoError("Semántico", "Solo se permite tipos de dato number en <", this.linea_, this.columna_, "Tipo dato"));
                     return;
                 }
 
                 return retorno_;    
             }else if(this.tipo_ == oper_rel.MENOR_IGUAL){
-                if(tipo_guia == tipo.BOOLEAN || tipo_guia == tipo.NUMBER){
-                    generador_.add_if(left_oper.get_valor(), right_oper.get_valor(), '<=', this.true_lbl);
-                    generador_.add_goto(this.false_lbl);
+                if(tipo_guia == tipo.NUMBER){
+                    if(left_oper.tipo_.tipo != tipos_dato.NUMBER || right_oper.tipo_.tipo != tipos_dato.NUMBER){
+                        errores_.push(new nodoError("Semántico", "Solo se puede validar number <= number", this.linea_, this.columna_, "String"));
+                        return;
+                    }else{
+                        generador_.add_if(left_oper.get_valor(), right_oper.get_valor(), '<=', this.true_lbl);
+                        generador_.add_goto(this.false_lbl);
+                    }
                 }else{
                     errores_.push(new nodoError("Semántico", "Solo se permite tipos de dato booleano y number en <", this.linea_, this.columna_, "Tipo dato"));
                     return;
@@ -109,12 +158,25 @@ export class relacionales extends expresion_c3d{
 
                 return retorno_;    
             }else if(this.tipo_ == oper_rel.NO_IGUAL){
-                if(tipo_guia == tipo.BOOLEAN || tipo_guia == tipo.NUMBER){
-                    generador_.add_if(left_oper.get_valor(), right_oper.get_valor(), '!=', this.true_lbl);
-                    generador_.add_goto(this.false_lbl);
+                if(tipo_guia == tipo.NUMBER){
+                    if(left_oper.tipo_.tipo != tipos_dato.NUMBER || right_oper.tipo_.tipo != tipos_dato.NUMBER){
+                        errores_.push(new nodoError("Semántico", "Solo se puede validar number != number", this.linea_, this.columna_, "String"));
+                        return;
+                    }else{
+                        generador_.add_if(left_oper.get_valor(), right_oper.get_valor(), '!=', this.true_lbl);
+                        generador_.add_goto(this.false_lbl);
+                    }
+                }else if(tipo_guia == tipo.BOOLEAN){
+                    if(left_oper.tipo_.tipo != tipos_dato.BOOLEAN || right_oper.tipo_.tipo != tipos_dato.BOOLEAN){
+                        errores_.push(new nodoError("Semántico", "Solo se puede validar boolean != boolean", this.linea_, this.columna_, "String"));
+                        return;
+                    }else{
+                        generador_.add_if(left_oper.get_valor(), right_oper.get_valor(), '!=', this.true_lbl);
+                        generador_.add_goto(this.false_lbl);
+                    }
                 }else if(tipo_guia == tipo.STRING){
                     if(left_oper.tipo_.tipo != tipos_dato.STRING || right_oper.tipo_.tipo != tipos_dato.STRING){
-                        errores_.push(new nodoError("Semántico", "Solo se puede validar string == string", this.linea_, this.columna_, "String"));
+                        errores_.push(new nodoError("Semántico", "Solo se puede validar string != string", this.linea_, this.columna_, "String"));
                         return;
                     }else{
                         let temp_return = generador_.new_temporal();

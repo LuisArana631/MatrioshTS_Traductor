@@ -107,8 +107,7 @@ export class HomePage {
         errores.clear();
         this.env_c3d.limpiar_types();
         this.env_c3d.limpiar_variables();
-        this.gener_.limpiar_temporales();
-        
+        this.gener_.limpiar_temporales();        
 
         /*-----EJECUTAR Y MOSTRAR----*/
         this.ast = traductor_c3d.parse(this.fuente);        
@@ -117,8 +116,6 @@ export class HomePage {
         this.listaErrores = this.listaErrores.concat(errores.getErrores());        
 
         this.cargar_nativas();
-
-        console.log("---------------------------------");
 
         this.gener_.add_void("main");
         this.codigo_c3d_sp();       

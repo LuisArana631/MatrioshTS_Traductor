@@ -15,10 +15,20 @@ export class do_while_c3d extends instruccion_c3d{
             let lbl_true = generador_.new_label();
             this.condicion_.true_lbl = lbl_true;
             generador_.add_label(lbl_true);
+            
 
             this.instrucciones.traducir(env_, generador_, errores_);
 
             const condicion = this.condicion_.traducir(env_, generador_, errores_);    
+
+            if(condicion.temp_){
+                generador_.add_if(condicion.get_valor(), "1", "==", condicion.true_lbl);
+                generador_.add_goto(condicion.false_lbl);
+            }
+
+            if(condicion.get_valor().charAt(0) == "t"){
+                generador_.free_temp(condicion.get_valor());
+            }
 
             if(condicion.tipo_.tipo != tipos_dato.BOOLEAN){
                 errores_.push(new nodoError("Semántico", "La condición debe ser tipo booleano", this.linea_, this.columna_, "Condicion"));
