@@ -24,6 +24,7 @@
     const { primitivo_ } = require('../js/c3d/expresion/acceso');
     const { string_c3d } = require('../js/c3d/expresion/string_c3d');
     const { tipos_ } = require('../js/c3d/tools/tipo');
+    const { acceso_ } = require('../js/c3d/instrucciones/variables/acceder');
 //--------------------------------------------------------------------------------------
     //INSTRUCCIONES
     const { print } = require('../js/instruccion/print');
@@ -519,7 +520,7 @@ dato_valor
         }
     }; }
     | 'IDENTIFICADOR' { $$ = {
-        nodo: (new acceso($1, @1.first_line, @1.first_column)),
+        nodo: (new acceso_($1, @1.first_line, @1.first_column)),
         id: $1,
         
         expresion: {

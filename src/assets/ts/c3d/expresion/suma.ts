@@ -19,23 +19,32 @@ export class suma extends expresion_c3d{
     public traducir(env_: ambiente_c3d, generador_:generador, errores_:Array<nodoError>):retorno{
         try{
 
-            let aux_temporal;
+            let aux_temporal_left_bool;
+            let aux_temporal_right_bool;
+            let aux_temporal_left_num;
+            let aux_temporal_right_num;
             const left_ = this.left_oper.traducir(env_, generador_, errores_);
 
             /* SI ES BOOLEANO */
             if(left_.true_lbl != "" && left_.false_lbl != ""){
+                if(left_.get_valor().charAt(0) == "t"){
+                    generador_.free_temp(left_.get_valor());
+                }
                 if(left_.get_valor() == "1"){
-                    aux_temporal = generador_.new_temporal();
+                    aux_temporal_left_bool = generador_.new_temporal();
                     generador_.add_label(left_.true_lbl);
                 }else if(left_.get_valor() == "0"){
-                    aux_temporal = generador_.new_temporal();
+                    aux_temporal_left_bool = generador_.new_temporal();
                     generador_.add_label(left_.false_lbl);
                 }
             }
 
             /* SI ES NUMERO */
             if(left_.tipo_.tipo == tipos_dato.NUMBER){
-                aux_temporal = generador_.new_temporal();
+                if(left_.get_valor().charAt(0) == "t"){
+                    generador_.free_temp(left_.get_valor());
+                }
+                aux_temporal_left_num = generador_.new_temporal();
                 generador_.add_set_stack(left_.get_valor(), env_.size + generador_.get_temporales().size);
             }
 
@@ -43,18 +52,29 @@ export class suma extends expresion_c3d{
 
             /* SI ES BOOLEANO */
             if(right_.true_lbl != "" && right_.false_lbl != ""){
+                if(right_.get_valor().charAt(0) == "t"){
+                    generador_.free_temp(right_.get_valor());
+                }    
                 if(right_.get_valor() == "1"){
-                    aux_temporal = generador_.new_temporal();
+                    aux_temporal_right_bool = generador_.new_temporal();
                     generador_.add_label(right_.true_lbl);
                 }else if(right_.get_valor() == "0"){
-                    aux_temporal = generador_.new_temporal();
+                    aux_temporal_right_bool = generador_.new_temporal();
                     generador_.add_label(right_.false_lbl);
                 }
             }
 
             /* SI ES NUMERO */
-            if(right_.tipo_.tipo == tipos_dato.NUMBER){
-                aux_temporal = generador_.new_temporal();
+            if(right_.tipo_.tipo == tipos_dato.NUMBER){     
+                if(right_.get_valor().charAt(0) == "t"){
+                    generador_.free_temp(right_.get_valor());
+                }          
+                aux_temporal_right_num = generador_.new_temporal();
+
+                console.log("se sumara: " + (env_.size + generador_.get_temporales().size));
+                console.log("donde: env -> " + env_.size + " y temps -> " + generador_.get_temporales().size);
+                console.log(generador_.get_temporales());
+
                 generador_.add_set_stack(right_.get_valor(), env_.size + generador_.get_temporales().size);
             }
 
@@ -67,7 +87,10 @@ export class suma extends expresion_c3d{
             }
 
             const temp_ = generador_.new_temporal();
-            generador_.free_temp(aux_temporal);
+            generador_.free_temp(aux_temporal_left_bool);
+            generador_.free_temp(aux_temporal_left_num);
+            generador_.free_temp(aux_temporal_right_bool);
+            generador_.free_temp(aux_temporal_right_num);
 
             const tipo_guia = this.determinar_tipo(left_.tipo_.tipo, right_.tipo_.tipo)
             

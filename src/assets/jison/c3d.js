@@ -471,7 +471,7 @@ case 66:
 break;
 case 67:
  this.$ = {
-        nodo: (new acceso($$[$0], _$[$0].first_line, _$[$0].first_column)),
+        nodo: (new acceso_($$[$0], _$[$0].first_line, _$[$0].first_column)),
         id: $$[$0],
         
         expresion: {
@@ -956,6 +956,7 @@ _handle_error:
     const { primitivo_ } = require('../js/c3d/expresion/acceso');
     const { string_c3d } = require('../js/c3d/expresion/string_c3d');
     const { tipos_ } = require('../js/c3d/tools/tipo');
+    const { acceso_ } = require('../js/c3d/instrucciones/variables/acceder');
 //--------------------------------------------------------------------------------------
     //INSTRUCCIONES
     const { print } = require('../js/instruccion/print');

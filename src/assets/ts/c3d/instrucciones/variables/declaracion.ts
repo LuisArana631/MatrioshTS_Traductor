@@ -45,9 +45,11 @@ export class declaracion_ extends instruccion_c3d{
                 valor_ = this.valor.traducir(env_, generador_, errores_);
             }
 
+           
             if(valor_.get_valor().charAt(0) == "t"){
                 generador_.free_temp(valor_.get_valor());
             }
+            
 
             if(!this.mismo_tipo(this.tipo, valor_.tipo_)){
                 errores_.push(new nodoError("Semántico", `No puedes insertar ${valor_.tipo_} en ${this.tipo.tipo}`, this.linea_, this.columna_, "Datos No Iguales"));
