@@ -364,7 +364,43 @@ export class nativas_ {
     }
     potencia_() {
         let gen_ = generador.get_instance();
+        let respuesta = gen_.new_temporal();
+        let base = gen_.new_temporal();
+        let exp = gen_.new_temporal();
+        let index = gen_.new_temporal();
+        let contador = gen_.new_temporal();
+        gen_.free_temp(index);
+        gen_.free_temp(exp);
+        gen_.free_temp(base);
+        gen_.free_temp(respuesta);
+        gen_.free_temp(contador);
+        let potencia_positiva = gen_.new_label();
+        let potencia_negativa = gen_.new_label();
+        let endloop = gen_.new_label();
         gen_.add_void("potencia_");
+        gen_.add_expresion(index, "p", "1", "+");
+        gen_.add_get_stack(base, index);
+        gen_.add_expresion(index, index, "1", "+");
+        gen_.add_get_stack(exp, index);
+        gen_.add_code(`${respuesta} = 1;`);
+        gen_.add_code(`${contador} = 0;`);
+        /* VALIDAR TIPO DE POTENCIA */
+        gen_.add_if(exp, "-1", ">", potencia_positiva);
+        gen_.add_goto(potencia_negativa);
+        /* HACER POTENCIA  POSITIVA*/
+        gen_.add_label(potencia_positiva);
+        gen_.add_if(exp, contador, "==", endloop);
+        gen_.add_expresion(respuesta, respuesta, base, "*");
+        gen_.add_expresion(contador, contador, "1", "+");
+        gen_.add_goto(potencia_positiva);
+        /* HACER POTENCIA NEGATIVA */
+        gen_.add_label(potencia_negativa);
+        gen_.add_if(exp, contador, "==", endloop);
+        gen_.add_expresion(respuesta, respuesta, base, "/");
+        gen_.add_expresion(contador, contador, "1", "-");
+        gen_.add_goto(potencia_positiva);
+        gen_.add_label(endloop);
+        gen_.add_set_stack(respuesta, "p");
         gen_.add_end_void();
     }
 }

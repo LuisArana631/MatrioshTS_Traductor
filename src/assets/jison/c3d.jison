@@ -10,6 +10,7 @@
     const { while_c3d } = require('../js/c3d/instrucciones/while');
     const { do_while_c3d } = require('../js/c3d/instrucciones/do_while');
     const { print_ } = require('../js/c3d/instrucciones/print');
+    const { asignar_ } = require('../js/c3d/instrucciones/variables/asignacion');
 
     //EXPRESIONES
     const { suma } = require('../js/c3d/expresion/suma');
@@ -19,6 +20,10 @@
     const { modulo } = require('../js/c3d/expresion/modulo');
     const { oper_rel, relacionales } = require('../js/c3d/logicas/relacional');
     const { oper_logica, logicas_ } = require('../js/c3d/logicas/logicas_');
+    const { incremento } = require('../js/c3d/expresion/incremento');
+    const { decremento } = require('../js/c3d/expresion/decremento');
+    const { negativo_ } = require('../js/c3d/expresion/negativo');
+    const { potencia_ } = require('../js/c3d/expresion/potencia');
 
     //DATOS 
     const { primitivo_ } = require('../js/c3d/expresion/acceso');
@@ -192,7 +197,7 @@ instruccion
     | asignacion { $$ = $1; }
     | llamada ';' { $$ = $1; }
     | dato_valor '++' ';' { $$ = {
-        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.INCREMENTO, $1.id, @1.first_line, @1.first_column)),
+        nodo: (new incremento($1.nodo, $1.id, @1.first_line, @1.first_column)),
 
         tipo: "incremento",
         expresion: {
@@ -201,9 +206,9 @@ instruccion
         }
     }; }
     | dato_valor '--' ';' { $$ = {
-        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.DECREMENTO, $1.id, @1.first_line, @1.first_column)),
+        nodo: (new decremento($1.nodo, $1.id, @1.first_line, @1.first_column)),
 
-        tipo: "incremento",
+        tipo: "decremento",
         expresion: {
             izquierdo: $1.expresion,
             operador: $2
@@ -243,8 +248,7 @@ instruccion
 
 asignacion     
     : 'IDENTIFICADOR' '=' expresion ';' { $$ = {
-        nodo: (new asignacion_($3.nodo, $1, @1.first_line, @1.first_column)),
-        
+        nodo: (new asignar_($3.nodo, $1, @1.first_line, @1.first_column)),        
         
         tipo: "asignar",
         expresion: $3.expresion,
@@ -379,7 +383,7 @@ expresion
         }
     }; }
     | expresion '**' expresion { $$ = {
-        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.POTENCIA, @1.first_line, @1.first_column)),
+        nodo: (new potencia_($1.nodo, $3.nodo, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -387,8 +391,9 @@ expresion
             operador: $2
         }
     }; }
+
     | dato_valor '++' { $$ = {
-        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.INCREMENTO, $1.id, @1.first_line, @1.first_column)),
+        nodo: (new incremento($1.nodo, $1.id, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -396,7 +401,7 @@ expresion
         }
     }; }
     | dato_valor '--' { $$ = {
-        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.DECREMENTO, $1.id, @1.first_line, @1.first_column)),
+        nodo: (new decremento($1.nodo, $1.id, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -404,7 +409,7 @@ expresion
         }
     }; }
     | '-' expresion { $$ = {
-        nodo: (new aritmetica($2.nodo, null, operacion_aritmetica.NEGAR, @1.first_line, @1.first_column)),
+        nodo: (new negativo_($2.nodo, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $2.expresion,

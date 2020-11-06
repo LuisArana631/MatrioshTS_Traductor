@@ -15,7 +15,6 @@ export class do_while_c3d extends instruccion_c3d{
             let lbl_true = generador_.new_label();
             this.condicion_.true_lbl = lbl_true;
             generador_.add_label(lbl_true);
-            
 
             this.instrucciones.traducir(env_, generador_, errores_);
 

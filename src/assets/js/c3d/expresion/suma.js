@@ -59,9 +59,6 @@ export class suma extends expresion_c3d {
                     generador_.free_temp(right_.get_valor());
                 }
                 aux_temporal_right_num = generador_.new_temporal();
-                console.log("se sumara: " + (env_.size + generador_.get_temporales().size));
-                console.log("donde: env -> " + env_.size + " y temps -> " + generador_.get_temporales().size);
-                console.log(generador_.get_temporales());
                 generador_.add_set_stack(right_.get_valor(), env_.size + generador_.get_temporales().size);
             }
             if (left_.get_valor().charAt(0) == "t") {

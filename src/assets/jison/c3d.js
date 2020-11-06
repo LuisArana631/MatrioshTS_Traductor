@@ -100,7 +100,7 @@ case 9: case 24: case 25: case 63:
 break;
 case 10:
  this.$ = {
-        nodo: (new aritmetica_unitaria($$[$0-2].nodo, operacion_unitaria.INCREMENTO, $$[$0-2].id, _$[$0-2].first_line, _$[$0-2].first_column)),
+        nodo: (new incremento($$[$0-2].nodo, $$[$0-2].id, _$[$0-2].first_line, _$[$0-2].first_column)),
 
         tipo: "incremento",
         expresion: {
@@ -111,9 +111,9 @@ case 10:
 break;
 case 11:
  this.$ = {
-        nodo: (new aritmetica_unitaria($$[$0-2].nodo, operacion_unitaria.DECREMENTO, $$[$0-2].id, _$[$0-2].first_line, _$[$0-2].first_column)),
+        nodo: (new decremento($$[$0-2].nodo, $$[$0-2].id, _$[$0-2].first_line, _$[$0-2].first_column)),
 
-        tipo: "incremento",
+        tipo: "decremento",
         expresion: {
             izquierdo: $$[$0-2].expresion,
             operador: $$[$0-1]
@@ -153,8 +153,7 @@ case 26:
 break;
 case 27:
  this.$ = {
-        nodo: (new asignacion_($$[$0-1].nodo, $$[$0-3], _$[$0-3].first_line, _$[$0-3].first_column)),
-        
+        nodo: (new asignar_($$[$0-1].nodo, $$[$0-3], _$[$0-3].first_line, _$[$0-3].first_column)),        
         
         tipo: "asignar",
         expresion: $$[$0-1].expresion,
@@ -302,7 +301,7 @@ case 48:
 break;
 case 49:
  this.$ = {
-        nodo: (new aritmetica($$[$0-2].nodo, $$[$0].nodo, operacion_aritmetica.POTENCIA, _$[$0-2].first_line, _$[$0-2].first_column)),
+        nodo: (new potencia_($$[$0-2].nodo, $$[$0].nodo, _$[$0-2].first_line, _$[$0-2].first_column)),
 
         expresion: {
             izquierdo: $$[$0-2].expresion,
@@ -313,7 +312,7 @@ case 49:
 break;
 case 50:
  this.$ = {
-        nodo: (new aritmetica_unitaria($$[$0-1].nodo, operacion_unitaria.INCREMENTO, $$[$0-1].id, _$[$0-1].first_line, _$[$0-1].first_column)),
+        nodo: (new incremento($$[$0-1].nodo, $$[$0-1].id, _$[$0-1].first_line, _$[$0-1].first_column)),
 
         expresion: {
             izquierdo: $$[$0-1].expresion,
@@ -323,7 +322,7 @@ case 50:
 break;
 case 51:
  this.$ = {
-        nodo: (new aritmetica_unitaria($$[$0-1].nodo, operacion_unitaria.DECREMENTO, $$[$0-1].id, _$[$0-1].first_line, _$[$0-1].first_column)),
+        nodo: (new decremento($$[$0-1].nodo, $$[$0-1].id, _$[$0-1].first_line, _$[$0-1].first_column)),
 
         expresion: {
             izquierdo: $$[$0-1].expresion,
@@ -333,7 +332,7 @@ case 51:
 break;
 case 52:
  this.$ = {
-        nodo: (new aritmetica($$[$0].nodo, null, operacion_aritmetica.NEGAR, _$[$0-1].first_line, _$[$0-1].first_column)),
+        nodo: (new negativo_($$[$0].nodo, _$[$0-1].first_line, _$[$0-1].first_column)),
 
         expresion: {
             izquierdo: $$[$0].expresion,
@@ -942,6 +941,7 @@ _handle_error:
     const { while_c3d } = require('../js/c3d/instrucciones/while');
     const { do_while_c3d } = require('../js/c3d/instrucciones/do_while');
     const { print_ } = require('../js/c3d/instrucciones/print');
+    const { asignar_ } = require('../js/c3d/instrucciones/variables/asignacion');
 
     //EXPRESIONES
     const { suma } = require('../js/c3d/expresion/suma');
@@ -951,6 +951,10 @@ _handle_error:
     const { modulo } = require('../js/c3d/expresion/modulo');
     const { oper_rel, relacionales } = require('../js/c3d/logicas/relacional');
     const { oper_logica, logicas_ } = require('../js/c3d/logicas/logicas_');
+    const { incremento } = require('../js/c3d/expresion/incremento');
+    const { decremento } = require('../js/c3d/expresion/decremento');
+    const { negativo_ } = require('../js/c3d/expresion/negativo');
+    const { potencia_ } = require('../js/c3d/expresion/potencia');
 
     //DATOS 
     const { primitivo_ } = require('../js/c3d/expresion/acceso');
