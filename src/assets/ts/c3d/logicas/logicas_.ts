@@ -30,14 +30,12 @@ export class logicas_ extends expresion_c3d{
             }
 
             let tipo_guia:any = left_oper.tipo_.tipo;
-
             if(tipo_guia != tipos_dato.BOOLEAN){
                 errores_.push(new nodoError("Semántico", `Operación de tipo invalido. Necesitas Boolean`, this.linea_, this.columna_, "Operacion incorrecta"));
                 return;
             }
-
             let retorno_ = new retorno('', false, new tipos_(2));
-
+            
             if(this.tipo_ == oper_logica.AND){
                 generador_.add_label(left_oper.true_lbl);
 

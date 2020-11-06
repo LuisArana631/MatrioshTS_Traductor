@@ -139,7 +139,7 @@ str_ (\"[^"]*\")|(\'[^']*\')
 "ToLowerCase"           return 'TOLOWERCASE'
 "ToUpperCase"           return 'TOUPPERCASE'
 "Concat"                return 'CONCAT' 
-"null"                  return 'CONCAT';
+"null"                  return 'NULL'
 
 "true"                  return 'TRUE'
 "false"                 return 'FALSE'
