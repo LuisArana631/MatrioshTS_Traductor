@@ -11,6 +11,7 @@
     const { do_while_c3d } = require('../js/c3d/instrucciones/do_while');
     const { print_ } = require('../js/c3d/instrucciones/print');
     const { asignar_ } = require('../js/c3d/instrucciones/variables/asignacion');
+    const { for_c3d } = require('../js/c3d/instrucciones/for');
 
     //EXPRESIONES
     const { suma } = require('../js/c3d/expresion/suma');
@@ -682,22 +683,22 @@ for_of
 
 for_normal
     :'FOR' '(' declaracion_variables expresion ';' expresion ')' statement { $$ = {
-        nodo: (new for_($4.nodo, $6.nodo, $3.nodo, $8.nodo, $3.id, @1.first_line, @1.first_column)),        
+        nodo: (new for_c3d($4.nodo, $6.nodo, $3.nodo, $8.nodo, $3.id, @1.first_line, @1.first_column)),        
 
         tipo: "for_",
-        instr: $8
+        instr: $8.instr
     }; }
     | 'FOR' '(' asignacion expresion ';' expresion ')' statement { $$ = {
-        nodo: (new for_($4.nodo, $6.nodo, $3.nodo, $8.nodo, $3.id, @1.first_line, @1.first_column)),        
+        nodo: (new for_c3d($4.nodo, $6.nodo, $3.nodo, $8.nodo, $3.id, @1.first_line, @1.first_column)),        
 
         tipo: "for_",
-        instr: $8
+        instr: $8.instr
     }; }
     | 'FOR' '(' 'IDENTIFICADOR' ';' expresion ';' expresion ')' statement { $$ = {
-        nodo: (new for_($5.nodo, $7.nodo, null, $9.nodo, $3, @1.first_line, @1.first_column)),
+        nodo: (new for_c3d($5.nodo, $7.nodo, null, $9.nodo, $3, @1.first_line, @1.first_column)),
         
         tipo: "for_",
-        instr: $8
+        instr: $9.instr
     }; };
 
 sentencia_return

@@ -624,18 +624,18 @@ case 100:
 break;
 case 101: case 102:
  this.$ = {
-        nodo: (new for_($$[$0-4].nodo, $$[$0-2].nodo, $$[$0-5].nodo, $$[$0].nodo, $$[$0-5].id, _$[$0-7].first_line, _$[$0-7].first_column)),        
+        nodo: (new for_c3d($$[$0-4].nodo, $$[$0-2].nodo, $$[$0-5].nodo, $$[$0].nodo, $$[$0-5].id, _$[$0-7].first_line, _$[$0-7].first_column)),        
 
         tipo: "for_",
-        instr: $$[$0]
+        instr: $$[$0].instr
     }; 
 break;
 case 103:
  this.$ = {
-        nodo: (new for_($$[$0-4].nodo, $$[$0-2].nodo, null, $$[$0].nodo, $$[$0-6], _$[$0-8].first_line, _$[$0-8].first_column)),
+        nodo: (new for_c3d($$[$0-4].nodo, $$[$0-2].nodo, null, $$[$0].nodo, $$[$0-6], _$[$0-8].first_line, _$[$0-8].first_column)),
         
         tipo: "for_",
-        instr: $$[$0-1]
+        instr: $$[$0].instr
     }; 
 break;
 case 104:
@@ -942,6 +942,7 @@ _handle_error:
     const { do_while_c3d } = require('../js/c3d/instrucciones/do_while');
     const { print_ } = require('../js/c3d/instrucciones/print');
     const { asignar_ } = require('../js/c3d/instrucciones/variables/asignacion');
+    const { for_c3d } = require('../js/c3d/instrucciones/for');
 
     //EXPRESIONES
     const { suma } = require('../js/c3d/expresion/suma');

@@ -36,7 +36,15 @@ export class suma extends expresion_c3d {
                     generador_.free_temp(left_.get_valor());
                 }
                 aux_temporal_left_num = generador_.new_temporal();
-                generador_.add_set_stack(left_.get_valor(), env_.size + generador_.get_temporales().size);
+                if (env_.prev_ == null) {
+                    generador_.add_set_stack(left_.get_valor(), env_.size + generador_.get_temporales().size);
+                }
+                else {
+                    let aux_index = generador_.new_temporal();
+                    generador_.free_temp(aux_index);
+                    generador_.add_expresion(aux_index, "p", generador_.get_temporales().size + env_.size, "+");
+                    generador_.add_set_stack(left_.get_valor(), aux_index);
+                }
             }
             const right_ = this.right_oper.traducir(env_, generador_, errores_);
             /* SI ES BOOLEANO */
@@ -59,7 +67,15 @@ export class suma extends expresion_c3d {
                     generador_.free_temp(right_.get_valor());
                 }
                 aux_temporal_right_num = generador_.new_temporal();
-                generador_.add_set_stack(right_.get_valor(), env_.size + generador_.get_temporales().size);
+                if (env_.prev_ == null) {
+                    generador_.add_set_stack(right_.get_valor(), env_.size + generador_.get_temporales().size);
+                }
+                else {
+                    let aux_index = generador_.new_temporal();
+                    generador_.free_temp(aux_index);
+                    generador_.add_expresion(aux_index, "p", generador_.get_temporales().size + env_.size, "+");
+                    generador_.add_set_stack(right_.get_valor(), aux_index);
+                }
             }
             if (left_.get_valor().charAt(0) == "t") {
                 generador_.free_temp(left_.get_valor());
@@ -85,11 +101,25 @@ export class suma extends expresion_c3d {
                         let temp_aux = generador_.new_temporal();
                         generador_.free_temp(temp_aux);
                         /* COLOCAR VALOR DEL BOOLEAN */
-                        if (left_.get_valor() == "1") {
-                            generador_.add_set_stack("1", env_.size + generador_.get_temporales().size);
+                        if (env_.prev_ == null) {
+                            if (left_.get_valor() == "1") {
+                                generador_.add_set_stack("1", env_.size + generador_.get_temporales().size);
+                            }
+                            else {
+                                generador_.add_set_stack("0", env_.size + generador_.get_temporales().size);
+                            }
                         }
                         else {
-                            generador_.add_set_stack("0", env_.size + generador_.get_temporales().size);
+                            let aux_index = generador_.new_temporal();
+                            generador_.free_temp(aux_index);
+                            if (left_.get_valor() == "1") {
+                                generador_.add_expresion(aux_index, "p", generador_.get_temporales().size + env_.size, "+");
+                                generador_.add_set_stack("1", aux_index);
+                            }
+                            else {
+                                generador_.add_expresion(aux_index, "p", generador_.get_temporales().size + env_.size, "+");
+                                generador_.add_set_stack("0", aux_index);
+                            }
                         }
                         /* PASAR BOOLEAN A STRING */
                         generador_.next_stack(env_.size + generador_.get_temporales().size - 1);
@@ -112,11 +142,25 @@ export class suma extends expresion_c3d {
                         let temp_aux = generador_.new_temporal();
                         generador_.free_temp(temp_aux);
                         /* COLOCAR VALOR DEL BOOLEAN */
-                        if (right_.get_valor() == "1") {
-                            generador_.add_set_stack("1", env_.size + generador_.get_temporales().size + 1);
+                        if (env_.prev_ == null) {
+                            if (right_.get_valor() == "1") {
+                                generador_.add_set_stack("1", env_.size + generador_.get_temporales().size + 1);
+                            }
+                            else {
+                                generador_.add_set_stack("0", env_.size + generador_.get_temporales().size + 1);
+                            }
                         }
                         else {
-                            generador_.add_set_stack("0", env_.size + generador_.get_temporales().size + 1);
+                            let aux_index = generador_.new_temporal();
+                            generador_.free_temp(aux_index);
+                            if (right_.get_valor() == "1") {
+                                generador_.add_expresion(aux_index, "p", generador_.get_temporales().size + env_.size, "+");
+                                generador_.add_set_stack("1", aux_index);
+                            }
+                            else {
+                                generador_.add_expresion(aux_index, "p", generador_.get_temporales().size + env_.size, "+");
+                                generador_.add_set_stack("0", aux_index);
+                            }
                         }
                         /* PASAR BOOLEAN A STRING */
                         generador_.add_get_stack(temp_aux, env_.size + generador_.get_temporales().size + 1);
@@ -158,8 +202,18 @@ export class suma extends expresion_c3d {
                         let temp_aux = generador_.new_temporal();
                         generador_.free_temp(temp_aux);
                         /* PASAR NUMERO A STRING */
-                        generador_.add_get_stack(temp_aux, env_.size + generador_.get_temporales().size + 1);
-                        generador_.add_set_stack(temp_aux, env_.size + generador_.get_temporales().size + 2);
+                        if (env_.prev_ == null) {
+                            generador_.add_get_stack(temp_aux, env_.size + generador_.get_temporales().size + 1);
+                            generador_.add_set_stack(temp_aux, env_.size + generador_.get_temporales().size + 2);
+                        }
+                        else {
+                            let aux_index = generador_.new_temporal();
+                            generador_.free_temp(aux_index);
+                            generador_.add_expresion(aux_index, "p", generador_.get_temporales().size + env_.size + 1, "+");
+                            generador_.add_get_stack(temp_aux, aux_index);
+                            generador_.add_expresion(aux_index, "p", generador_.get_temporales().size + env_.size + 2, "+");
+                            generador_.add_set_stack(temp_aux, aux_index);
+                        }
                         generador_.next_stack(env_.size + generador_.get_temporales().size + 1);
                         generador_.add_call("dec_toStr");
                         generador_.add_code(`${temp_aux} = p;`);

@@ -35,7 +35,7 @@ export class decremento extends expresion_c3d{
 
             generador_.add_expresion(right_.get_valor(), right_.get_valor(), "1", "-");
             generador_.add_set_stack(right_.get_valor(), var_.pos);
-
+            return new retorno("", false, right_.tipo_, right_.simbolo_);
         }catch(error){
             errores_.push(new nodoError("Semántico", error, this.linea_, this.columna_, "Desconocido"));
             return;

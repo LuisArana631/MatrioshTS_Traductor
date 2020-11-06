@@ -10,6 +10,8 @@ export class acceso_ extends expresion_c3d{
         super(linea_, columna_);
     }
 
+    
+
     public traducir(env_:ambiente_c3d, generador_:generador, errores_:Array<nodoError>):retorno{
         try{
             /* EXTRAER VALOR EN UN TEMPORAL */            

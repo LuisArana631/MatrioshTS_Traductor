@@ -107,7 +107,8 @@ export class HomePage {
         errores.clear();
         this.env_c3d.limpiar_types();
         this.env_c3d.limpiar_variables();
-        this.gener_.limpiar_temporales();        
+        this.gener_.limpiar_temporales();
+        
 
         /*-----EJECUTAR Y MOSTRAR----*/
         this.ast = traductor_c3d.parse(this.fuente);        
@@ -568,7 +569,7 @@ export class HomePage {
 
       this.graficar_expresion(item.expresion, instr_num, sub_instr + 600, "print_" + sub_instr + instr_num);
       sub_instr++;
-    }else if(item.tipo == "for_"){
+    }else if(item.tipo == "for_"){//AST FOR
       this.str_ast += "for_" + sub_instr + instr_num + "[label = \"For\"];\n";
       this.str_ast += padre + " -> for_" + sub_instr  + instr_num + ";\n";
 

@@ -23,8 +23,18 @@ export class potencia_ extends expresion_c3d {
             const tipo_guia = this.determinar_tipo(left_.tipo_.tipo, right_.tipo_.tipo);
             switch (tipo_guia) {
                 case tipo.NUMBER:
-                    generador_.add_set_stack(left_.get_valor(), env_.size + generador_.get_temporales().size);
-                    generador_.add_set_stack(right_.get_valor(), env_.size + generador_.get_temporales().size + 1);
+                    if (env_.prev_ == null) {
+                        generador_.add_set_stack(left_.get_valor(), env_.size + generador_.get_temporales().size);
+                        generador_.add_set_stack(right_.get_valor(), env_.size + generador_.get_temporales().size + 1);
+                    }
+                    else {
+                        let aux_index = generador_.new_temporal();
+                        generador_.free_temp(aux_index);
+                        generador_.add_expresion(aux_index, "p", generador_.get_temporales().size + env_.size, "+");
+                        generador_.add_set_stack(left_.get_valor(), aux_index);
+                        generador_.add_expresion(aux_index, "p", generador_.get_temporales().size + env_.size + 1, "+");
+                        generador_.add_set_stack(right_.get_valor(), aux_index);
+                    }
                     generador_.next_stack(env_.size + generador_.get_temporales().size - 1);
                     generador_.add_call("potencia_");
                     generador_.add_get_stack(temp_, "p");
