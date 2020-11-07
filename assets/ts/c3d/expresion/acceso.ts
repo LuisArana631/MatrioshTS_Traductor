@@ -16,18 +16,20 @@ export class primitivo_ extends expresion_c3d{
     }
     
     public traducir(env_:ambiente_c3d, generador_:generador, errores_:Array<nodoError>):retorno{
-        try{
+        try{   
+
             switch(this.tipo_){
-                case tipos_dato.NUMBER:
+                case tipos_dato.NUMBER:                                       
                     return new retorno(this.valor_, false, new tipos_(this.tipo_));
                 case tipos_dato.BOOLEAN:
                     let retorno_ = new retorno(this.valor_  ? '1' : '0', false, new tipos_(this.tipo_));
                     this.true_lbl = this.true_lbl == '' ? generador_.new_label() : this.true_lbl;
-                    this.false_lbl = this.false_lbl == '' ? generador_.new_label() : this.false_lbl;
-                    this.valor_ ? generador_.add_goto(this.true_lbl) : generador_.add_goto(this.false_lbl)                    
+                    this.false_lbl = this.false_lbl == '' ? generador_.new_label() : this.false_lbl; 
+                    generador_.add_goto(this.valor_ ? this.true_lbl:this.false_lbl);
 
                     retorno_.true_lbl = this.true_lbl;
                     retorno_.false_lbl = this.false_lbl;
+
                     return retorno_;
                 case tipos_dato.NULL:
                     return new retorno('-1', false, new tipos_(this.tipo_));

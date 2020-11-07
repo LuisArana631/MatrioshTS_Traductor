@@ -10,6 +10,12 @@ export class ambiente_c3d {
         this.continue_ = (anterior_ === null || anterior_ === void 0 ? void 0 : anterior_.continue_) || null;
         this.return_ = (anterior_ === null || anterior_ === void 0 ? void 0 : anterior_.return_) || null;
     }
+    limpiar_types() {
+        this.types_.clear();
+    }
+    limpiar_variables() {
+        this.variables_.clear();
+    }
     add_variable(rest_, id_, tipo_, const_, ref_, linea_, columna_) {
         id_ = id_.toLowerCase();
         if (this.variables_.get(id_) != undefined) {

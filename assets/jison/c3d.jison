@@ -10,6 +10,10 @@
     const { while_c3d } = require('../js/c3d/instrucciones/while');
     const { do_while_c3d } = require('../js/c3d/instrucciones/do_while');
     const { print_ } = require('../js/c3d/instrucciones/print');
+    const { asignar_ } = require('../js/c3d/instrucciones/variables/asignacion');
+    const { for_c3d } = require('../js/c3d/instrucciones/for');
+    const { case_c3d } = require('../js/c3d/instrucciones/case');
+    const { switch_c3d } = require('../js/c3d/instrucciones/switch');
 
     //EXPRESIONES
     const { suma } = require('../js/c3d/expresion/suma');
@@ -19,24 +23,20 @@
     const { modulo } = require('../js/c3d/expresion/modulo');
     const { oper_rel, relacionales } = require('../js/c3d/logicas/relacional');
     const { oper_logica, logicas_ } = require('../js/c3d/logicas/logicas_');
+    const { incremento } = require('../js/c3d/expresion/incremento');
+    const { decremento } = require('../js/c3d/expresion/decremento');
+    const { negativo_ } = require('../js/c3d/expresion/negativo');
+    const { potencia_ } = require('../js/c3d/expresion/potencia');
 
     //DATOS 
     const { primitivo_ } = require('../js/c3d/expresion/acceso');
     const { string_c3d } = require('../js/c3d/expresion/string_c3d');
     const { tipos_ } = require('../js/c3d/tools/tipo');
+    const { acceso_ } = require('../js/c3d/instrucciones/variables/acceder');
 //--------------------------------------------------------------------------------------
     //INSTRUCCIONES
-    const { print } = require('../js/instruccion/print');
-    const { if_ } = require('../js/instruccion/if');
-    const { while_ } = require('../js/instruccion/while');
-    const { dowhile_ } = require('../js/instruccion/dowhile')
-    const { for_ } = require('../js/instruccion/for');
-    const { instrucciones_ } = require('../js/instruccion/instrucciones');
-    const { asignacion_ } = require('../js/instruccion/asignacion');
     const { break_ } = require('../js/instruccion/break');
     const { continue_ } = require('../js/instruccion/continue');
-    const { switch_ } = require('../js/instruccion/switch');
-    const { case_ } = require('../js/instruccion/case');
     const { return_ } = require('../js/instruccion/return');
     const { function_ } = require('../js/instruccion/function');
     const { llamada_ } = require('../js/instruccion/llamada');
@@ -44,13 +44,6 @@
     const { length_ } = require('../js/instruccion/length');
     const { pop_ } = require('../js/instruccion/pop');
     const { push_ } = require('../js/instruccion/push');
-
-    //EXPRESIONES
-    const { operacion_unitaria, aritmetica_unitaria } = require('../js/expresion/aritmetica_unaria');
-
-    //DATOS 
-    const { dato_literal } = require('../js/expresion/dato');
-    const { acceso } = require('../js/expresion/acceso');
 %}
 
 %lex
@@ -132,7 +125,7 @@ str_ (\"[^"]*\")|(\'[^']*\')
 "ToLowerCase"           return 'TOLOWERCASE'
 "ToUpperCase"           return 'TOUPPERCASE'
 "Concat"                return 'CONCAT' 
-"null"                  return 'CONCAT';
+"null"                  return 'NULL'
 
 "true"                  return 'TRUE'
 "false"                 return 'FALSE'
@@ -191,7 +184,7 @@ instruccion
     | asignacion { $$ = $1; }
     | llamada ';' { $$ = $1; }
     | dato_valor '++' ';' { $$ = {
-        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.INCREMENTO, $1.id, @1.first_line, @1.first_column)),
+        nodo: (new incremento($1.nodo, $1.id, @1.first_line, @1.first_column)),
 
         tipo: "incremento",
         expresion: {
@@ -200,9 +193,9 @@ instruccion
         }
     }; }
     | dato_valor '--' ';' { $$ = {
-        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.DECREMENTO, $1.id, @1.first_line, @1.first_column)),
+        nodo: (new decremento($1.nodo, $1.id, @1.first_line, @1.first_column)),
 
-        tipo: "incremento",
+        tipo: "decremento",
         expresion: {
             izquierdo: $1.expresion,
             operador: $2
@@ -242,8 +235,7 @@ instruccion
 
 asignacion     
     : 'IDENTIFICADOR' '=' expresion ';' { $$ = {
-        nodo: (new asignacion_($3.nodo, $1, @1.first_line, @1.first_column)),
-        
+        nodo: (new asignar_($3.nodo, $1, @1.first_line, @1.first_column)),        
         
         tipo: "asignar",
         expresion: $3.expresion,
@@ -378,7 +370,7 @@ expresion
         }
     }; }
     | expresion '**' expresion { $$ = {
-        nodo: (new aritmetica($1.nodo, $3.nodo, operacion_aritmetica.POTENCIA, @1.first_line, @1.first_column)),
+        nodo: (new potencia_($1.nodo, $3.nodo, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -386,8 +378,9 @@ expresion
             operador: $2
         }
     }; }
+
     | dato_valor '++' { $$ = {
-        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.INCREMENTO, $1.id, @1.first_line, @1.first_column)),
+        nodo: (new incremento($1.nodo, $1.id, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -395,7 +388,7 @@ expresion
         }
     }; }
     | dato_valor '--' { $$ = {
-        nodo: (new aritmetica_unitaria($1.nodo, operacion_unitaria.DECREMENTO, $1.id, @1.first_line, @1.first_column)),
+        nodo: (new decremento($1.nodo, $1.id, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $1.expresion,
@@ -403,7 +396,7 @@ expresion
         }
     }; }
     | '-' expresion { $$ = {
-        nodo: (new aritmetica($2.nodo, null, operacion_aritmetica.NEGAR, @1.first_line, @1.first_column)),
+        nodo: (new negativo_($2.nodo, @1.first_line, @1.first_column)),
 
         expresion: {
             izquierdo: $2.expresion,
@@ -519,7 +512,7 @@ dato_valor
         }
     }; }
     | 'IDENTIFICADOR' { $$ = {
-        nodo: (new acceso($1, @1.first_line, @1.first_column)),
+        nodo: (new acceso_($1, @1.first_line, @1.first_column)),
         id: $1,
         
         expresion: {
@@ -612,7 +605,7 @@ statement
 
 statement_switch
     : instrucciones { $$ = {
-        nodo: (new instrucciones_($1,  @1.first_line, @1.first_column)),
+        nodo: (new statement_($1,  @1.first_line, @1.first_column)),
         instr: $1
     }; };
 
@@ -636,7 +629,7 @@ do_while
 
 switch
     : 'SWITCH' '(' expresion ')' '{' cases '}' { $$ = {
-        nodo: (new switch_($3.nodo, $6, @1.first_line, @1.first_column)),
+        nodo: (new switch_c3d($3.nodo, $6, @1.first_line, @1.first_column)),
         
         tipo: "switch_",
         instr: $6,
@@ -649,13 +642,13 @@ cases
 
 case
     : 'CASE' expresion ':' statement_switch { $$ = {
-        nodo: (new case_($2.nodo, $4.nodo, @1.first_line, @1.first_column)),
+        nodo: (new case_c3d($2.nodo, $4.nodo, @1.first_line, @1.first_column)),
 
         expresion: $2.expresion,
         instr: $4.instr
     }; }
     | 'DEFAULT' ':' statement_switch { $$ = {
-        nodo: (new case_(null, $3.nodo, @1.first_line, @1.first_column)),
+        nodo: (new case_c3d(null, $3.nodo, @1.first_line, @1.first_column)),
 
         instr: $3.instr
     }; };
@@ -676,22 +669,22 @@ for_of
 
 for_normal
     :'FOR' '(' declaracion_variables expresion ';' expresion ')' statement { $$ = {
-        nodo: (new for_($4.nodo, $6.nodo, $3.nodo, $8.nodo, $3.id, @1.first_line, @1.first_column)),        
+        nodo: (new for_c3d($4.nodo, $6.nodo, $3.nodo, $8.nodo, $3.id, @1.first_line, @1.first_column)),        
 
         tipo: "for_",
-        instr: $8
+        instr: $8.instr
     }; }
     | 'FOR' '(' asignacion expresion ';' expresion ')' statement { $$ = {
-        nodo: (new for_($4.nodo, $6.nodo, $3.nodo, $8.nodo, $3.id, @1.first_line, @1.first_column)),        
+        nodo: (new for_c3d($4.nodo, $6.nodo, $3.nodo, $8.nodo, $3.id, @1.first_line, @1.first_column)),        
 
         tipo: "for_",
-        instr: $8
+        instr: $8.instr
     }; }
     | 'FOR' '(' 'IDENTIFICADOR' ';' expresion ';' expresion ')' statement { $$ = {
-        nodo: (new for_($5.nodo, $7.nodo, null, $9.nodo, $3, @1.first_line, @1.first_column)),
+        nodo: (new for_c3d($5.nodo, $7.nodo, null, $9.nodo, $3, @1.first_line, @1.first_column)),
         
         tipo: "for_",
-        instr: $8
+        instr: $9.instr
     }; };
 
 sentencia_return

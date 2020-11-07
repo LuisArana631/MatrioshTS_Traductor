@@ -24,6 +24,7 @@ export class nativas_{
 
     public print_str(){
         let gen_ = generador.get_instance();
+        
         let index_aux = gen_.new_temporal();
         let mov_heap = gen_.new_temporal();
         let char_val = gen_.new_temporal();
@@ -56,6 +57,7 @@ export class nativas_{
 
     public compare_str(){
         let gen_ = generador.get_instance();
+
         let var_1_index = gen_.new_temporal();
         let var_2_index = gen_.new_temporal();
         let aux_index = gen_.new_temporal();
@@ -94,7 +96,7 @@ export class nativas_{
         gen_.add_label(lbl_false);
         gen_.add_expresion(var_1_index, var_1_index, '1', '+');
         gen_.add_expresion(var_2_index, var_2_index, '1', '+');
-        gen_.add_if(temp_1, temp_2, "==", lbl_true2);
+        gen_.add_if(temp_1, "-1", "==", lbl_true2);
         gen_.add_goto(lbl_loop);
 
         gen_.add_label(lbl_true2);
@@ -165,97 +167,181 @@ export class nativas_{
     public int_toStr(){
         let gen_ = generador.get_instance();
 
-        let var_1 = gen_.new_temporal();
-        let var_2 = gen_.new_temporal();
-        let index = gen_.new_temporal();
         let aux_1 = gen_.new_temporal();
         let aux_2 = gen_.new_temporal();
         let aux_3 = gen_.new_temporal();
         let aux_4 = gen_.new_temporal();
         let aux_5 = gen_.new_temporal();
+        let aux_6 = gen_.new_temporal();
+        let aux_7 = gen_.new_temporal();
+        let index = gen_.new_temporal();        
         let ret_ = gen_.new_temporal();
         
-        gen_.free_temp(index);
-        gen_.free_temp(var_1);
-        gen_.free_temp(var_2);
+        gen_.free_temp(index);        
         gen_.free_temp(aux_1);
         gen_.free_temp(aux_2);
         gen_.free_temp(aux_3);
         gen_.free_temp(aux_4);
         gen_.free_temp(aux_5);
+        gen_.free_temp(aux_6);
+        gen_.free_temp(aux_7);
         gen_.free_temp(ret_);
 
         let lbl_true = gen_.new_label();
-        let lbl_false = gen_.new_label();
         let lbl_true2 = gen_.new_label();
-        let lbl_false2 = gen_.new_label();
-        let lbl_true3 = gen_.new_label();
-        let lbl_false3 = gen_.new_label();        
+        let lbl_true3 = gen_.new_label();       
+        let lbl_true4 = gen_.new_label();       
         let lbl_escape = gen_.new_label();
-        let aux_lbl = gen_.new_label();
 
-        gen_.add_void("int_toStr");
+        gen_.add_void("num_toStr");
         gen_.add_expresion(index, "p", "1", "+");
-        gen_.add_get_stack(var_1, index);
-        gen_.add_code(`${var_2} = h;`);
-        gen_.add_if(var_1, "0", "==", lbl_true);
-        gen_.add_goto(lbl_false);
+        gen_.add_get_stack(aux_1, index);
+        gen_.add_code(`${aux_2} = h;`);
+        gen_.add_if(aux_1, "0", "==", lbl_true);
+
+        gen_.add_code(`${aux_4} = 10;`);
+        gen_.add_if(aux_1, "0", ">", lbl_true2);
+
+        gen_.add_set_heap("45", "h");
+        gen_.next_heap();
+        gen_.add_expresion(aux_1, aux_1, "-1", "*");
+
+        gen_.add_label(lbl_true2);
+        gen_.add_expresion(aux_3, aux_1, aux_4, "/");
+        gen_.add_if(aux_3, "1", "<", lbl_true3);
+        
+        gen_.add_expresion(aux_4, aux_4, "10", "*");
+        gen_.add_goto(lbl_true2);
+      
+        gen_.add_label(lbl_true3);        
+        gen_.add_expresion(aux_4, aux_4, "10", "/");
+
+        gen_.add_label(lbl_true4);
+        gen_.add_expresion(aux_3, aux_1, aux_4, "/");
+        gen_.add_code(`${aux_5} = fmod(${aux_3}, 1);`);
+        gen_.add_expresion(aux_6, aux_3, aux_5, "-");
+        gen_.add_expresion(aux_7, aux_6, aux_4, "*");
+        gen_.add_expresion(aux_1, aux_1, aux_7, "-");
+        gen_.add_expresion(ret_, "p", "1", "+");
+
+        gen_.add_set_stack(aux_6, ret_);
+        gen_.add_call("num_toChar");
+        gen_.add_get_stack(ret_, "p");
+        gen_.add_set_heap(ret_, "h");
+        gen_.next_heap();
+
+        gen_.add_if(aux_4, "1", "==", lbl_escape);
+        gen_.add_expresion(aux_4, aux_4, "10", "/");
+        gen_.add_goto(lbl_true4);
 
         gen_.add_label(lbl_true);
         gen_.add_set_heap("48", "h");
         gen_.next_heap();
-        gen_.add_goto(lbl_escape);
-
-        gen_.add_goto(lbl_false);
-        gen_.add_code(`${aux_1} = 10;`);
-        gen_.add_if(var_1, "0", ">", lbl_true2);
-        gen_.add_goto(lbl_false2);
-
-        gen_.add_goto(lbl_true2);
-        gen_.add_expresion(aux_2, var_1, aux_1, "/");
-        gen_.add_if(var_1, "1", "<", lbl_true3);
-        gen_.add_goto(lbl_false3);
-
-        gen_.add_goto(lbl_false2);
-        gen_.add_set_heap("45", "h");
-        gen_.next_heap();
-        gen_.add_expresion(var_1, var_1, "-1", "*");
-        gen_.add_goto(lbl_true2);
-
-        gen_.add_goto(lbl_true3);
-        gen_.add_expresion(aux_1, aux_1, "10", "/");
-        gen_.add_goto(aux_lbl);
-
-        gen_.add_goto(lbl_false3);
-        gen_.add_expresion(aux_1, aux_1, "10", "*");
-        gen_.add_goto(lbl_true2);
-
-        gen_.add_label(aux_lbl);
-        gen_.add_expresion(aux_2, var_1, aux_1, "/");
-        gen_.add_expresion(aux_3, aux_2, "1", "%");
-        gen_.add_expresion(aux_4, aux_2, aux_3, "-");
-        gen_.add_expresion(aux_5, aux_4, aux_1, "*");
-        gen_.add_expresion(var_1, var_1, aux_5, "-");
-        gen_.add_expresion(ret_, "p", "1", "+");
-        gen_.add_set_stack(aux_4, ret_);
-        gen_.add_call("int_toChar");
-        gen_.add_get_stack(ret_, "p");
-        gen_.add_set_heap(ret_, "h");
-        gen_.next_heap();
-        gen_.add_if(aux_1, "1", "==", lbl_escape);
-        gen_.add_expresion(aux_1, aux_1, "10", "/");
-        gen_.add_goto(aux_lbl);
 
         gen_.add_label(lbl_escape);
         gen_.add_set_heap("-1", "h");
         gen_.next_heap();
-        gen_.add_set_stack(var_2, "p");
+        gen_.add_set_stack(aux_2, "p");
 
         gen_.add_end_void();
     }
 
     public dec_toStr(){
+        let gen_ = generador.get_instance();
 
+        let temp1 = gen_.new_temporal();
+        let temp2 = gen_.new_temporal();
+        let temp3 = gen_.new_temporal();
+        let temp4 = gen_.new_temporal();
+        let temp5 = gen_.new_temporal();
+        let index = gen_.new_temporal();
+        let index2 = gen_.new_temporal();
+        let ret_ = gen_.new_temporal();
+        let ret_2 = gen_.new_temporal();
+        let rep_ = gen_.new_temporal();
+        let bloque_ = gen_.new_temporal();
+
+        gen_.free_temp(temp1);
+        gen_.free_temp(temp2);
+        gen_.free_temp(temp3);
+        gen_.free_temp(temp4);
+        gen_.free_temp(temp5);
+        gen_.free_temp(index);
+        gen_.free_temp(index2);
+        gen_.free_temp(ret_);
+        gen_.free_temp(ret_2);
+        gen_.free_temp(rep_);
+        gen_.free_temp(bloque_);
+
+        let lbl0 = gen_.new_label();
+        let lbl1 = gen_.new_label();
+        let lbl_end = gen_.new_label();
+
+        gen_.add_void("dec_toStr");
+        gen_.add_expresion(index, "p", "1", "+");
+        gen_.add_get_stack(temp1, index);
+        gen_.add_code(`${temp2} = fmod(${temp1}, 1);`);
+        gen_.add_expresion(temp3, temp1, temp2, "-");
+
+        gen_.add_expresion(index2, "p", "4", "+");
+        gen_.add_set_stack(temp3, index2);
+        gen_.add_expresion("p", "p", "3", "+");
+        gen_.add_call("num_toStr");
+        gen_.add_get_stack(ret_, "p");
+        gen_.add_expresion("p", "p", "3", "-");
+
+        gen_.add_expresion(temp4, temp1, temp3, "-");
+        gen_.add_if(temp4, "0.000000001", "<", lbl_end);
+        gen_.add_code(`${bloque_} = 0;`);
+
+        gen_.add_label(lbl0);
+        gen_.add_expresion(temp4, temp4, "10", "*");
+        gen_.add_expresion(bloque_, bloque_, "1",  "+");
+        gen_.add_code(`${temp5} = fmod(${temp4},1);`);
+
+        gen_.add_if(temp5, "0.000000001", "<", lbl1);
+        gen_.add_if(temp5, "0.999999990", ">", lbl1);
+        gen_.add_if(bloque_, "8", ">", lbl1);
+        gen_.add_goto(lbl0);
+
+        gen_.add_label(lbl1);
+        gen_.add_code(`${temp5} = fmod(${temp4}, 1);`);
+        gen_.add_expresion(temp4, temp4, temp5, "-");
+        gen_.add_expresion(index2, "p", "4", "+");
+        gen_.add_set_stack(temp4, index2);
+        gen_.add_expresion("p", "p", "3", "+");
+        gen_.add_call("num_toStr");
+        gen_.add_get_stack(ret_2, "p");
+        gen_.add_expresion("p", "p", "3", "-");
+
+        gen_.add_code(`${rep_} = h;`);
+        gen_.add_set_heap("46", "h");
+        gen_.next_heap();
+        gen_.add_set_heap("-1", "h");
+        gen_.next_heap();
+
+        gen_.add_expresion(index2, "p", "4", "+");
+        gen_.add_set_stack(ret_, index2);
+        gen_.add_expresion(index2, "p", "5", "+");
+        gen_.add_set_stack(rep_, index2);
+        gen_.add_expresion("p", "p", "3", "+");
+        gen_.add_call("concat_str");
+        gen_.add_get_stack(ret_, "p");
+        gen_.add_expresion("p", "p", "3", "-");
+
+        gen_.add_expresion(index2, "p", "4", "+");
+        gen_.add_set_stack(ret_, index2);
+        gen_.add_expresion(index2, "p", "5", "+");
+        gen_.add_set_stack(ret_2, index2);
+
+        gen_.add_expresion("p", "p", "3", "+");
+        gen_.add_call("concat_str");
+        gen_.add_get_stack(ret_, "p");
+        gen_.add_expresion("p", "p", "3", "-");
+
+        gen_.add_label(lbl_end);
+        gen_.add_set_stack(ret_, "p");
+        gen_.add_end_void();
     }
 
     public int_toChar(){
@@ -271,7 +357,7 @@ export class nativas_{
         let lblescape = gen_.new_label();
         let lblnext = gen_.new_label();
 
-        gen_.add_void("int_toChar");
+        gen_.add_void("num_toChar");
         gen_.add_expresion(index, "p", "1", "+");
         gen_.add_get_stack(temp1, index);
         
@@ -348,15 +434,58 @@ export class nativas_{
         gen_.add_label(lbl_end);
         gen_.add_set_heap("-1", "h");
         gen_.next_heap();
-        gen_.add_set_stack("p", "h");
+        gen_.add_set_stack(temp_2, "p");
         gen_.add_end_void();
     }
 
     public potencia_(){
         let gen_ = generador.get_instance();
+        
+        let respuesta = gen_.new_temporal();
+        let base = gen_.new_temporal();
+        let exp = gen_.new_temporal();
+        let index = gen_.new_temporal();
+        let contador = gen_.new_temporal();
+
+        gen_.free_temp(index);
+        gen_.free_temp(exp);
+        gen_.free_temp(base);
+        gen_.free_temp(respuesta);
+        gen_.free_temp(contador);
+
+        let potencia_positiva = gen_.new_label();
+        let potencia_negativa = gen_.new_label();
+        let endloop = gen_.new_label();
 
         gen_.add_void("potencia_");
+        gen_.add_expresion(index, "p", "1", "+");
+        gen_.add_get_stack(base, index);
+        gen_.add_expresion(index, index, "1", "+");
+        gen_.add_get_stack(exp, index);
 
+        gen_.add_code(`${respuesta} = 1;`);
+        gen_.add_code(`${contador} = 0;`);
+
+        /* VALIDAR TIPO DE POTENCIA */
+        gen_.add_if(exp, "-1", ">", potencia_positiva);
+        gen_.add_goto(potencia_negativa);
+
+        /* HACER POTENCIA  POSITIVA*/
+        gen_.add_label(potencia_positiva)
+        gen_.add_if(exp, contador, "==", endloop);
+        gen_.add_expresion(respuesta, respuesta, base, "*");
+        gen_.add_expresion(contador, contador, "1", "+");
+        gen_.add_goto(potencia_positiva);
+
+        /* HACER POTENCIA NEGATIVA */
+        gen_.add_label(potencia_negativa);
+        gen_.add_if(exp, contador, "==", endloop);
+        gen_.add_expresion(respuesta, respuesta, base, "/");
+        gen_.add_expresion(contador, contador, "1", "-");        
+        gen_.add_goto(potencia_positiva);
+
+        gen_.add_label(endloop);
+        gen_.add_set_stack(respuesta, "p");
         gen_.add_end_void();
     }
 }

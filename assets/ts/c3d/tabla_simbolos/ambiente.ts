@@ -22,6 +22,14 @@ export class ambiente_c3d{
         this.return_ = anterior_?.return_ || null;
     }
 
+    public limpiar_types(){
+        this.types_.clear();
+    }
+
+    public limpiar_variables(){
+        this.variables_.clear();
+    }
+
     public add_variable(rest_:number, id_:string, tipo_:tipos_, const_:boolean, ref_: boolean, linea_:number, columna_:number):simbolo_c3d|null{
         id_ = id_.toLowerCase();
         if(this.variables_.get(id_) != undefined){

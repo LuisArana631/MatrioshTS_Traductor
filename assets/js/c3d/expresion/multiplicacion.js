@@ -1,6 +1,6 @@
 import { expresion_c3d } from '../abstract/expresion';
 import { retorno } from '../tools/retorno';
-import { tipos_dato } from '../tools/tipo';
+import { tipos_, tipos_dato } from '../tools/tipo';
 import { tipo } from '../../abstract/valores';
 import { nodoError } from '../../error/error';
 export class multiplicacion extends expresion_c3d {
@@ -24,7 +24,7 @@ export class multiplicacion extends expresion_c3d {
             switch (tipo_guia) {
                 case tipo.NUMBER:
                     generador_.add_expresion(temp_, left_.get_valor(), right_.get_valor(), '*');
-                    return new retorno(temp_, true, right_.tipo_.tipo == tipos_dato.NUMBER ? right_.tipo_ : left_.tipo_);
+                    return new retorno(temp_, true, new tipos_(tipos_dato.NUMBER));
                 default:
                     errores_.push(new nodoError("Semántico", `No se puede multiplicar ${left_.tipo_.tipo} * ${right_.tipo_.tipo}`, this.linea_, this.columna_, "Multiplicar"));
                     break;

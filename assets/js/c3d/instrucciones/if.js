@@ -11,12 +11,19 @@ export class if_c3d extends instruccion_c3d {
     traducir(env_, generador_, errores_) {
         try {
             const condicion = this.condicion.traducir(env_, generador_, errores_);
+            if (condicion.get_valor().charAt(0) == "t") {
+                generador_.free_temp(condicion.get_valor());
+            }
             if (condicion.tipo_.tipo != tipos_dato.BOOLEAN) {
                 errores_.push(new nodoError("Semántico", "La condición debe ser tipo booleano", this.linea_, this.columna_, "Condición"));
                 return null;
             }
             else {
                 let exit_lbl;
+                if (condicion.temp_) {
+                    generador_.add_if(condicion.get_valor(), "1", "==", condicion.true_lbl);
+                    generador_.add_goto(condicion.false_lbl);
+                }
                 generador_.add_label(condicion.true_lbl);
                 this.instrucciones.traducir(env_, generador_, errores_);
                 if (this.elst) {

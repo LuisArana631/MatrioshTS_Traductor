@@ -24,21 +24,27 @@ export class logicas_ extends expresion_c3d{
             if(this.izquierda){
                 left_oper = this.izquierda.traducir(env_, generador_, errores_);            
             }
+            
+            if(left_oper.get_valor().charAt(0) == "t"){
+                generador_.free_temp(left_oper.get_valor());                
+            }
 
             let tipo_guia:any = left_oper.tipo_.tipo;
-
             if(tipo_guia != tipos_dato.BOOLEAN){
                 errores_.push(new nodoError("Semántico", `Operación de tipo invalido. Necesitas Boolean`, this.linea_, this.columna_, "Operacion incorrecta"));
                 return;
             }
-
             let retorno_ = new retorno('', false, new tipos_(2));
-
+            
             if(this.tipo_ == oper_logica.AND){
                 generador_.add_label(left_oper.true_lbl);
 
                 if(this.derecha){
                     right_oper = this.derecha.traducir(env_, generador_, errores_);
+                }
+
+                if(right_oper.get_valor().charAt(0) == "t"){
+                    generador_.free_temp(right_oper.get_valor());
                 }
 
                 tipo_guia = this.determinar_tipo(left_oper.tipo_.tipo, right_oper.tipo_.tipo);
@@ -55,6 +61,10 @@ export class logicas_ extends expresion_c3d{
 
                 if(this.derecha){
                     right_oper = this.derecha.traducir(env_, generador_, errores_);
+                }
+
+                if(right_oper.get_valor().charAt(0) == "t"){
+                    generador_.free_temp(right_oper.get_valor());
                 }
 
                 tipo_guia = this.determinar_tipo(left_oper.tipo_.tipo, right_oper.tipo_.tipo);

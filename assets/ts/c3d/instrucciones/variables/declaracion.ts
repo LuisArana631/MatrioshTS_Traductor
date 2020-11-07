@@ -45,9 +45,11 @@ export class declaracion_ extends instruccion_c3d{
                 valor_ = this.valor.traducir(env_, generador_, errores_);
             }
 
+           
             if(valor_.get_valor().charAt(0) == "t"){
                 generador_.free_temp(valor_.get_valor());
             }
+            
 
             if(!this.mismo_tipo(this.tipo, valor_.tipo_)){
                 errores_.push(new nodoError("Semántico", `No puedes insertar ${valor_.tipo_} en ${this.tipo.tipo}`, this.linea_, this.columna_, "Datos No Iguales"));
@@ -68,18 +70,18 @@ export class declaracion_ extends instruccion_c3d{
                     if(this.tipo.tipo == tipos_dato.BOOLEAN){
                         const temporal_ = generador_.new_label();
                         generador_.add_label(valor_.true_lbl);
-                        generador_.add_set_stack('1', new_var.pos+1);
+                        generador_.add_set_stack('1', new_var.pos);
                         generador_.add_goto(temporal_);
                         generador_.add_label(valor_.false_lbl);
-                        generador_.add_set_stack('0', new_var.pos+1);
+                        generador_.add_set_stack('0', new_var.pos);
                         generador_.add_label(temporal_);
                     }else{
-                        generador_.add_set_stack(valor_.get_valor(), new_var.pos+1 + generador_.get_temporales().size);
+                        generador_.add_set_stack(valor_.get_valor(), new_var.pos + generador_.get_temporales().size);
                     }
                 }else{
                     const temp_ = generador_.new_temporal();
                     generador_.free_temp(temp_);
-                    generador_.add_expresion(temp_, 'p', new_var.pos+1 + generador_.get_temporales().size, '+');
+                    generador_.add_expresion(temp_, 'p', new_var.pos + generador_.get_temporales().size, '+');
                     if(this.tipo.tipo == tipos_dato.BOOLEAN){
                         const temp_lbl = generador_.new_label();
                         generador_.add_label(valor_.true_lbl);

@@ -3,13 +3,12 @@ import { ambiente_c3d } from '../tabla_simbolos/ambiente';
 import { retorno } from '../tools/retorno';
 import { generador } from '../instrucciones/generador';
 import { tipos_dato } from '../tools/tipo';
-import { errores } from '../../error/errores';
 import { nodoError } from '../../error/error';
 
 export class incremento extends expresion_c3d{
     private right_oper: expresion_c3d;
 
-    constructor(right_: expresion_c3d, linea_:number, columna_:number){
+    constructor(right_: expresion_c3d, private id_:string, linea_:number, columna_:number){
         super(linea_, columna_);
         this.right_oper = right_;
     }
@@ -17,20 +16,26 @@ export class incremento extends expresion_c3d{
     public traducir(env_: ambiente_c3d, generador_:generador, errores_:Array<nodoError>):retorno{
         try{
             const right_ = this.right_oper.traducir(env_, generador_, errores_);
-            const temp_ = generador_.new_temporal();      
             
             if(right_.get_valor().charAt(0) == "t"){
                 generador_.free_temp(right_.get_valor());
-            }      
-
-            switch(right_.tipo_.tipo){  
-                case tipos_dato.NUMBER:
-                    generador_.add_expresion(temp_, 1, +right_.get_valor(), '+');
-                    return new retorno(temp_, true, right_.tipo_ );
-                default:
-                    errores_.push(new nodoError("Semántico", `No se puede incrementar ${right_.tipo_.tipo}`, this.linea_, this.columna_, "Incremento"));
-                    break;
             }
+
+            let var_ = env_.get_variable(this.id_);
+
+            if(var_ == null){
+                errores_.push(new nodoError("Semántico", `No se encontro la variable: ${this.id_}`, this.linea_, this.columna_, "No es variable"));
+                return;
+            }
+            
+            if(var_.tipo_.tipo != tipos_dato.NUMBER){
+                errores_.push(new nodoError("Semántico", "Solo se puede incrementar variables numericas", this.linea_, this.columna_, "No es numero"));
+                return;
+            }
+
+            generador_.add_expresion(right_.get_valor(), right_.get_valor(), "1", "+");
+            generador_.add_set_stack(right_.get_valor(), var_.pos);
+            return new retorno("", false, right_.tipo_, right_.simbolo_);
         }catch(error){
             errores_.push(new nodoError("Semántico", error, this.linea_, this.columna_, "Desconocido"));
             return;
