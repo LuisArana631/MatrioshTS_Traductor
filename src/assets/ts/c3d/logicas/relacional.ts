@@ -5,8 +5,6 @@ import { ambiente_c3d } from '../tabla_simbolos/ambiente';
 import { retorno } from '../tools/retorno';
 import { tipos_, tipos_dato } from '../tools/tipo';
 import { tipo } from '../../abstract/valores';
-import { errores } from '../../error/errores';
-
 
 export enum oper_rel{
     IGUAL,

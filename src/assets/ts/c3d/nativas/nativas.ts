@@ -96,7 +96,7 @@ export class nativas_{
         gen_.add_label(lbl_false);
         gen_.add_expresion(var_1_index, var_1_index, '1', '+');
         gen_.add_expresion(var_2_index, var_2_index, '1', '+');
-        gen_.add_if(temp_1, temp_2, "==", lbl_true2);
+        gen_.add_if(temp_1, "-1", "==", lbl_true2);
         gen_.add_goto(lbl_loop);
 
         gen_.add_label(lbl_true2);
