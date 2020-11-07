@@ -20,6 +20,8 @@ export class while_c3d extends instruccion_c3d {
                 return null;
             }
             else {
+                env_.break_ = condicion.false_lbl;
+                env_.continue_ = temporal_loop;
                 if (condicion.temp_) {
                     generador_.add_if(condicion.get_valor(), "1", "==", condicion.true_lbl);
                     generador_.add_goto(condicion.false_lbl);

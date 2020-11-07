@@ -122,7 +122,7 @@ case 11:
 break;
 case 19:
  this.$ = {
-        nodo: (new break_(_$[$0-1].first_line, _$[$0-1].first_column)),
+        nodo: (new break_c3d(_$[$0-1].first_line, _$[$0-1].first_column)),
 
         tipo: "break"
     }; 
@@ -945,6 +945,7 @@ _handle_error:
     const { for_c3d } = require('../js/c3d/instrucciones/for');
     const { case_c3d } = require('../js/c3d/instrucciones/case');
     const { switch_c3d } = require('../js/c3d/instrucciones/switch');
+    const { break_c3d } = require('../js/c3d/instrucciones/break');
 
     //EXPRESIONES
     const { suma } = require('../js/c3d/expresion/suma');

@@ -14,6 +14,7 @@
     const { for_c3d } = require('../js/c3d/instrucciones/for');
     const { case_c3d } = require('../js/c3d/instrucciones/case');
     const { switch_c3d } = require('../js/c3d/instrucciones/switch');
+    const { break_c3d } = require('../js/c3d/instrucciones/break');
 
     //EXPRESIONES
     const { suma } = require('../js/c3d/expresion/suma');
@@ -209,7 +210,7 @@ instruccion
     | for_in { $$ = $1; }
     | for_of { $$ = $1; }
     | 'BREAK' ';' { $$ = {
-        nodo: (new break_(@1.first_line, @1.first_column)),
+        nodo: (new break_c3d(@1.first_line, @1.first_column)),
 
         tipo: "break"
     }; }

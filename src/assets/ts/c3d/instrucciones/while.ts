@@ -24,6 +24,8 @@ export class while_c3d extends instruccion_c3d{
                 errores_.push(new nodoError("Semántico", "La condición debe ser tipo booleano", this.linea_, this.columna_, "Condición"));
                 return null;
             }else{
+                env_.break_ = condicion.false_lbl;
+                env_.continue_ = temporal_loop;
 
                 if(condicion.temp_){
                     generador_.add_if(condicion.get_valor(), "1", "==", condicion.true_lbl);

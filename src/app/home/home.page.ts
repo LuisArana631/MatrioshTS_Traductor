@@ -117,8 +117,8 @@ export class HomePage {
         this.listaErrores = this.listaErrores.concat(errores.getErrores());        
 
         this.cargar_nativas();
-
-        this.gener_.add_void("main");
+        this.codigo_c3d_pp();
+        this.gener_.add_void("main");        
         this.codigo_c3d_sp();       
         this.gener_.add_end_void();
 
@@ -325,7 +325,10 @@ export class HomePage {
   }
 
   codigo_c3d_pp(){
-    
+    this.ast.forEach((item:any) => {
+      if((item.nodo instanceof types_))
+        item.nodo.traducir(this.env_c3d, this.gener_, this.listaErrores);
+    });      
   }
 
   codigo_c3d_sp(){    

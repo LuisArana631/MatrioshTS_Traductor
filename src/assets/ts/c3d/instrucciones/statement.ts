@@ -12,6 +12,10 @@ export class statement_ extends instruccion_c3d{
         try{
             const new_env = new ambiente_c3d(env_);
 
+            new_env.break_ = env_.break_;
+            new_env.continue_ = env_.continue_;
+            new_env.return_ = env_.return_;
+
             for(const instr of this.code_){
                 try{
                     instr.nodo.traducir(new_env, generador_, errores_);
