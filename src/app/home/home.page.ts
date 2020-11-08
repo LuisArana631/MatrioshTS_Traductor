@@ -108,6 +108,7 @@ export class HomePage {
         errores.clear();
         this.env_c3d.limpiar_types();
         this.env_c3d.limpiar_variables();
+        this.env_c3d.limpiar_funciones();
         this.gener_.limpiar_temporales();
         
 
@@ -714,7 +715,7 @@ export class HomePage {
           this.str_ast += "_id__" + sub_instr + instr_num + "[label = \"" + param_func.id + "\"];\n";
           this.str_ast += "_param_" + sub_instr + instr_num +" -> _id__" + sub_instr + instr_num + ";\n";
 
-          this.str_ast += "_tipo__" + sub_instr + instr_num + "[label = \"" + param_func.tipo + "\"];\n";
+          this.str_ast += "_tipo__" + sub_instr + instr_num + "[label = \"" + param_func.tipos + "\"];\n";
           this.str_ast += "_param_" + sub_instr + instr_num + " -> _tipo__" + sub_instr + instr_num + ";\n";
 
           sub_instr++;

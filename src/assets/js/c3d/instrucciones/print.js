@@ -42,7 +42,7 @@ export class print_ extends instruccion_c3d {
             }
         }
         catch (error) {
-            errores_.push(new nodoError("Semántico", error, this.linea_, this.columna_, "Desconocido"));
+            errores_.push(new nodoError("Semántico", error, this.linea_, this.columna_, "Desconocido en console.log"));
             return;
         }
     }

@@ -1,0 +1,24 @@
+        function resta(b:number, a:number):void{
+        console.log(b-a);
+        console.log("\n");
+        }
+
+        function suma(a:number, b:number):void{
+        console.log(a+b);
+        console.log("\n");
+        resta(b,a);
+        } 
+
+        let x:number = 1;
+        suma(1,2);
+        console.log(x + "\n");
+
+        function factorial(x:number):number{
+	if(x <= 1){
+    	return 1;  
+    }else{
+      	return x * factorial(x-1);
+    }
+}
+
+console.log(factorial(3));

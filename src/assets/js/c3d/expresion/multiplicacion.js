@@ -13,6 +13,7 @@ export class multiplicacion extends expresion_c3d {
         try {
             const left_ = this.left_oper.traducir(env_, generador_, errores_);
             const right_ = this.right_oper.traducir(env_, generador_, errores_);
+            console.log(right_);
             const temp_ = generador_.new_temporal();
             if (left_.get_valor().charAt(0) == "t") {
                 generador_.free_temp(left_.get_valor());
@@ -31,7 +32,7 @@ export class multiplicacion extends expresion_c3d {
             }
         }
         catch (error) {
-            errores_.push(new nodoError("Semántico", error, this.linea_, this.columna_, "Desconocido"));
+            errores_.push(new nodoError("Semántico", error, this.linea_, this.columna_, "Desconocido en multiplicación"));
             return;
         }
     }

@@ -17,6 +17,9 @@ export class ambiente_c3d {
     limpiar_variables() {
         this.variables_.clear();
     }
+    limpiar_funciones() {
+        this.funciones_.clear();
+    }
     add_variable(rest_, id_, tipo_, const_, ref_, linea_, columna_) {
         id_ = id_.toLowerCase();
         if (this.variables_.get(id_) != undefined) {
@@ -35,6 +38,7 @@ export class ambiente_c3d {
         }
         else {
             this.funciones_.set(id, func);
+            return true;
         }
     }
     add_types(id_, size_, params_) {
@@ -61,8 +65,8 @@ export class ambiente_c3d {
     get_function(id) {
         let env_ = this;
         while (env_ != null) {
-            if (env_.funciones_.has(id)) {
-                return env_.funciones_.get(id);
+            if (env_.funciones_.has(id.toLowerCase())) {
+                return env_.funciones_.get(id.toLowerCase());
             }
             env_ = env_.prev_;
         }
@@ -78,6 +82,9 @@ export class ambiente_c3d {
     }
     existe_types(id_) {
         return this.types_.get(id_.toLowerCase());
+    }
+    existe_func(id_) {
+        return this.funciones_.get(id_.toLowerCase());
     }
     look_types(id_) {
         let ambiente_ = this;

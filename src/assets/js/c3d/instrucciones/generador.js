@@ -30,6 +30,9 @@ export class generador {
         return encabezado;
     }
     print_(tipo_, valor) {
+        if (this.temp_strg.has(valor)) {
+            this.temp_strg.delete(valor);
+        }
         if (valor.charCodeAt(0) != 116) {
             this.codigo_.push(`${this.es_funcion}printf("%${tipo_}", ${valor});`);
         }
@@ -77,12 +80,24 @@ export class generador {
         this.codigo_.push(`${this.es_funcion}${label}:`);
     }
     add_expresion(target, left_oper, right_oper = '', operador_ = '') {
+        if (this.temp_strg.has(left_oper)) {
+            this.temp_strg.delete(left_oper);
+        }
+        if (this.temp_strg.has(right_oper)) {
+            this.temp_strg.delete(right_oper);
+        }
         this.codigo_.push(`${this.es_funcion}${target} = ${left_oper} ${operador_} ${right_oper};`);
     }
     add_goto(label) {
         this.codigo_.push(`${this.es_funcion}goto ${label};`);
     }
     add_if(left_oper, right_oper, operador, label) {
+        if (this.temp_strg.has(left_oper)) {
+            this.temp_strg.delete(left_oper);
+        }
+        if (this.temp_strg.has(right_oper)) {
+            this.temp_strg.delete(right_oper);
+        }
         this.codigo_.push(`${this.es_funcion}if (${left_oper} ${operador} ${right_oper}) goto ${label};`);
     }
     next_heap() {
@@ -95,15 +110,39 @@ export class generador {
         this.codigo_.push(`${this.es_funcion}p = p - ${size_};`);
     }
     add_get_heap(target_, index) {
+        if (this.temp_strg.has(index)) {
+            this.temp_strg.delete(index);
+        }
+        if (this.temp_strg.has(target_)) {
+            this.temp_strg.delete(target_);
+        }
         this.codigo_.push(`${this.es_funcion}${target_} = heap[(int) ${index}];`);
     }
     add_set_heap(valor_, index) {
+        if (this.temp_strg.has(index)) {
+            this.temp_strg.delete(index);
+        }
+        if (this.temp_strg.has(valor_)) {
+            this.temp_strg.delete(valor_);
+        }
         this.codigo_.push(`${this.es_funcion}heap[(int) ${index}] = ${valor_};`);
     }
     add_get_stack(target_, index) {
+        if (this.temp_strg.has(index)) {
+            this.temp_strg.delete(index);
+        }
+        if (this.temp_strg.has(target_)) {
+            this.temp_strg.delete(target_);
+        }
         this.codigo_.push(`${this.es_funcion}${target_} = stack[(int) ${index}];`);
     }
     add_set_stack(valor_, index) {
+        if (this.temp_strg.has(index)) {
+            this.temp_strg.delete(index);
+        }
+        if (this.temp_strg.has(valor_)) {
+            this.temp_strg.delete(valor_);
+        }
         this.codigo_.push(`${this.es_funcion}stack[(int) ${index}] = ${valor_};`);
     }
     add_call(id_) {
@@ -128,6 +167,40 @@ export class generador {
     add_temp(temp_) {
         if (!this.temp_strg.has(temp_)) {
             this.temp_strg.add(temp_);
+        }
+    }
+    save_temps(env_) {
+        if (this.temp_strg.size > 0) {
+            const temp_ = this.new_temporal();
+            this.free_temp(temp_);
+            let size = 0;
+            this.add_expresion(temp_, 'p', env_.size, '+');
+            this.temp_strg.forEach((valor) => {
+                size++;
+                this.add_set_stack(temp_, valor);
+                if (size != this.temp_strg.size) {
+                    this.add_expresion(temp_, temp_, '1', '+');
+                }
+            });
+        }
+        let puntero = env_.size;
+        env_.size = puntero + this.temp_strg.size;
+        return puntero;
+    }
+    recover_temps(env_, pos) {
+        if (this.temp_strg.size > 0) {
+            const temp_ = this.new_temporal();
+            this.free_temp(temp_);
+            let size = 0;
+            this.add_expresion(temp_, "p", pos, "+");
+            this.temp_strg.forEach((valor) => {
+                size++;
+                this.add_get_stack(valor, temp_);
+                if (size != this.temp_strg.size) {
+                    this.add_expresion(temp_, temp_, "1", "+");
+                }
+            });
+            env_.size = pos;
         }
     }
 }

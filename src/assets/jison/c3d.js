@@ -640,14 +640,14 @@ case 103:
 break;
 case 104:
  this.$ = {
-        nodo: (new return_(null, _$[$0-1].first_line, _$[$0-1].first_column)),
+        nodo: (new return_c3d(null, _$[$0-1].first_line, _$[$0-1].first_column)),
 
         tipo: "return_"
     }; 
 break;
 case 105:
   this.$ = {
-        nodo: (new return_($$[$0-1].nodo, _$[$0-2].first_line, _$[$0-2].first_column)),
+        nodo: (new return_c3d($$[$0-1].nodo, _$[$0-2].first_line, _$[$0-2].first_column)),
 
         tipo: "return_",
         expresion: $$[$0-1].expresion
@@ -655,7 +655,7 @@ case 105:
 break;
 case 106:
  this.$ = {
-        nodo: (new function_c3d($$[$0-6], $$[$0].nodo, $$[$0-4], _$[$0-7].first_line, _$[$0-7].first_column, $$[$0-1].dato)),
+        nodo: (new function_c3d($$[$0-6], $$[$0].nodo, $$[$0-4], $$[$0-1].nodo, _$[$0-7].first_line, _$[$0-7].first_column)),
 
         tipo: "funcion",
         id: $$[$0-6],
@@ -665,7 +665,7 @@ case 106:
 break;
 case 107:
  this.$ = {
-        nodo: (new function_c3d($$[$0-5], $$[$0].nodo, [], _$[$0-6].first_line, _$[$0-6].first_column, $$[$0-1].dato)),
+        nodo: (new function_c3d($$[$0-5], $$[$0].nodo, [], $$[$0-1].nodo, _$[$0-6].first_line, _$[$0-6].first_column)),
 
         tipo: "funcion",
         id: $$[$0-5],
@@ -675,7 +675,8 @@ break;
 case 110:
  this.$ = {
         id: $$[$0-2],
-        tipo: $$[$0].dato
+        tipo: $$[$0].nodo,
+        tipos: $$[$0].dato
     }; 
 break;
 }
@@ -949,6 +950,7 @@ _handle_error:
     const { function_c3d } = require('../js/c3d/instrucciones/function');
     const { continue_c3d } = require('../js/c3d/instrucciones/continue');
     const { call_c3d } = require('../js/c3d/instrucciones/call');
+    const { return_c3d } = require('../js/c3d/instrucciones/return');
 
     //EXPRESIONES
     const { suma } = require('../js/c3d/expresion/suma');

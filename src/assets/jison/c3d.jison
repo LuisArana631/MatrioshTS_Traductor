@@ -18,6 +18,7 @@
     const { function_c3d } = require('../js/c3d/instrucciones/function');
     const { continue_c3d } = require('../js/c3d/instrucciones/continue');
     const { call_c3d } = require('../js/c3d/instrucciones/call');
+    const { return_c3d } = require('../js/c3d/instrucciones/return');
 
     //EXPRESIONES
     const { suma } = require('../js/c3d/expresion/suma');
@@ -694,12 +695,12 @@ for_normal
 
 sentencia_return
     :'RETURN' ';' { $$ = {
-        nodo: (new return_(null, @1.first_line, @1.first_column)),
+        nodo: (new return_c3d(null, @1.first_line, @1.first_column)),
 
         tipo: "return_"
     }; }
     |'RETURN' expresion ';' {  $$ = {
-        nodo: (new return_($2.nodo, @1.first_line, @1.first_column)),
+        nodo: (new return_c3d($2.nodo, @1.first_line, @1.first_column)),
 
         tipo: "return_",
         expresion: $2.expresion
@@ -707,7 +708,7 @@ sentencia_return
 
 declaracion_funciones
     : 'FUNCTION' 'IDENTIFICADOR' '(' parametros ')' ':' tipo_dato statement { $$ = {
-        nodo: (new function_c3d($2, $8.nodo, $4, @1.first_line, @1.first_column, $7.dato)),
+        nodo: (new function_c3d($2, $8.nodo, $4, $7.nodo, @1.first_line, @1.first_column)),
 
         tipo: "funcion",
         id: $2,
@@ -715,7 +716,7 @@ declaracion_funciones
         instr: $8.instr
     }; }
     | 'FUNCTION' 'IDENTIFICADOR' '(' ')' ':' tipo_dato statement { $$ = {
-        nodo: (new function_c3d($2, $7.nodo, [], @1.first_line, @1.first_column, $6.dato)),
+        nodo: (new function_c3d($2, $7.nodo, [], $6.nodo, @1.first_line, @1.first_column)),
 
         tipo: "funcion",
         id: $2,
@@ -729,5 +730,6 @@ parametros
 parametro
     : 'IDENTIFICADOR' ':' tipo_dato { $$ = {
         id: $1,
-        tipo: $3.dato
+        tipo: $3.nodo,
+        tipos: $3.dato
     }; };

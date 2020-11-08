@@ -33,6 +33,10 @@ export class ambiente_c3d{
         this.variables_.clear();
     }
 
+    public limpiar_funciones(){
+        this.funciones_.clear();
+    }
+
     public add_variable(rest_:number, id_:string, tipo_:tipos_, const_:boolean, ref_: boolean, linea_:number, columna_:number):simbolo_c3d|null{
         id_ = id_.toLowerCase();
         if(this.variables_.get(id_) != undefined){
@@ -51,6 +55,7 @@ export class ambiente_c3d{
             return null;
         }else{
             this.funciones_.set(id, func);
+            return true;
         }        
     }
 
@@ -83,8 +88,8 @@ export class ambiente_c3d{
         let env_:ambiente_c3d|null = this;
 
         while(env_ != null){
-            if(env_.funciones_.has(id)){
-                return env_.funciones_.get(id);
+            if(env_.funciones_.has(id.toLowerCase())){
+                return env_.funciones_.get(id.toLowerCase());
             }
 
             env_ = env_.prev_;
@@ -105,6 +110,10 @@ export class ambiente_c3d{
 
     public existe_types(id_:string){
         return this.types_.get(id_.toLowerCase());
+    }
+
+    public existe_func(id_:string){
+        return this.funciones_.get(id_.toLowerCase());
     }
 
     public look_types(id_:string):simbolo_atributo|null{

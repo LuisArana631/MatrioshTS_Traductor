@@ -1,3 +1,4 @@
+import { ambiente_c3d } from '../tabla_simbolos/ambiente';
 
 export class generador{
     private static generador_: generador;
@@ -39,6 +40,10 @@ export class generador{
     }
 
     public print_(tipo_:string, valor:string){
+        if(this.temp_strg.has(valor)){
+            this.temp_strg.delete(valor);
+        }
+
         if(valor.charCodeAt(0) != 116){
             this.codigo_.push(`${this.es_funcion}printf("%${tipo_}", ${valor});`);
         }else{
@@ -93,6 +98,12 @@ export class generador{
     }
 
     public add_expresion(target:string, left_oper:any, right_oper:any = '', operador_:string = ''){
+        if(this.temp_strg.has(left_oper)){
+            this.temp_strg.delete(left_oper);
+        }
+        if(this.temp_strg.has(right_oper)){
+            this.temp_strg.delete(right_oper);
+        }
         this.codigo_.push(`${this.es_funcion}${target} = ${left_oper} ${operador_} ${right_oper};`);
     }
 
@@ -101,6 +112,12 @@ export class generador{
     }
 
     public add_if(left_oper:any, right_oper:any, operador:string, label:string){
+        if(this.temp_strg.has(left_oper)){
+            this.temp_strg.delete(left_oper);
+        }
+        if(this.temp_strg.has(right_oper)){
+            this.temp_strg.delete(right_oper);
+        }
         this.codigo_.push(`${this.es_funcion}if (${left_oper} ${operador} ${right_oper}) goto ${label};`);
     }
 
@@ -117,18 +134,42 @@ export class generador{
     }
 
     public add_get_heap(target_:any, index:any){
+        if(this.temp_strg.has(index)){
+            this.temp_strg.delete(index);
+        }
+        if(this.temp_strg.has(target_)){
+            this.temp_strg.delete(target_);
+        }
         this.codigo_.push(`${this.es_funcion}${target_} = heap[(int) ${index}];`);
     }
 
     public add_set_heap(valor_:any, index:any){
+        if(this.temp_strg.has(index)){
+            this.temp_strg.delete(index);
+        }
+        if(this.temp_strg.has(valor_)){
+            this.temp_strg.delete(valor_);
+        }
         this.codigo_.push(`${this.es_funcion}heap[(int) ${index}] = ${valor_};`);
     }
 
     public add_get_stack(target_:any, index:any){
+        if(this.temp_strg.has(index)){
+            this.temp_strg.delete(index);
+        }
+        if(this.temp_strg.has(target_)){
+            this.temp_strg.delete(target_);
+        }   
         this.codigo_.push(`${this.es_funcion}${target_} = stack[(int) ${index}];`);
     }
 
     public add_set_stack(valor_:any, index:any){
+        if(this.temp_strg.has(index)){
+            this.temp_strg.delete(index);
+        }
+        if(this.temp_strg.has(valor_)){
+            this.temp_strg.delete(valor_);
+        }
         this.codigo_.push(`${this.es_funcion}stack[(int) ${index}] = ${valor_};`);
     }
 
@@ -162,5 +203,43 @@ export class generador{
         }
     }
 
+    public save_temps(env_:ambiente_c3d):number{
+        if(this.temp_strg.size > 0){
+            const temp_ = this.new_temporal();
+            this.free_temp(temp_);
+            let size = 0;
+            
+            this.add_expresion(temp_, 'p', env_.size, '+');
+            this.temp_strg.forEach((valor) => {
+                size++;
+                this.add_set_stack(temp_, valor);
 
+                if(size != this.temp_strg.size){
+                    this.add_expresion(temp_, temp_, '1', '+');
+                }
+            });
+        }
+
+        let puntero = env_.size;
+        env_.size = puntero + this.temp_strg.size;
+        return puntero;
+    }
+
+    public recover_temps(env_:ambiente_c3d, pos:number){
+        if(this.temp_strg.size > 0){
+            const temp_ = this.new_temporal();
+            this.free_temp(temp_);
+            let size = 0;
+
+            this.add_expresion(temp_, "p", pos, "+");
+            this.temp_strg.forEach((valor) => {
+                size++;
+                this.add_get_stack(valor, temp_);
+                if(size != this.temp_strg.size){
+                    this.add_expresion(temp_, temp_, "1", "+");
+                }
+            });
+            env_.size = pos;
+        }
+    }
 }
