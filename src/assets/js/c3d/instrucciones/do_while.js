@@ -14,6 +14,8 @@ export class do_while_c3d extends instruccion_c3d {
             generador_.add_label(lbl_true);
             this.instrucciones.traducir(env_, generador_, errores_);
             const condicion = this.condicion_.traducir(env_, generador_, errores_);
+            env_.break_ = this.condicion_.false_lbl;
+            env_.continue_ = lbl_true;
             if (condicion.temp_) {
                 generador_.add_if(condicion.get_valor(), "1", "==", condicion.true_lbl);
                 generador_.add_goto(condicion.false_lbl);

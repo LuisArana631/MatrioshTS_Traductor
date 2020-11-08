@@ -129,7 +129,7 @@ case 19:
 break;
 case 20:
  this.$ = {
-        nodo: (new continue_(_$[$0-1].first_line, _$[$0-1].first_column)),
+        nodo: (new continue_c3d(_$[$0-1].first_line, _$[$0-1].first_column)),
         
         tipo: "continue"
     }; 
@@ -501,12 +501,12 @@ case 69:
 break;
 case 74:
  this.$ = {
-        nodo: (new llamada_($$[$0-2], [], _$[$0-2].first_line, _$[$0-2].first_column))
+        nodo: (new call_c3d($$[$0-2], [], _$[$0-2].first_line, _$[$0-2].first_column))
     }; 
 break;
 case 75:
  this.$ = {
-        nodo: (new llamada_($$[$0-3], $$[$0-1], _$[$0-3].first_line, _$[$0-3].first_column))
+        nodo: (new call_c3d($$[$0-3], $$[$0-1], _$[$0-3].first_line, _$[$0-3].first_column))
     }; 
 break;
 case 80:
@@ -655,7 +655,7 @@ case 105:
 break;
 case 106:
  this.$ = {
-        nodo: (new function_($$[$0-6], $$[$0].nodo, $$[$0-4], _$[$0-7].first_line, _$[$0-7].first_column, $$[$0-1].dato)),
+        nodo: (new function_c3d($$[$0-6], $$[$0].nodo, $$[$0-4], _$[$0-7].first_line, _$[$0-7].first_column, $$[$0-1].dato)),
 
         tipo: "funcion",
         id: $$[$0-6],
@@ -665,7 +665,7 @@ case 106:
 break;
 case 107:
  this.$ = {
-        nodo: (new function_($$[$0-5], $$[$0].nodo, [], _$[$0-6].first_line, _$[$0-6].first_column, $$[$0-1].dato)),
+        nodo: (new function_c3d($$[$0-5], $$[$0].nodo, [], _$[$0-6].first_line, _$[$0-6].first_column, $$[$0-1].dato)),
 
         tipo: "funcion",
         id: $$[$0-5],
@@ -946,6 +946,9 @@ _handle_error:
     const { case_c3d } = require('../js/c3d/instrucciones/case');
     const { switch_c3d } = require('../js/c3d/instrucciones/switch');
     const { break_c3d } = require('../js/c3d/instrucciones/break');
+    const { function_c3d } = require('../js/c3d/instrucciones/function');
+    const { continue_c3d } = require('../js/c3d/instrucciones/continue');
+    const { call_c3d } = require('../js/c3d/instrucciones/call');
 
     //EXPRESIONES
     const { suma } = require('../js/c3d/expresion/suma');
@@ -1300,7 +1303,7 @@ pushState:function pushState (condition) {
 stateStackSize:function stateStackSize() {
         return this.conditionStack.length;
     },
-options: {},
+options: {"case-insensitive":true},
 performAction: function anonymous(yy,yy_,$avoiding_name_collisions,YY_START) {
 var YYSTATE=YY_START;
 switch($avoiding_name_collisions) {
@@ -1450,7 +1453,7 @@ case 71:errores.addError(new nodoError("Lexico","Caracter desconocido",yy_.yyllo
 break;
 }
 },
-rules: [/^(?:\s+)/,/^(?:(("[^"]*")|('[^']*')\/\/.*[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]))/,/^(?:string\b)/,/^(?:number\b)/,/^(?:boolean\b)/,/^(?:void\b)/,/^(?:type\b)/,/^(?:Array\b)/,/^(?:\*\*)/,/^(?:--)/,/^(?:\+\+)/,/^(?:\+)/,/^(?:-)/,/^(?:\*)/,/^(?:\/)/,/^(?:%)/,/^(?:>=)/,/^(?:<=)/,/^(?:>)/,/^(?:<)/,/^(?:==)/,/^(?:!=)/,/^(?:&&)/,/^(?:\|\|)/,/^(?:!)/,/^(?:\?)/,/^(?:if\b)/,/^(?:else\b)/,/^(?:switch\b)/,/^(?:case\b)/,/^(?:default\b)/,/^(?:while\b)/,/^(?:do\b)/,/^(?:for\b)/,/^(?:in\b)/,/^(?:of\b)/,/^(?:push\b)/,/^(?:pop\b)/,/^(?:length\b)/,/^(?:let\b)/,/^(?:const\b)/,/^(?:break\b)/,/^(?:continue\b)/,/^(?:return\b)/,/^(?:function\b)/,/^(?:console\.log\b)/,/^(?:graficar_ts\b)/,/^(?:new\b)/,/^(?:CharAt\b)/,/^(?:ToLowerCase\b)/,/^(?:ToUpperCase\b)/,/^(?:Concat\b)/,/^(?:null\b)/,/^(?:true\b)/,/^(?:false\b)/,/^(?:\{)/,/^(?:\})/,/^(?:\[)/,/^(?:\])/,/^(?:=)/,/^(?:,)/,/^(?:;)/,/^(?::)/,/^(?:\()/,/^(?:\))/,/^(?:\.)/,/^(?:([0-9]+\.[0-9]+))/,/^(?:([0-9]+))/,/^(?:(([a-zA-Z_])[a-zA-Z0-9_]*))/,/^(?:{booleano})/,/^(?:$)/,/^(?:.)/],
+rules: [/^(?:\s+)/i,/^(?:(("[^"]*")|('[^']*')\/\/.*[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]))/i,/^(?:string\b)/i,/^(?:number\b)/i,/^(?:boolean\b)/i,/^(?:void\b)/i,/^(?:type\b)/i,/^(?:Array\b)/i,/^(?:\*\*)/i,/^(?:--)/i,/^(?:\+\+)/i,/^(?:\+)/i,/^(?:-)/i,/^(?:\*)/i,/^(?:\/)/i,/^(?:%)/i,/^(?:>=)/i,/^(?:<=)/i,/^(?:>)/i,/^(?:<)/i,/^(?:==)/i,/^(?:!=)/i,/^(?:&&)/i,/^(?:\|\|)/i,/^(?:!)/i,/^(?:\?)/i,/^(?:if\b)/i,/^(?:else\b)/i,/^(?:switch\b)/i,/^(?:case\b)/i,/^(?:default\b)/i,/^(?:while\b)/i,/^(?:do\b)/i,/^(?:for\b)/i,/^(?:in\b)/i,/^(?:of\b)/i,/^(?:push\b)/i,/^(?:pop\b)/i,/^(?:length\b)/i,/^(?:let\b)/i,/^(?:const\b)/i,/^(?:break\b)/i,/^(?:continue\b)/i,/^(?:return\b)/i,/^(?:function\b)/i,/^(?:console\.log\b)/i,/^(?:graficar_ts\b)/i,/^(?:new\b)/i,/^(?:CharAt\b)/i,/^(?:ToLowerCase\b)/i,/^(?:ToUpperCase\b)/i,/^(?:Concat\b)/i,/^(?:null\b)/i,/^(?:true\b)/i,/^(?:false\b)/i,/^(?:\{)/i,/^(?:\})/i,/^(?:\[)/i,/^(?:\])/i,/^(?:=)/i,/^(?:,)/i,/^(?:;)/i,/^(?::)/i,/^(?:\()/i,/^(?:\))/i,/^(?:\.)/i,/^(?:([0-9]+\.[0-9]+))/i,/^(?:([0-9]+))/i,/^(?:(([a-zA-Z_])[a-zA-Z0-9_]*))/i,/^(?:{booleano})/i,/^(?:$)/i,/^(?:.)/i],
 conditions: {"INITIAL":{"rules":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71],"inclusive":true}}
 });
 return lexer;

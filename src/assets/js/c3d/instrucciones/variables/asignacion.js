@@ -8,7 +8,7 @@ export class asignar_ extends instruccion_c3d {
     }
     traducir(env_, generador_, errores_) {
         try {
-            let var_ = env_.get_variable(this.id_receptor);
+            let var_ = env_.get_variable(this.id_receptor.toLowerCase());
             if (var_ == null) {
                 errores_.push(new nodoError("Semántico", `No se encontró la variable ${this.id_receptor}.`, this.linea_, this.columna_, "No existe variable."));
                 return;

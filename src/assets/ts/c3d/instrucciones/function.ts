@@ -11,10 +11,16 @@ export class function_c3d extends instruccion_c3d{
 
     public traducir(env_:ambiente_c3d, generador_:generador, errores_:Array<nodoError>){
         try{
-            generador_.add_call(this.id_);
+            let fin_ = generador_.new_label();
+            generador_.add_void(this.id_);
+
+            if(this.parametros.length > 0){
+                let indice_ = generador_.new_temporal();
+                generador_.free_temp(indice_);
+            }
 
             this.instrucciones_.traducir(env_, generador_, errores_);
-
+            generador_.add_label(fin_);
             generador_.add_end_void();
         }catch(error){
             errores_.push(new nodoError("Semántico", error, this.linea_, this.columna_, `Error en función ${this.id_}`));

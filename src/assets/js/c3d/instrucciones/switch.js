@@ -11,6 +11,9 @@ export class switch_c3d extends instruccion_c3d {
         try {
             let fin_ = generador_.new_label();
             let ctr_default = generador_.new_label();
+            let inicio_ = generador_.new_label();
+            env_.break_ = fin_;
+            env_.continue_ = inicio_;
             let aux_default = "-1";
             let coincidir = generador_.new_temporal();
             let desactivar = generador_.new_temporal();
@@ -18,6 +21,7 @@ export class switch_c3d extends instruccion_c3d {
             generador_.free_temp(desactivar);
             let stack_bloques = new Array();
             let stack_label = new Array();
+            generador_.add_label(inicio_);
             if (this.cases.length == 1) { //SOLO TENEMOS UN CASE
                 let case_aux = this.cases[0].nodo;
                 if (case_aux.condicion_ == null) { //DEFAULT

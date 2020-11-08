@@ -17,6 +17,7 @@ import { ambiente_c3d } from '../../assets/ts/c3d/tabla_simbolos/ambiente';
 import { types_ } from '../../assets/ts/c3d/tools/type_';
 import { generador } from '../../assets/ts/c3d/instrucciones/generador';
 import { nativas_ } from '../../assets/ts/c3d/nativas/nativas';
+import { function_c3d } from '../../assets/js/c3d/instrucciones/function';
 
 //GRAFICOS
 @Component({
@@ -326,14 +327,14 @@ export class HomePage {
 
   codigo_c3d_pp(){
     this.ast.forEach((item:any) => {
-      if((item.nodo instanceof types_))
+      if((item.nodo instanceof function_c3d))
         item.nodo.traducir(this.env_c3d, this.gener_, this.listaErrores);
     });      
   }
 
   codigo_c3d_sp(){    
     this.ast.forEach((item:any) => {
-      if(!(item.nodo instanceof types_))
+      if(!(item.nodo instanceof function_c3d))
         item.nodo.traducir(this.env_c3d, this.gener_, this.listaErrores);
     });      
   }

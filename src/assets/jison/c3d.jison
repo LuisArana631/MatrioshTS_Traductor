@@ -15,6 +15,9 @@
     const { case_c3d } = require('../js/c3d/instrucciones/case');
     const { switch_c3d } = require('../js/c3d/instrucciones/switch');
     const { break_c3d } = require('../js/c3d/instrucciones/break');
+    const { function_c3d } = require('../js/c3d/instrucciones/function');
+    const { continue_c3d } = require('../js/c3d/instrucciones/continue');
+    const { call_c3d } = require('../js/c3d/instrucciones/call');
 
     //EXPRESIONES
     const { suma } = require('../js/c3d/expresion/suma');
@@ -48,6 +51,7 @@
 %}
 
 %lex
+%options case-insensitive
 
 /* DATOS */
 entero  [0-9]+
@@ -215,7 +219,7 @@ instruccion
         tipo: "break"
     }; }
     | 'CONTINUE' ';' { $$ = {
-        nodo: (new continue_(@1.first_line, @1.first_column)),
+        nodo: (new continue_c3d(@1.first_line, @1.first_column)),
         
         tipo: "continue"
     }; }
@@ -544,10 +548,10 @@ dato_valor
 
 llamada
     : 'IDENTIFICADOR' '(' ')' { $$ = {
-        nodo: (new llamada_($1, [], @1.first_line, @1.first_column))
+        nodo: (new call_c3d($1, [], @1.first_line, @1.first_column))
     }; }
     | 'IDENTIFICADOR' '(' lista_exp_par ')' { $$ = {
-        nodo: (new llamada_($1, $3, @1.first_line, @1.first_column))
+        nodo: (new call_c3d($1, $3, @1.first_line, @1.first_column))
     }; };
 
 lista_exp_par
@@ -703,7 +707,7 @@ sentencia_return
 
 declaracion_funciones
     : 'FUNCTION' 'IDENTIFICADOR' '(' parametros ')' ':' tipo_dato statement { $$ = {
-        nodo: (new function_($2, $8.nodo, $4, @1.first_line, @1.first_column, $7.dato)),
+        nodo: (new function_c3d($2, $8.nodo, $4, @1.first_line, @1.first_column, $7.dato)),
 
         tipo: "funcion",
         id: $2,
@@ -711,7 +715,7 @@ declaracion_funciones
         instr: $8.instr
     }; }
     | 'FUNCTION' 'IDENTIFICADOR' '(' ')' ':' tipo_dato statement { $$ = {
-        nodo: (new function_($2, $7.nodo, [], @1.first_line, @1.first_column, $6.dato)),
+        nodo: (new function_c3d($2, $7.nodo, [], @1.first_line, @1.first_column, $6.dato)),
 
         tipo: "funcion",
         id: $2,

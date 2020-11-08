@@ -4,6 +4,7 @@ export class ambiente_c3d {
     constructor(anterior_ = null) {
         this.types_ = new Map();
         this.variables_ = new Map();
+        this.funciones_ = new Map();
         this.prev_ = anterior_;
         this.size = (anterior_ === null || anterior_ === void 0 ? void 0 : anterior_.size) || 0;
         this.break_ = (anterior_ === null || anterior_ === void 0 ? void 0 : anterior_.break_) || null;
@@ -27,6 +28,15 @@ export class ambiente_c3d {
             return new_variable;
         }
     }
+    add_function(id, func) {
+        id = id.toLowerCase();
+        if (this.variables_.get(id) != undefined) {
+            return null;
+        }
+        else {
+            this.funciones_.set(id, func);
+        }
+    }
     add_types(id_, size_, params_) {
         if (this.types_.has(id_.toLocaleLowerCase())) {
             return false;
@@ -48,9 +58,23 @@ export class ambiente_c3d {
         }
         return null;
     }
+    get_function(id) {
+        let env_ = this;
+        while (env_ != null) {
+            if (env_.funciones_.has(id)) {
+                return env_.funciones_.get(id);
+            }
+            env_ = env_.prev_;
+        }
+        return undefined;
+    }
     get_variables() {
         let env_ = this;
         return env_.variables_.values();
+    }
+    get_functions() {
+        let env_ = this;
+        return env_.funciones_.values();
     }
     existe_types(id_) {
         return this.types_.get(id_.toLowerCase());

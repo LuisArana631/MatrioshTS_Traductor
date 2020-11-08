@@ -15,6 +15,10 @@ export class switch_c3d extends instruccion_c3d{
         try{
             let fin_ = generador_.new_label();
             let ctr_default = generador_.new_label();
+            let inicio_ = generador_.new_label();
+
+            env_.break_ = fin_;
+            env_.continue_ = inicio_;
 
             let aux_default:string|undefined = "-1";
 
@@ -26,6 +30,8 @@ export class switch_c3d extends instruccion_c3d{
 
             let stack_bloques:Array<string> = new Array();
             let stack_label:Array<string> = new Array();
+
+            generador_.add_label(inicio_);
 
             if(this.cases.length == 1){ //SOLO TENEMOS UN CASE
                 let case_aux:case_c3d = this.cases[0].nodo;

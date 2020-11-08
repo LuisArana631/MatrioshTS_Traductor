@@ -9,8 +9,10 @@ export class function_c3d extends instruccion_c3d {
     }
     traducir(env_, generador_, errores_) {
         try {
-            generador_.add_call(this.id_);
+            let fin_ = generador_.new_label();
+            generador_.add_void(this.id_);
             this.instrucciones_.traducir(env_, generador_, errores_);
+            generador_.add_label(fin_);
             generador_.add_end_void();
         }
         catch (error) {

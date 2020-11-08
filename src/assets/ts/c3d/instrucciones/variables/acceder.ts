@@ -16,7 +16,7 @@ export class acceso_ extends expresion_c3d{
         try{
             /* EXTRAER VALOR EN UN TEMPORAL */            
             let temporal_ = generador_.new_temporal();
-            let variable_ = env_.get_variable(this.id_);            
+            let variable_ = env_.get_variable(this.id_.toLowerCase());            
 
             if(variable_ == null){                
                 errores_.push(new nodoError("Semántico" , `Variable ${this.id_} no encontrada`, this.linea_, this.columna_, "No se encontro la variable"));    

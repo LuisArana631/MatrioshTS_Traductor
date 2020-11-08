@@ -23,7 +23,6 @@ export class for_c3d extends instruccion_c3d {
                 let aux_acceso = new acceso_(this.id_, this.linea_, this.columna_);
                 id_aux = aux_acceso.traducir(env_, generador_, errores_);
             }
-            console.log(id_aux);
             if (id_aux instanceof expresion_c3d) {
                 if (id_aux.get_valor().charAt(0) == "t") {
                     generador_.free_temp(id_aux.get_valor());
@@ -33,6 +32,8 @@ export class for_c3d extends instruccion_c3d {
             let loop_lbl = generador_.new_label();
             generador_.add_label(loop_lbl);
             const condi_ = this.condicion_.traducir(env_, generador_, errores_);
+            env_.break_ = condi_.false_lbl;
+            env_.continue_ = loop_lbl;
             if (condi_.get_valor().charAt(0) == "t") {
                 generador_.free_temp(id_aux.get_valor());
             }
