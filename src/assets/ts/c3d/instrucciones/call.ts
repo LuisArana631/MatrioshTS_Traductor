@@ -11,8 +11,7 @@ export class call_c3d extends instruccion_c3d{
 
     public traducir(env_:ambiente_c3d, generador_:generador, errores_:Array<nodoError>){
         try{           
-            let temporal_ = generador_.new_temporal(); 
-            let aux_temp = generador_.new_temporal();
+            let temporal_ = generador_.new_temporal();           
 
             let func_ = env_.get_function(this.id_);
 
@@ -22,19 +21,16 @@ export class call_c3d extends instruccion_c3d{
             }
 
             let arr_valores = new Array();
-            generador_.free_temp(temporal_);
-            generador_.free_temp(aux_temp);
 
             if(env_.prev_ != null){
-                generador_.add_expresion(temporal_, "p" ,env_.size+generador_.get_temporales().size+2, "+");
-            }else{
                 generador_.add_expresion(temporal_, "p" ,env_.size+generador_.get_temporales().size+1, "+");
+            }else{
+                generador_.add_expresion(temporal_, "p" ,env_.size+generador_.get_temporales().size, "+");
             }
             
             let val_param:retorno;
 
             this.parametros.forEach((param_) => {
-                console.log(param_.nodo);
                 val_param = param_.nodo.traducir(env_, generador_, errores_);                
                 arr_valores.push(val_param);
             });
@@ -74,6 +70,14 @@ export class call_c3d extends instruccion_c3d{
             generador_.add_code("printf(\"%c\", 10);");
             generador_.add_code("printf(\"%c\", 10);");
             generador_.add_code("printf(\"%c\", 10);");*/
+
+            console.log("--------------------------------------------");
+            console.log("tamaño de size: " + env_.size)
+            console.log(env_);
+            console.log("--------------------------------------------");
+            console.log("tamaño de variables temporales: " + generador_.get_temporales().size);
+            console.log(generador_.get_temporales());
+            console.log("--------------------------------------------");
 
             let t_ = generador_.new_temporal();
             generador_.free_temp(t_);

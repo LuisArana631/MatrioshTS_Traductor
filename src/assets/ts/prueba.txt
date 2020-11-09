@@ -1,24 +1,52 @@
-        function resta(b:number, a:number):void{
-        console.log(b-a);
-        console.log("\n");
-        }
-
-        function suma(a:number, b:number):void{
-        console.log(a+b);
-        console.log("\n");
-        resta(b,a);
-        } 
-
-        let x:number = 1;
-        suma(1,2);
-        console.log(x + "\n");
-
-        function factorial(x:number):number{
-	if(x <= 1){
-    	return 1;  
-    }else{
-      	return x * factorial(x-1);
-    }
+function resta(b:number, a:number):void{
+  console.log(b-a);
+  console.log("\n");
 }
 
-console.log(factorial(3));
+function suma(a:number, b:number):void{
+  console.log(a+b);
+  console.log("\n");
+  resta(b,a);
+} 
+
+let x:number = 1;
+suma(1,2);
+console.log(x + "\n");
+
+function factorial(x:number):number{
+  if(x <= 1){
+    return 1;  
+  }else{
+    return factorial(x-1)*x;
+  }
+} 
+
+console.log(factorial(9));
+
+function fibo(n:number):number{
+  if((n==0) || (n==1)){
+    return n;
+  }else{
+    return fibo(n-2) +  fibo(n-1);
+  }
+}
+
+console.log(fibo(2));       //6765
+
+
+function sumar1(n:number):number{
+	return n+1;
+}
+
+function sumar2(n:number):number{
+	return n+2;
+}
+
+function operar(n1:number, n2:number):void{
+	let x:number = sumar1(n1);
+	let y:number = sumar2(n2);
+
+	console.log(x+y);
+}
+
+operar(2,2);

@@ -10,24 +10,20 @@ export class call_c3d extends instruccion_c3d {
     traducir(env_, generador_, errores_) {
         try {
             let temporal_ = generador_.new_temporal();
-            let aux_temp = generador_.new_temporal();
             let func_ = env_.get_function(this.id_);
             if (!func_) {
                 errores_.push(new nodoError("Semántico", `La función ${this.id_} no se encuentra`, this.linea_, this.columna_, "No existe la función"));
                 return;
             }
             let arr_valores = new Array();
-            generador_.free_temp(temporal_);
-            generador_.free_temp(aux_temp);
             if (env_.prev_ != null) {
-                generador_.add_expresion(temporal_, "p", env_.size + generador_.get_temporales().size + 2, "+");
+                generador_.add_expresion(temporal_, "p", env_.size + generador_.get_temporales().size + 1, "+");
             }
             else {
-                generador_.add_expresion(temporal_, "p", env_.size + generador_.get_temporales().size + 1, "+");
+                generador_.add_expresion(temporal_, "p", env_.size + generador_.get_temporales().size, "+");
             }
             let val_param;
             this.parametros.forEach((param_) => {
-                console.log(param_.nodo);
                 val_param = param_.nodo.traducir(env_, generador_, errores_);
                 arr_valores.push(val_param);
             });
@@ -65,6 +61,13 @@ export class call_c3d extends instruccion_c3d {
                         generador_.add_code("printf(\"%c\", 10);");
                         generador_.add_code("printf(\"%c\", 10);");
                         generador_.add_code("printf(\"%c\", 10);");*/
+            console.log("--------------------------------------------");
+            console.log("tamaño de size: " + env_.size);
+            console.log(env_);
+            console.log("--------------------------------------------");
+            console.log("tamaño de variables temporales: " + generador_.get_temporales().size);
+            console.log(generador_.get_temporales());
+            console.log("--------------------------------------------");
             let t_ = generador_.new_temporal();
             generador_.free_temp(t_);
             if (env_.prev_ != null) {

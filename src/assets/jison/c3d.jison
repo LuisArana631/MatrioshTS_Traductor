@@ -59,18 +59,12 @@ entero  [0-9]+
 decimal [0-9]+"."[0-9]+
 identificador ([a-zA-Z_])[a-zA-Z0-9_]*
 
-/* CADENAS */
-str_ (\"[^"]*\")|(\'[^']*\')
-
-/* COMENTARIOS */
-"//".* /* IGNORAR COMENTARIO */
-[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/] /* IGNORAR COMENTARIO */
-
 %%
 \s+                   /* EVITAR ESPACIOS EN BLANCO */
 
-/* CADENAS */
-{str_}          { yytext = yytext.replace("\\n", "\n").replace("\\\\","\\").replace("\\r", "\r").replace("\\t","\t");/*yytext = yytext.substr( 1 , yyleng-2 );*/ return 'CADENA'; }     
+/* COMENTARIOS */
+"//".* /* IGNORAR COMENTARIO */
+[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/] /* IGNORAR COMENTARIO */   
 
 /* TIPOS DE DATOS */
 "string"                return 'STRING'
@@ -153,6 +147,11 @@ str_ (\"[^"]*\")|(\'[^']*\')
 {decimal}               return 'DECIMAL'
 {entero}                return 'ENTERO'
 {identificador}         return 'IDENTIFICADOR'
+
+[\']([^\t\'\"\n]|(\\\")|(\\n)|(\\\')|(\\t))*[\'] { yytext = yytext.substr(1,yyleng-2).replace("\\n", "\n").replace("\\t", "\t").replace("\\r", "\r").replace("\\\\", "\\").replace("\\\"", "\""); return 'CADENA'; }
+
+\"[^"]*\" { yytext = yytext.replace("\\n", "\n").replace("\\t", "\t").replace("\\r", "\r").replace("\\\\", "\\").replace("\\\"", "\""); return 'CADENA'; }
+
 {booleano}              return 'BOOLEANO'
 
 <<EOF>>		            return 'EOF'
@@ -549,10 +548,22 @@ dato_valor
 
 llamada
     : 'IDENTIFICADOR' '(' ')' { $$ = {
-        nodo: (new call_c3d($1, [], @1.first_line, @1.first_column))
+        nodo: (new call_c3d($1, [], @1.first_line, @1.first_column)),
+        expresion: {
+            tipo: "llamada",
+            param: [],
+            escritura: 0,
+            dato: $1
+        }        
     }; }
     | 'IDENTIFICADOR' '(' lista_exp_par ')' { $$ = {
-        nodo: (new call_c3d($1, $3, @1.first_line, @1.first_column))
+        nodo: (new call_c3d($1, $3, @1.first_line, @1.first_column)),
+        expresion:{
+            tipo: "llamada",
+            param: $3,
+            escritura: 5,
+            dato: $1
+        }        
     }; };
 
 lista_exp_par

@@ -101,9 +101,11 @@ export class generador{
         if(this.temp_strg.has(left_oper)){
             this.temp_strg.delete(left_oper);
         }
+
         if(this.temp_strg.has(right_oper)){
             this.temp_strg.delete(right_oper);
         }
+        
         this.codigo_.push(`${this.es_funcion}${target} = ${left_oper} ${operador_} ${right_oper};`);
     }
 

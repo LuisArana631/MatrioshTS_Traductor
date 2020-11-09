@@ -596,8 +596,13 @@ export class HomePage {
       this.str_ast += "call_" + sub_instr + instr_num + "[label = \"Llamada\" ];\n";
       this.str_ast += padre + " ->  call_" + sub_instr + instr_num + ";\n";
 
-      this.str_ast += "id_" + sub_instr + instr_num + "[label = \"" + item.dato + "\"];\n";
-      this.str_ast += "call_" + sub_instr + instr_num + " -> id_" + sub_instr + instr_num + ";\n";
+      try{
+        this.str_ast += "id_" + sub_instr + instr_num + "[label = \"" + item.dato + "\"];\n";
+        this.str_ast += "call_" + sub_instr + instr_num + " -> id_" + sub_instr + instr_num + ";\n";
+      }catch(error){
+        this.str_ast += "id_" + sub_instr + instr_num + "[label = \"" + item.valor + "\"];\n";
+        this.str_ast += "call_" + sub_instr + instr_num + " -> id_" + sub_instr + instr_num + ";\n";
+      }        
 
       let count_param = 0;
 
@@ -743,7 +748,7 @@ export class HomePage {
     }else if(item.tipo == "return_"){
       this.str_ast += "return_" + sub_instr + instr_num + "[label = \"Return\"];\n";
       this.str_ast += padre + " -> return_" + sub_instr + instr_num + ";\n";
-
+      
       this.graficar_expresion(item.expresion, instr_num, sub_instr+1400, "return_" +sub_instr+instr_num);
       sub_instr++;
     }
@@ -755,7 +760,7 @@ export class HomePage {
     let nombre_expresion = "expresion_" + sub_instr + instr_num;
     this.str_ast += nombre_expresion + " [label = \"Expresion\"];\n";
     this.str_ast += padre + " -> " + nombre_expresion + ";\n";
-
+    
     if(item.dato){  //Es un dato
       this.str_ast += "dato_" + sub_instr + instr_num + " [label = \"Dato\"];\n";
       this.str_ast += nombre_expresion + " -> " + "dato_" + sub_instr + instr_num + ";\n";

@@ -21,8 +21,6 @@ export class multiplicacion extends expresion_c3d{
             const left_ = this.left_oper.traducir(env_, generador_, errores_);
             const right_ = this.right_oper.traducir(env_, generador_, errores_);
 
-            console.log(right_);
-
             const temp_ = generador_.new_temporal();
             
             if(left_.get_valor().charAt(0) == "t"){

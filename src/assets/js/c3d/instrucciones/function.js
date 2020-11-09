@@ -22,13 +22,23 @@ export class function_c3d extends instruccion_c3d {
                 return;
             }
             generador_.add_void(this.id_);
-            generador_.limpiar_temporales();
             generador_.es_funcion = " ";
-            if (this.parametros.length > 0) { /*
+            if (this.parametros.length > 0) {
                 let indice_ = generador_.new_temporal();
                 generador_.free_temp(indice_);
-                generador_.add_expresion(indice_, "p", "1", "+");*/
+                generador_.add_expresion(indice_, "p", "1", "+");
                 this.parametros.forEach(param_ => {
+                    if (param_.tipo.tipo == tipos_dato.ARRAY || param_.tipo.tipo == tipos_dato.TYPES) {
+                        // ARRAY - TYPES                         
+                    }
+                    else {
+                        let temp_valor = generador_.new_temporal();
+                        generador_.free_temp(temp_valor);
+                        generador_.add_get_stack(temp_valor, indice_);
+                    }
+                    if (!(param_ === this.parametros[this.parametros.length - 1])) {
+                        generador_.add_expresion(indice_, indice_, "1", "+");
+                    }
                     nuevo_env.add_variable(1, param_.id, param_.tipo, false, false, this.linea_, this.columna_);
                 });
             }
@@ -36,7 +46,6 @@ export class function_c3d extends instruccion_c3d {
             generador_.add_label(fin_);
             generador_.es_funcion = "";
             generador_.add_end_void();
-            generador_.limpiar_temporales();
         }
         catch (error) {
             errores_.push(new nodoError("Semántico", error, this.linea_, this.columna_, `Error en función ${this.id_}`));

@@ -61,13 +61,13 @@ export class declaracion_ extends instruccion_c3d {
                         generador_.add_label(temporal_);
                     }
                     else {
-                        generador_.add_set_stack(valor_.get_valor(), new_var.pos + generador_.get_temporales().size);
+                        generador_.add_set_stack(valor_.get_valor(), new_var.pos);
                     }
                 }
                 else {
                     const temp_ = generador_.new_temporal();
                     generador_.free_temp(temp_);
-                    generador_.add_expresion(temp_, 'p', new_var.pos + generador_.get_temporales().size, '+');
+                    generador_.add_expresion(temp_, 'p', new_var.pos, '+');
                     if (this.tipo.tipo == tipos_dato.BOOLEAN) {
                         const temp_lbl = generador_.new_label();
                         generador_.add_label(valor_.true_lbl);
