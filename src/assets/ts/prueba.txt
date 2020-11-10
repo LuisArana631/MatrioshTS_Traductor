@@ -50,3 +50,34 @@ function operar(n1:number, n2:number):void{
 }
 
 operar(2,2);
+
+/* ARCHIVO BASICO */
+
+let val1:number = 0;
+let val2:number = 0;
+let val3:number = 0;
+let a:number = 0;
+let b:number = 0;
+
+val1 = 7 - (5 + 10 * (20 / 5 - 2 + 4 * (5 + 2 * 3)) - 8 * 3 ** 2) + 50 * (6 * 2); //214
+val2 = 2 ** 4 - 9 * (8 - 6 * (3 ** 2 - 6 * 5 - 7 * (9 + 7 ** 3) + 10) - 5 ) + 8 * (36 / 6 - 5 * ( 2 * 3)); //-133853
+val3 = (8 ** 3 * 36 ** 0.5 - 2 ** 5 + 2 ** 3 + 16 ** 0.5 + 2) / 3; //-1018 
+//let val4:number = val1+val2+val3+val4; //Error, comentar despues de reportar
+let val4:number = val1 - val2 + val3; //El resultado es 135085
+if(val1 - val2 + val3 == 135085){
+  console.log('Aritmeticas 100');
+}
+
+let String_3: string;
+let String_4: string;
+let int2_:number;
+let TRUE_ :boolean = true;
+let FALSE_ :boolean = false;
+int2_ = 45;
+int2_ --; 
+
+String_3 = (int2_ > 77 || FALSE_) + "," + (int2_ < 78 && TRUE_) + "," + (int2_ + 10 <= int2_ || FALSE_) + "," + (!!!!!!!!!!!! (int2_ + 10 >= int2_));
+String_4 = (int2_ >= 77 || -1 < 100) + "," + (int2_ > 78 && 100 + 0);
+
+console.log("Lógica 1" + " = " + String_3); //false,true,false,true
+console.log("Lógica 2" + " = " + String_4); //true,false

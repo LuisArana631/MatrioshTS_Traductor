@@ -130,6 +130,10 @@ identificador ([a-zA-Z_])[a-zA-Z0-9_]*
 "true"                  return 'TRUE'
 "false"                 return 'FALSE'
 
+/* DATOS */
+{decimal}               return 'DECIMAL'
+{entero}                return 'ENTERO'
+
 /* CARACTERES ESPECIALES */
 "{"                     return '{'
 "}"                     return '}'
@@ -143,9 +147,7 @@ identificador ([a-zA-Z_])[a-zA-Z0-9_]*
 ")"                     return ')'
 "."                     return '.'
 
-/* DATOS */
-{decimal}               return 'DECIMAL'
-{entero}                return 'ENTERO'
+
 {identificador}         return 'IDENTIFICADOR'
 
 [\']([^\t\'\"\n]|(\\\")|(\\n)|(\\\')|(\\t))*[\'] { yytext = yytext.substr(1,yyleng-2).replace("\\n", "\n").replace("\\t", "\t").replace("\\r", "\r").replace("\\\\", "\\").replace("\\\"", "\""); return 'CADENA'; }
@@ -160,15 +162,18 @@ identificador ([a-zA-Z_])[a-zA-Z0-9_]*
 
 /lex
 
+%right '='
+%nonassoc '++' '--'
 %left '||'
 %left '&&'
-%left '!'
-%left '==', '!='
-%left '>=', '<=', '<', '>'
+%left '==' '!='
+%nonassoc '>=' '<=' '<' '>'
 %left '+' '-'
 %left '*' '/' '%' 
-%left '(' ')' '[' ']' '{' '}'
 %left '**'
+%right '!' 
+%left '(' ')' '[' ']' '{' '}'
+
 
 %start init
 

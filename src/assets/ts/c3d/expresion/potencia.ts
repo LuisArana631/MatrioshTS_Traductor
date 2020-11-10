@@ -30,6 +30,7 @@ export class potencia_ extends expresion_c3d{
 
             const temp_ = generador_.new_temporal();
             const tipo_guia  = this.determinar_tipo(left_.tipo_.tipo, right_.tipo_.tipo);
+            generador_.free_temp(temp_);
                         
             switch(tipo_guia){
                 case tipo.NUMBER:
@@ -49,7 +50,7 @@ export class potencia_ extends expresion_c3d{
                     generador_.next_stack(env_.size + generador_.get_temporales().size-1);
                     generador_.add_call("potencia_");
                     generador_.add_get_stack(temp_, "p");
-                    generador_.next_stack(env_.size + generador_.get_temporales().size-1);
+                    generador_.prev_stack(env_.size + generador_.get_temporales().size-1);
 
                     return new retorno(temp_, true, new tipos_(tipos_dato.NUMBER));
                 default:
